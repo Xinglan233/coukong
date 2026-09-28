@@ -24,7 +24,7 @@
   --radius: 10px;
   --radius-lg: 14px;
   --font:
-    -apple-system, BlinkBlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB',
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
 }
 
@@ -145,7 +145,7 @@ textarea {
   border-radius: var(--radius);
   font-weight: 600;
   font-size: 15px;
-  transition: transform 0.12s ease, background 0.15s ease;
+  transition: transform 0.12s ease, background 0.15px ease;
   white-space: nowrap;
 }
 
