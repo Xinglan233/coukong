@@ -53,3 +53,6 @@ for (const [name, url, isGz] of files) {
   await writeFile(p, isGz ? gunzipSync(buf) : buf)
   console.log('tesseract: fetched', name)
 }
+
+// PWA 图标由 gen-icons.mjs 纯代码生成到 public
+await import('./gen-icons.mjs')
