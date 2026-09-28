@@ -18,7 +18,7 @@ export interface Booking {
 
 export interface Profile {
   name: string
-  days: DayKey
+  days: DayKey[]
 }
 
 export type ThemeMode = 'auto' | 'light' | 'dark'
