@@ -2,6 +2,9 @@ node_modules
 dist
 dev-dist
 public/tesseract
+public/icon-192.png
+public/icon-512.png
+public/icon-maskable.png
 *.log
 stats.txt
 .DS_Store
