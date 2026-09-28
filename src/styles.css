@@ -145,7 +145,7 @@ textarea {
   border-radius: var(--radius);
   font-weight: 600;
   font-size: 15px;
-  transition: transform 0.12s ease, background 0.15px ease;
+  transition: transform 0.12s ease, background 0.15s ease;
   white-space: nowrap;
 }
 
