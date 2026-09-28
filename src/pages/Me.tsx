@@ -140,7 +140,7 @@ export function Me() {
             className='select'
             style={{ width: 110 }}
             value={settings.bufferMinutes}
-            onChange={(e) => updateSettings({ bufferMinutes: Number(e.target.value) }) }
+            onChange={(e) => updateSettings({ bufferMinutes: Number(e.target.value) })}
           >
             {BUFFER_OPTIONS.map((b) => (
               <option key={b} value={b}>
