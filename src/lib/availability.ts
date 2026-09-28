@@ -18,7 +18,7 @@ export function busyIntervals(bookings: Booking[], day: DayKey, buffer: number):
   const ivals = bookings
     .filter((b) => b.day === day)
     .map((b) => ({
-      start: Math.max(0, parseTime(b.start) - buffer),
+      start: Math.max(0, (parseTime(b.start)) - buffer),
       end: parseTime(b.end) + buffer
     }))
   return mergeIntervals(ivals)

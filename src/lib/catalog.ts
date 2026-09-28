@@ -1,7 +1,10 @@
 import type { CatalogActivity, CatalogSession, DayKey } from '../types'
 import { toMinute } from './dates'
 
-// 活动场次库：各活动准确场次截图给全后按此格式补全
+/**
+ * 活动场次库
+ * 各活动的准确场次时间截图给全后，按下面格式补全即可
+ */
 export const CATALOG: CatalogActivity[] = [
   {
     id: 'a10-ys-checkin',
@@ -37,7 +40,7 @@ export function activitiesForDay(day: DayKey): CatalogActivity[] {
 }
 
 export function findActivity(id: string): CatalogActivity | undefined {
-  return CATALOG.find((a) => a.id === undefined ? false : a.id === id)
+  return CATALOG.find((a) => a.id === id)
 }
 
 export function normalizeBooth(s: string): string {

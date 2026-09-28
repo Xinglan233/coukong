@@ -30,7 +30,7 @@ interface State {
   profile: Profile
   settings: Settings
   bookings: Booking[]
-  friends: Friend
+  friends: Friend[]
   tab: Tab
   modal: Modal
   reviewGroups: RecognitionGroup[]
@@ -107,12 +107,12 @@ export const useStore = create<State>()(
       closeModal: () => set({ modal: null }),
       setReviewGroups: (groups) => set({ reviewGroups: groups }),
       setOcrProgress: (progress) => set({ ocrProgress: progress }),
-      showToast: (text: string) => set({ toast: text }),
+      showToast: (text) => set({ toast: text }),
       clearToast: () => set({ toast: null }),
 
       saveBooking: (data, id) => {
         if (id) {
-          set({ bookings: get().bookings.map((b) => (b.id === id ? { ...data, id } : b) })
+          set({ bookings: get().bookings.map((b) => (b.id === id ? { ...data, id } : b)) })
         } else {
           set({ bookings: [...get().bookings, { ...data, id: uid() }] })
         }

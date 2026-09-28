@@ -5,11 +5,11 @@ import { matchSession } from './catalog'
 const VALID_DAYS: DayKey[] = ['10-02', '10-03', '10-04', '10-05', '10-06']
 
 const TIME_RANGE =
-  /(\d{1,2})\s*[:：;]\s*(\d{2})\s*[-–—~〜ー=]+\s*(\d{1,2})\s*[:：;]\s*(\d{2})/
+  /(\d{1,2})\s*[:：;]\s*(\d{2})\s*[-–—~～ー=]+\s*(\d{1,2})\s*[:：;]\s*(\d{2})/
 
 const DATE_RE = /(\d{1,2})\s*月\s*(\d{1,2})\s*日/g
 
-const BOOTH_RE = /([A-Za-z\uFF21-\uFF3A])\s*[-–—一~]\s*(\d{1,2})/
+const BOOTH_RE = /([A-Za-zＡ-Ｚ])\s*[-–—一~]\s*(\d{1,2})/
 
 const STATUS_WORDS = /已预约|取消预约|心愿单|我的预约|活动规则|去绑定|绑定门票|当日已预约|加入心愿单|我知道了|查看预约|^GO$/
 
@@ -38,8 +38,7 @@ function enrich(b: RawBooking): RawBooking {
     return {
       ...b,
       start: hit.session.start,
-      end: hit.session.end,
-      booth: hit.activity.booth,
+      end: hit.session.booth,
       ip: hit.activity.ip,
       title: hit.activity.title,
       confidence: 1
