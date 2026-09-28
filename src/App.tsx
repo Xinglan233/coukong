@@ -50,13 +50,18 @@ export default function App() {
   }, [themeMode])
 
   useEffect(() => {
-    const encoded = readHashPayload()
-    if (!encoded) return
-    const payload = decodePayload(encoded)
-    clearHash()
-    if (payload) {
-      setTimeout(() => openModal({ type: 'importPreview', payload }), 400)
+    function handleHash() {
+      const encoded = readHashPayload()
+      if (!encoded) return
+      const payload = decodePayload(encoded)
+      clearHash()
+      if (payload) {
+        setTimeout(() => openModal({ type: 'importPreview', payload }), 400)
+      }
     }
+    handleHash()
+    window.addEventListener('hashchange', handleHash)
+    return () => window.removeEventListener('hashchange', handleHash)
   }, [openModal])
 
   if (!onboarded) {
