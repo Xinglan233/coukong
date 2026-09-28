@@ -1,0 +1,11 @@
+node_modules
+dist
+dev-dist
+public/tesseract
+*.log
+stats.txt
+.DS_Store
+.env
+.env.*
+!.env.example
+package-lock.json
