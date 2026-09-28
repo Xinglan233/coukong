@@ -12,13 +12,13 @@ export function TabBar() {
   const setTab = useStore((s) => s.setTab)
 
   return (
-    <nav className="tabbar">
+    <nav className='tabbar'>
       {TABS.map(({ key, label, icon: Icon }) => (
         <button key={key} className={tab === key ? 'on' : ''} onClick={() => setTab(key)}>
           <Icon size={22} strokeWidth={tab === key ? 2.4 : 2} />
           {label}
         </button>
-      )}
+      ))}
     </nav>
   )
 }
