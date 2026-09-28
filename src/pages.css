@@ -340,8 +340,8 @@
 .me-profile {
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
