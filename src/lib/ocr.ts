@@ -38,7 +38,8 @@ function enrich(b: RawBooking): RawBooking {
     return {
       ...b,
       start: hit.session.start,
-      end: hit.session.booth,
+      end: hit.session.end,
+      booth: hit.activity.booth,
       ip: hit.activity.ip,
       title: hit.activity.title,
       confidence: 1
