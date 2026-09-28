@@ -24,7 +24,7 @@
   --radius: 10px;
   --radius-lg: 14px;
   --font:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB',
+    -apple-system, BlinkBlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
 }
 
@@ -327,7 +327,6 @@ textarea {
   position: fixed;
   left: 50%;
   bottom: 0;
-  transform: translateX(-50%);
   width: 100%;
   max-width: 460px;
   background: var(--surface);
@@ -370,7 +369,6 @@ textarea {
   position: fixed;
   left: 50%;
   bottom: calc(92px + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
   background: var(--busy);
   color: #fff;
   padding: 11px 18px;

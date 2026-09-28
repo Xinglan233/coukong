@@ -15,7 +15,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
       {open && (
         <>
           <motion.div
-            className="sheet-backdrop"
+            className='sheet-backdrop'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -23,20 +23,21 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
             onClick={onClose}
           />
           <motion.div
-            className="sheet"
+            className='sheet'
+            style={{ x: '-50%' }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
           >
-            <div className="sheet-grab" />
-            <div className="sheet-head">
-              <span className="sheet-title">{title}</span>
-              <button className="icon-btn" onClick={onClose} aria-label="关闭">
+            <div className='sheet-grab' />
+            <div className='sheet-head'>
+              <span className='sheet-title'>{title}</span>
+              <button className='icon-btn' onClick={onClose} aria-label='关闭'>
                 <X size={20} />
               </button>
             </div>
-            <div className="sheet-body">{children}</div>
+            <div className='sheet-body'>{children}</div>
           </motion.div>
         </>
       )}
