@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState } from "react"
 import {
   ChevronRight,
   ClipboardPaste,
@@ -8,19 +8,19 @@ import {
   Trash2,
   Upload,
   Users
-} from 'lucide-react'
-import type { DayKey, ThemeMode } from '../types'
-import { DAY_META } from '../lib/dates'
-import { useStore } from '../store'
-import { Sheet } from '../ui/Sheet'
-import { DaySelect } from '../ui/DaySelect'
+} from "lucide-react"
+import type { DayKey, ThemeMode } from "../types"
+import { DAY_META } from "../lib/dates"
+import { useStore } from "../store"
+import { Sheet } from "../ui/Sheet"
+import { DaySelect } from "../ui/DaySelect"
 
 const BUFFER_OPTIONS = [0, 5, 10, 15, 20, 30]
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => i)
 const THEME_OPTIONS: { key: ThemeMode; label: string }[] = [
-  { key: 'auto', label: '跟随系统' },
-  { key: 'light', label: '浅色' },
-  { key: 'dark', label: '深色' }
+  { key: "auto", label: "跟随系统" },
+  { key: "light", label: "浅色" },
+  { key: "dark", label: "深色" }
 ]
 
 export function Me() {
@@ -50,66 +50,66 @@ export function Me() {
     if (!editName.trim()) return
     updateProfile({ name: editName.trim(), days: editDays })
     setProfileOpen(false)
-    showToast('已保存')
+    showToast("已保存")
   }
 
   function handleExport() {
-    const blob = new Blob([exportBackup()], { type: 'application/json' })
+    const blob = new Blob([exportBackup()], { type: "application/json" })
     const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
+    const a = document.createElement("a")
     a.href = url
-    a.download = 'coukong-backup.json'
+    a.download = "coukong-backup.json"
     a.click()
     URL.revokeObjectURL(url)
-    showToast('备份已导出')
+    showToast("备份已导出")
   }
 
   async function handleBackupFile(file: File) {
     const text = await file.text()
     const ok = importBackup(text)
-    showToast(ok ? '备份已导入' : '文件内容无效')
+    showToast(ok ? "备份已导入" : "文件内容无效")
   }
 
   function handleReset() {
-    if (window.confirm('确定清空全部数据？')) {
+    if (window.confirm("确定清空全部数据？")) {
       resetAll()
     }
   }
 
   return (
-    <div className='page'>
-      <h1 className='page-title'>我的</h1>
+    <div className="page">
+      <h1 className="page-title">我的</h1>
 
-      <button className='me-profile' onClick={openProfile}>
+      <button className="me-profile" onClick={openProfile}>
         <div>
-          <div className='me-name'>{profile.name}</div>
-          <div className='me-days'>
-            {profile.days.map((d) => DAY_META[d].label).join(' ') || '未选择参展日'}
+          <div className="me-name">{profile.name}</div>
+          <div className="me-days">
+            {profile.days.map((d) => DAY_META[d].label).join(" ") || "未选择参展日"}
           </div>
         </div>
-        <PencilLine size={17} className='me-edit-icon' />
+        <PencilLine size={17} className="me-edit-icon" />
       </button>
 
-      <div className='card me-card'>
-        <button className='me-row' onClick={() => openModal({ type: 'share' })}>
-          <span className='me-row-label'>
+      <div className="card me-card">
+        <button className="me-row" onClick={() => openModal({ type: "share" })}>
+          <span className="me-row-label">
             <Share2 size={17} />
             生成分享码
           </span>
           <ChevronRight size={17} />
         </button>
-        <button className='me-row' onClick={() => openModal({ type: 'friends' })}>
-          <span className='me-row-label'>
+        <button className="me-row" onClick={() => openModal({ type: "friends" })}>
+          <span className="me-row-label">
             <Users size={17} />
             朋友
           </span>
-          <span className='me-row-value'>
+          <span className="me-row-value">
             {friends.length}
             <ChevronRight size={17} />
           </span>
         </button>
-        <button className='me-row' onClick={() => openModal({ type: 'importManual' })}>
-          <span className='me-row-label'>
+        <button className="me-row" onClick={() => openModal({ type: "importManual" })}>
+          <span className="me-row-label">
             <ClipboardPaste size={17} />
             导入朋友码
           </span>
@@ -117,15 +117,15 @@ export function Me() {
         </button>
       </div>
 
-      <div className='section-label'>设置</div>
-      <div className='card me-card'>
-        <div className='me-row me-col'>
-          <span className='me-row-label'>主题</span>
-          <div className='segmented' style={{ width: '100%' }}>
+      <div className="section-label">设置</div>
+      <div className="card me-card">
+        <div className="me-row me-col">
+          <span className="me-row-label">主题</span>
+          <div className="segmented" style={{ width: "100%" }}>
             {THEME_OPTIONS.map((t) => (
               <button
                 key={t.key}
-                className={settings.themeMode === t.key ? 'on' : ''}
+                className={settings.themeMode === t.key ? "on" : ""}
                 onClick={() => updateSettings({ themeMode: t.key })}
               >
                 {t.label}
@@ -134,10 +134,10 @@ export function Me() {
           </div>
         </div>
 
-        <div className='me-row'>
-          <span className='me-row-label'>移动时间</span>
+        <div className="me-row">
+          <span className="me-row-label">移动时间</span>
           <select
-            className='select'
+            className="select"
             style={{ width: 110 }}
             value={settings.bufferMinutes}
             onChange={(e) => updateSettings({ bufferMinutes: Number(e.target.value) })}
@@ -150,11 +150,11 @@ export function Me() {
           </select>
         </div>
 
-        <div className='me-row'>
-          <span className='me-row-label'>开放时间</span>
-          <span className='me-hours'>
+        <div className="me-row">
+          <span className="me-row-label">开放时间</span>
+          <span className="me-hours">
             <select
-              className='select'
+              className="select"
               value={settings.openHour}
               onChange={(e) => updateSettings({ openHour: Number(e.target.value) })}
             >
@@ -164,9 +164,9 @@ export function Me() {
                 </option>
               ))}
             </select>
-            <span className='me-hours-sep'>至</span>
+            <span className="me-hours-sep">至</span>
             <select
-              className='select'
+              className="select"
               value={settings.closeHour}
               onChange={(e) => updateSettings({ closeHour: Number(e.target.value) })}
             >
@@ -180,24 +180,24 @@ export function Me() {
         </div>
       </div>
 
-      <div className='section-label'>数据</div>
-      <div className='card me-card'>
-        <button className='me-row' onClick={handleExport}>
-          <span className='me-row-label'>
+      <div className="section-label">数据</div>
+      <div className="card me-card">
+        <button className="me-row" onClick={handleExport}>
+          <span className="me-row-label">
             <Download size={17} />
             导出备份
           </span>
           <ChevronRight size={17} />
         </button>
-        <button className='me-row' onClick={() => backupInput.current?.click()}>
-          <span className='me-row-label'>
+        <button className="me-row" onClick={() => backupInput.current?.click()}>
+          <span className="me-row-label">
             <Upload size={17} />
             导入备份
           </span>
           <ChevronRight size={17} />
         </button>
-        <button className='me-row me-danger' onClick={handleReset}>
-          <span className='me-row-label'>
+        <button className="me-row me-danger" onClick={handleReset}>
+          <span className="me-row-label">
             <Trash2 size={17} />
             清空全部
           </span>
@@ -207,32 +207,32 @@ export function Me() {
 
       <input
         ref={backupInput}
-        type='file'
-        accept='application/json,.json'
+        type="file"
+        accept="application/json,.json"
         hidden
         onChange={(e) => {
           const f = e.target.files?.[0]
-          e.target.value = ''
+          e.target.value = ""
           if (f) void handleBackupFile(f)
         }}
       />
 
-      <Sheet open={profileOpen} title='个人资料' onClose={() => setProfileOpen(false)}>
-        <div className='field'>
-          <label className='field-label'>名字</label>
+      <Sheet open={profileOpen} title="个人资料" onClose={() => setProfileOpen(false)}>
+        <div className="field">
+          <label className="field-label">名字</label>
           <input
-            className='input'
+            className="input"
             value={editName}
             maxLength={12}
             onChange={(e) => setEditName(e.target.value)}
           />
         </div>
-        <div className='field'>
-          <label className='field-label'>参展日</label>
+        <div className="field">
+          <label className="field-label">参展日</label>
           <DaySelect value={editDays} onChange={setEditDays} />
         </div>
         <button
-          className='btn btn-primary btn-block'
+          className="btn btn-primary btn-block"
           disabled={!editName.trim()}
           onClick={saveProfile}
         >

@@ -1,6 +1,6 @@
-import { Fragment, type ReactNode } from 'react'
-import type { Booking, Interval } from '../types'
-import { fromMinute } from '../lib/dates'
+import { Fragment, type ReactNode } from "react"
+import type { Booking, Interval } from "../types"
+import { fromMinute } from "../lib/dates"
 
 export interface AxisPerson {
   name: string
@@ -36,10 +36,10 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
       return (
         <div
           key={b.id}
-          className='tl-busy'
+          className="tl-busy"
           style={{ left: `${pos(s)}%`, width: `${w}%` }}
         >
-          {w > 13 ? <span className='tl-busy-text'>{b.title}</span> : null}
+          {w > 13 ? <span className="tl-busy-text">{b.title}</span> : null}
         </div>
       )
     })
@@ -47,31 +47,31 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
   const totalRows = 1 + people.length
 
   return (
-    <div className='tl' style={{ minHeight: BAND_H + totalRows * (ROW_H + 22) }}>
-      <div className='tl-grid'>
+    <div className="tl" style={{ minHeight: BAND_H + totalRows * (ROW_H + 22) }}>
+      <div className="tl-grid">
         {hours.map((h) => {
           const top = pos(h * 60)
           return (
             <Fragment key={h}>
-              <span className='tl-time' style={{ top: `${top}%` }}>
+              <span className="tl-time" style={{ top: `${top}%` }}>
                 {h}:00
               </span>
-              <span className='tl-line' style={{ top: `${top}%` }} />
+              <span className="tl-line" style={{ top: `${top}%` }} />
             </Fragment>
           )
         })}
       </div>
 
-      <div className='tl-label tl-label-top'>共同空闲</div>
-      <div className='tl-row' style={{ height: BAND_H }}>
+      <div className="tl-label tl-label-top">共同空闲</div>
+      <div className="tl-row" style={{ height: BAND_H }}>
         {free.map((iv, i) => (
           <div
             key={i}
-            className='tl-free'
+            className="tl-free"
             style={{ left: `${pos(iv.start)}%`, width: `${width(iv.start, iv.end)}%` }}
           >
             {width(iv.start, iv.end) > 12 ? (
-              <span className='tl-free-text'>
+              <span className="tl-free-text">
                 {fromMinute(iv.start).slice(0, 5)}–{fromMinute(iv.end).slice(0, 5)}
               </span>
             ) : null}
@@ -81,8 +81,8 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
 
       {people.map((p) => (
         <Fragment key={p.name}>
-          <div className='tl-label'>{p.name}</div>
-          <div className='tl-row' style={{ height: ROW_H }}>
+          <div className="tl-label">{p.name}</div>
+          <div className="tl-row" style={{ height: ROW_H }}>
             {busyBlocks(p.bookings)}
           </div>
         </Fragment>
@@ -92,6 +92,6 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
 }
 
 function parseHHMM(hhmm: string): number {
-  const [h, m] = hhmm.split(':').map(Number)
+  const [h, m] = hhmm.split(":").map(Number)
   return h * 60 + m
 }

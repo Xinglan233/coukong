@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect } from 'react'
-import { useStore } from '../store'
+import { AnimatePresence, motion } from "framer-motion"
+import { useEffect } from "react"
+import { useStore } from "../store"
 
 export function Toast() {
   const toast = useStore((s) => s.toast)
@@ -16,8 +16,8 @@ export function Toast() {
     <AnimatePresence>
       {toast && (
         <motion.div
-          className='toast'
-          style={{ x: '-50%' }}
+          className="toast"
+          style={{ x: "-50%" }}
           initial={{ opacity: 0, y: 12, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.97 }}

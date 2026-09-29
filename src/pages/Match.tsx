@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { ClipboardPaste } from 'lucide-react'
-import { DAY_META, durationLabel, fromMinute } from '../lib/dates'
-import { commonDays, mutualFree, type Person } from '../lib/availability'
-import { useStore } from '../store'
-import { TimeAxis, type AxisPerson } from '../ui/TimeAxis'
+import { useState } from "react"
+import { ClipboardPaste } from "lucide-react"
+import { DAY_META, durationLabel, fromMinute } from "../lib/dates"
+import { commonDays, mutualFree, type Person } from "../lib/availability"
+import { useStore } from "../store"
+import { TimeAxis, type AxisPerson } from "../ui/TimeAxis"
 
 const SLOT_OPTIONS = [15, 30, 60]
 
@@ -33,13 +33,13 @@ export function Match() {
 
   if (friends.length === 0) {
     return (
-      <div className='page'>
-        <h1 className='page-title'>凑空</h1>
-        <p className='page-sub'>看看你和朋友什么时候都有空</p>
-        <div className='empty' style={{ paddingTop: 70 }}>
-          <div className='empty-title'>还没有朋友的日程</div>
-          <div className='empty-sub'>让朋友填完发码给你</div>
-          <button className='btn btn-primary' onClick={() => openModal({ type: 'importManual' })}>
+      <div className="page">
+        <h1 className="page-title">凑空</h1>
+        <p className="page-sub">看看你和朋友什么时候都有空</p>
+        <div className="empty" style={{ paddingTop: 70 }}>
+          <div className="empty-title">还没有朋友的日程</div>
+          <div className="empty-sub">让朋友填完发码给你</div>
+          <button className="btn btn-primary" onClick={() => openModal({ type: "importManual" })}>
             <ClipboardPaste size={17} />
             导入朋友码
           </button>
@@ -49,20 +49,20 @@ export function Match() {
   }
 
   return (
-    <div className='page'>
-      <h1 className='page-title'>凑空</h1>
-      <p className='page-sub'>勾选朋友，查看共同空闲</p>
+    <div className="page">
+      <h1 className="page-title">凑空</h1>
+      <p className="page-sub">勾选朋友，查看共同空闲</p>
 
-      <div className='chip-wrap' style={{ marginBottom: 10 }}>
-        <button className='chip' onClick={toggleAll}>
-          {allOn ? '清空' : '全选'}
+      <div className="chip-wrap" style={{ marginBottom: 10 }}>
+        <button className="chip" onClick={toggleAll}>
+          {allOn ? "清空" : "全选"}
         </button>
         {friends.map((f) => {
           const on = selected[f.id] ?? false
           return (
             <button
               key={f.id}
-              className={`chip ${on ? 'on' : ''}`}
+              className={`chip ${on ? "on" : ""}`}
               onClick={() => setSelected((m) => ({ ...m, [f.id]: !on }))}
             >
               {f.name}
@@ -72,22 +72,22 @@ export function Match() {
       </div>
 
       {chosen.length === 0 ? (
-        <div className='empty' style={{ padding: '50px 20px' }}>
-          <div className='empty-sub'>勾选至少一位朋友</div>
+        <div className="empty" style={{ padding: "50px 20px" }}>
+          <div className="empty-sub">勾选至少一位朋友</div>
         </div>
       ) : (
         <>
-          <div className='segmented' style={{ margin: '6px 0 18px' }}>
+          <div className="segmented" style={{ margin: "6px 0 18px" }}>
             {SLOT_OPTIONS.map((m) => (
-              <button key={m} className={minSlot === m ? 'on' : ''} onClick={() => setMinSlot(m)}>
+              <button key={m} className={minSlot === m ? "on" : ""} onClick={() => setMinSlot(m)}>
                 {m} 分钟以上
               </button>
             ))}
           </div>
 
           {days.length === 0 && (
-            <div className='empty' style={{ padding: '40px 20px' }}>
-              <div className='empty-sub'>你们的参展日没有交集</div>
+            <div className="empty" style={{ padding: "40px 20px" }}>
+              <div className="empty-sub">你们的参展日没有交集</div>
             </div>
           )}
 
@@ -108,22 +108,22 @@ export function Match() {
               }))
             ]
             return (
-              <div key={day} className='match-day'>
-                <div className='match-day-head'>
-                  <span className='match-day-date'>{DAY_META[day].date}</span>
-                  <span className='match-day-weekday'>{DAY_META[day].weekday}</span>
+              <div key={day} className="match-day">
+                <div className="match-day-head">
+                  <span className="match-day-date">{DAY_META[day].date}</span>
+                  <span className="match-day-weekday">{DAY_META[day].weekday}</span>
                 </div>
 
                 {free.length === 0 ? (
-                  <div className='match-none'>当天凑不出整块时间</div>
+                  <div className="match-none">当天凑不出整块时间</div>
                 ) : (
-                  <div className='free-list'>
+                  <div className="free-list">
                     {free.map((iv, i) => (
-                      <div key={i} className='free-row'>
-                        <span className='free-range'>
+                      <div key={i} className="free-row">
+                        <span className="free-range">
                           {fromMinute(iv.start)}–{fromMinute(iv.end)}
                         </span>
-                        <span className='free-dur'>
+                        <span className="free-dur">
                           {durationLabel(fromMinute(iv.start), fromMinute(iv.end))}
                         </span>
                       </div>
