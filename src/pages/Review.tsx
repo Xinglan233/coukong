@@ -54,6 +54,10 @@ export function Review({ onClose }: { onClose: () => void }) {
       showToast('还有场次没有选择日期')
       return
     }
+    if (raws.some((r) => !r.start || !r.end)) {
+      showToast('还有场次的时间没填完整')
+      return
+    }
     const { saved, skipped } = addRawBookings(raws)
     if (!saved && skipped) showToast(`${skipped} 场与已有预约冲突`)
     else showToast(skipped ? `已保存 ${saved} 场，${skipped} 场冲突未保存` : `已保存 ${saved} 场`)
@@ -122,7 +126,11 @@ export function Review({ onClose }: { onClose: () => void }) {
             return (
               <div key={k} className={`rv-row ${on ? '' : 'off'}`}>
                 <div className="rv-row-main">
-                  <button className={`rv-check ${on ? 'on' : ''}`} onClick={() => toggle(k)}>
+                  <button
+                    className={`rv-check ${on ? 'on' : ''}`}
+                    aria-label={on ? '取消选中' : '选中'}
+                    onClick={() => toggle(k)}
+                  >
                     {on ? <Check size={13} strokeWidth={3.2} /> : null}
                   </button>
                   <button className="rv-row-text" onClick={() => setOpenKeys((m) => ({ ...m, [k]: !m[k] }))}>

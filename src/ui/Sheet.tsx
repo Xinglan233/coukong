@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { X } from "lucide-react"
 import type { ReactNode } from "react"
 
@@ -10,6 +10,8 @@ interface SheetProps {
 }
 
 export function Sheet({ open, title, onClose, children }: SheetProps) {
+  const reduce = useReducedMotion()
+
   return (
     <AnimatePresence>
       {open && (
@@ -25,10 +27,14 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
           <motion.div
             className="sheet"
             style={{ x: "-50%" }}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 320 }}
+            initial={reduce ? { opacity: 0 } : { y: "100%" }}
+            animate={reduce ? { opacity: 1 } : { y: 0 }}
+            exit={reduce ? { opacity: 0 } : { y: "100%" }}
+            transition={
+              reduce
+                ? { duration: 0.15 }
+                : { type: "spring", damping: 30, stiffness: 320 }
+            }
           >
             <div className="sheet-grab" />
             <div className="sheet-head">

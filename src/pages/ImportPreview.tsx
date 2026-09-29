@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { DAY_KEYS, type SharePayload } from '../types'
 import { DAY_META, formatTime } from '../lib/dates'
 import { useStore } from '../store'
@@ -10,7 +10,9 @@ interface ImportPreviewProps {
 
 export function ImportPreview({ payload, onClose }: ImportPreviewProps) {
   const importFriend = useStore((s) => s.importFriend)
+  const hasSameName = useStore((s) => s.friends.some((f) => f.name === payload.name))
   const showToast = useStore((s) => s.showToast)
+  const reduce = useReducedMotion()
 
   const grouped = DAY_KEYS.map((d) => ({
     day: d,
@@ -28,7 +30,7 @@ export function ImportPreview({ payload, onClose }: ImportPreviewProps) {
   return (
     <motion.div
       className="import-page"
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: reduce ? 0 : 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
     >
@@ -37,6 +39,8 @@ export function ImportPreview({ payload, onClose }: ImportPreviewProps) {
         <p className="page-sub">
           {payload.days.length} 天在场，{payload.bookings.length} 场预约
         </p>
+
+        {hasSameName && <div className="notice">已有同名朋友，保存将覆盖其日程</div>}
 
         {grouped.map((g) => (
           <div key={g.day} className="import-day">

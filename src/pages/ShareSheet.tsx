@@ -44,7 +44,7 @@ export function ShareSheet() {
 
       {tab === 'qr' && (
         <div className="qr-box">
-          <QRCodeSVG value={url} size={218} bgColor="#ffffff" fgColor="#171a1f" includeMargin />
+          <QRCodeSVG value={url} size={218} bgColor="#ffffff" fgColor="#171a1f" marginSize={4} />
         </div>
       )}
 

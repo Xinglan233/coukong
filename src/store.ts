@@ -123,7 +123,7 @@ export const useStore = create<State>()(
       addRawBookings: (raws) => {
         let saved = 0
         let skipped = 0
-        const current = [...get().bookings]
+        const added: Booking[] = []
         for (const raw of raws) {
           if (!raw.day) {
             skipped++
@@ -140,18 +140,19 @@ export const useStore = create<State>()(
               }
             : raw
           const booking = toBooking(enriched)
-          const conflicts = [
-            ...findConflicts(current, { day: booking.day, start: booking.start, end: booking.end }),
-            ...findConflicts(get().bookings, { day: booking.day, start: booking.start, end: booking.end })
-          ]
+          const conflicts = findConflicts([...get().bookings, ...added], {
+            day: booking.day,
+            start: booking.start,
+            end: booking.end
+          })
           if (conflicts.length) {
             skipped++
             continue
           }
-          current.push(booking)
+          added.push(booking)
           saved++
         }
-        if (saved) set({ bookings: [...get().bookings, ...current.slice(get().bookings.length)] })
+        if (added.length) set({ bookings: [...get().bookings, ...added] })
         return { saved, skipped }
       },
 

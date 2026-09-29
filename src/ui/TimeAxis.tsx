@@ -1,6 +1,6 @@
 import { Fragment, type ReactNode } from "react"
 import type { Booking, Interval } from "../types"
-import { fromMinute } from "../lib/dates"
+import { formatTime, fromMinute } from "../lib/dates"
 
 export interface AxisPerson {
   name: string
@@ -30,14 +30,16 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
 
   const busyBlocks = (bookings: Booking[]): ReactNode =>
     bookings.map((b) => {
-      const s = (parseHHMM(b.start)) - buffer
-      const e = parseHHMM(b.end) + buffer
-      const w = width(s, e)
+      // 缓冲可能把块推出开放时间边界，夹回轴内避免溢出
+      const from = Math.min(Math.max(parseHHMM(b.start) - buffer, openMin), openMin + span)
+      const to = Math.min(Math.max(parseHHMM(b.end) + buffer, openMin), openMin + span)
+      if (to <= from) return null
+      const w = width(from, to)
       return (
         <div
           key={b.id}
           className="tl-busy"
-          style={{ left: `${pos(s)}%`, width: `${w}%` }}
+          style={{ left: `${pos(from)}%`, width: `${w}%` }}
         >
           {w > 13 ? <span className="tl-busy-text">{b.title}</span> : null}
         </div>
@@ -72,15 +74,15 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
           >
             {width(iv.start, iv.end) > 12 ? (
               <span className="tl-free-text">
-                {fromMinute(iv.start).slice(0, 5)}–{fromMinute(iv.end).slice(0, 5)}
+                {formatTime(fromMinute(iv.start))}–{formatTime(fromMinute(iv.end))}
               </span>
             ) : null}
           </div>
         ))}
       </div>
 
-      {people.map((p) => (
-        <Fragment key={p.name}>
+      {people.map((p, i) => (
+        <Fragment key={`${p.name}-${i}`}>
           <div className="tl-label">{p.name}</div>
           <div className="tl-row" style={{ height: ROW_H }}>
             {busyBlocks(p.bookings)}

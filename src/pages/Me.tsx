@@ -47,7 +47,7 @@ export function Me() {
   }
 
   function saveProfile() {
-    if (!editName.trim()) return
+    if (!editName.trim() || editDays.length === 0) return
     updateProfile({ name: editName.trim(), days: editDays })
     setProfileOpen(false)
     showToast("已保存")
@@ -60,7 +60,8 @@ export function Me() {
     a.href = url
     a.download = "coukong-backup.json"
     a.click()
-    URL.revokeObjectURL(url)
+    // Safari 下立即释放会打断下载，延后回收
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
     showToast("备份已导出")
   }
 
@@ -156,7 +157,14 @@ export function Me() {
             <select
               className="select"
               value={settings.openHour}
-              onChange={(e) => updateSettings({ openHour: Number(e.target.value) })}
+              onChange={(e) => {
+                const v = Number(e.target.value)
+                updateSettings(
+                  v >= settings.closeHour
+                    ? { openHour: v, closeHour: Math.min(23, v + 1) }
+                    : { openHour: v }
+                )
+              }}
             >
               {HOUR_OPTIONS.map((h) => (
                 <option key={h} value={h}>
@@ -168,7 +176,14 @@ export function Me() {
             <select
               className="select"
               value={settings.closeHour}
-              onChange={(e) => updateSettings({ closeHour: Number(e.target.value) })}
+              onChange={(e) => {
+                const v = Number(e.target.value)
+                updateSettings(
+                  v <= settings.openHour
+                    ? { closeHour: v, openHour: Math.max(0, v - 1) }
+                    : { closeHour: v }
+                )
+              }}
             >
               {HOUR_OPTIONS.map((h) => (
                 <option key={h} value={h}>
@@ -233,7 +248,7 @@ export function Me() {
         </div>
         <button
           className="btn btn-primary btn-block"
-          disabled={!editName.trim()}
+          disabled={!editName.trim() || editDays.length === 0}
           onClick={saveProfile}
         >
           保存

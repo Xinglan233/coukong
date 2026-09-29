@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { decodePayload } from '../lib/codec'
+import { decodeShareText } from '../lib/codec'
 import { useStore } from '../store'
 
 interface ImportManualProps {
@@ -12,7 +12,7 @@ export function ImportManual({ onClose }: ImportManualProps) {
   const [text, setText] = useState('')
 
   function handleImport() {
-    const payload = decodePayload(text)
+    const payload = decodeShareText(text)
     if (!payload) {
       showToast('没有识别出有效内容')
       return

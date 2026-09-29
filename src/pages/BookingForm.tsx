@@ -41,7 +41,7 @@ export function BookingForm({ bookingId, presetDay, onClose }: BookingFormProps)
   const dayCount = bookings.filter((b) => b.day === day && b.id !== bookingId).length
   const overFive = dayCount >= 5
 
-  const timeInvalid = toMinute(end) <= toMinute(start)
+  const timeInvalid = !start || !end || toMinute(end) <= toMinute(start)
   const catalogReady = Boolean(activityId && session)
   const customReady = Boolean(title.trim() && !timeInvalid && conflicts.length === 0)
 
@@ -107,6 +107,8 @@ export function BookingForm({ bookingId, presetDay, onClose }: BookingFormProps)
         </div>
       )}
 
+      {overFive && <div className="notice">当天预约已超过 5 场</div>}
+
       {mode === 'catalog' ? (
         <div>
           {activitiesForDay(day).length === 0 ? (
@@ -150,8 +152,11 @@ export function BookingForm({ bookingId, presetDay, onClose }: BookingFormProps)
       ) : (
         <div>
           {conflicts.length > 0 && <div className="notice">与已有预约时间冲突</div>}
-          {overFive && <div className="notice">当天预约已超过 5 场</div>}
-          {timeInvalid && <div className="notice">结束时间需晚于开始时间</div>}
+          {!start && <div className="notice">请选择开始时间</div>}
+          {!end && <div className="notice">请选择结束时间</div>}
+          {start && end && toMinute(end) <= toMinute(start) && (
+            <div className="notice">结束时间需晚于开始时间</div>
+          )}
 
           <div className="field">
             <label className="field-label">活动名</label>

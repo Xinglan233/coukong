@@ -14,7 +14,7 @@ export default defineConfig({
         description: 'REDLAND 日程与共同空闲',
         lang: 'zh-CN',
         theme_color: '#0c8578',
-        background_color: '#f6f7f8',
+        background_color: '#f5f6f8',
         display: 'standalone',
         start_url: '/',
         icons: [

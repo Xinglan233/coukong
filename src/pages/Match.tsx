@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { ClipboardPaste } from "lucide-react"
-import { DAY_META, durationLabel, fromMinute } from "../lib/dates"
+import { DAY_META, durationLabel, formatTime, fromMinute } from "../lib/dates"
 import { commonDays, mutualFree, type Person } from "../lib/availability"
 import { useStore } from "../store"
 import { TimeAxis, type AxisPerson } from "../ui/TimeAxis"
@@ -87,7 +87,9 @@ export function Match() {
 
           {days.length === 0 && (
             <div className="empty" style={{ padding: "40px 20px" }}>
-              <div className="empty-sub">你们的参展日没有交集</div>
+              <div className="empty-sub">
+                {profile.days.length === 0 ? "你还没有选择参展日" : "你们的参展日没有交集"}
+              </div>
             </div>
           )}
 
@@ -121,7 +123,7 @@ export function Match() {
                     {free.map((iv, i) => (
                       <div key={i} className="free-row">
                         <span className="free-range">
-                          {fromMinute(iv.start)}–{fromMinute(iv.end)}
+                          {formatTime(fromMinute(iv.start))}–{formatTime(fromMinute(iv.end))}
                         </span>
                         <span className="free-dur">
                           {durationLabel(fromMinute(iv.start), fromMinute(iv.end))}

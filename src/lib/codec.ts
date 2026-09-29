@@ -25,6 +25,14 @@ export function decodePayload(encoded: string): SharePayload | null {
   }
 }
 
+// 粘贴的内容可能是裸字符串，也可能是整个分享链接，都能解析
+export function decodeShareText(text: string): SharePayload | null {
+  const direct = decodePayload(text)
+  if (direct) return direct
+  const m = text.match(/d=([^&\s]+)/)
+  return m ? decodePayload(m[1]) : null
+}
+
 export function shareUrl(encoded: string): string {
   const { origin, pathname } = window.location
   return `${origin}${pathname}#d=${encoded}`
