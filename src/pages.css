@@ -436,9 +436,11 @@
 .activity-page-header .activity-back { flex-shrink:0; margin:0; }
 .activity-context { color:var(--ink-2); font-size:13.5px; margin:0 0 20px; overflow-wrap:anywhere; }
 .activity-context p { margin:0 0 6px; }
-.activity-context details { font-size:12.5px; }
-.activity-context summary { cursor:pointer; padding:3px 0; }
-.activity-context details p { margin-top:6px; }
+.activity-disclosure { margin:6px 0 12px; }
+.activity-disclosure .btn { min-height:44px; }
+.activity-disclosure .is-open { transform:rotate(180deg); }
+.activity-disclosure-content { color:var(--ink-2); font-size:13.5px; line-height:1.6; margin-top:8px; overflow-wrap:anywhere; }
+.activity-disclosure-content p { margin:0; }
 .activity-list-group { margin-top:16px; }
 .activity-personal .activity-companion-empty { padding-top:72px; }
 .activity-empty-note { color:var(--ink-2); font-size:12px; line-height:1.6; margin:20px 0 0; }
