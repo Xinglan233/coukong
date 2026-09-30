@@ -1,0 +1,4 @@
+import type {EventPackage} from '../../../shared/types'
+import type {MapData,MediaAssetDTO} from '../../../shared/activity-contract'
+export function mapImageIdentity(pkg:EventPackage,map:MapData|undefined):string {if(!map)return '';const m=pkg.assetManifest?.find(a=>a.assetKey===map.assetKey);return JSON.stringify([map.id,map.revision,map.assetKey,map.width,map.height,m?.sha256,m?.sizeBytes,m?.mimeType,m?.width,m?.height])}
+export function matchingMapAsset(pkg:EventPackage,map:MapData,assets:MediaAssetDTO[]):MediaAssetDTO|undefined {const m=pkg.assetManifest?.find(a=>a.assetKey===map.assetKey);if(!m||m.width!==map.width||m.height!==map.height)return undefined;return assets.find(a=>a.eventId===pkg.event.id&&a.assetKey===m.assetKey&&a.state==='ready'&&a.sha256===m.sha256&&a.sizeBytes===m.sizeBytes&&a.mimeType===m.mimeType&&a.width===m.width&&a.height===m.height)}
