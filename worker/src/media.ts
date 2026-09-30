@@ -27,6 +27,25 @@ export async function verifyVercelOIDC(req:Request,env:VercelOIDCConfig,fetcher:
 export function mediaDTO(r:Row):MediaAssetDTO{return {id:r.id,eventId:r.event_id,assetKey:r.asset_key,state:r.state,...(r.mime_type?{mimeType:r.mime_type,width:r.width,height:r.height,sizeBytes:r.size_bytes,sha256:r.sha256,displaySizeBytes:r.display_size_bytes}:{}),revision:r.revision}}
 export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;data?:unknown}>{
  const {DB,path,method,authHash,now}=ctx,first=(sql:string,...args:any[])=>DB.prepare(sql).bind(...args).first<Row>()
+ const backup=path.match(/^\/admin\/events\/([-\w]+)\/assets\/(backup-index|backup-file)$/)
+ if(backup&&method==='GET'){
+  await ctx.admin();await ctx.verifyNode();const eventId=backup[1],action=backup[2],params=new URL(ctx.req.url).searchParams,event=await first('SELECT revision,public_revision,status,updated_at FROM events WHERE id=?',eventId)
+  if(!event)ctx.fail('NOT_FOUND','活动不存在',404)
+  const expected=params.get('expectedRevision');if(expected!==null&&(!/^\d+$/.test(expected)||Number(expected)!==event!.revision))ctx.fail('VERSION_CONFLICT','活动在备份期间变化，请重新备份',409)
+  if(action==='backup-index'){
+   const rows=await DB.prepare("SELECT * FROM media_assets WHERE event_id=? AND state IN ('ready','revoked') AND source_path IS NOT NULL AND display_path IS NOT NULL ORDER BY revision,id LIMIT 51").bind(eventId).all<Row>()
+   if(rows.results.length>50)ctx.fail('LIMIT_EXCEEDED','历史媒体超过50项备份上限',413)
+   const refs=await DB.prepare("SELECT v.revision,json_extract(m.value,'$.assetKey') AS assetKey,json_extract(a.value,'$.sha256') AS sha256 FROM event_versions v JOIN json_each(v.event_json,'$.event.extensions.convention.maps') m LEFT JOIN json_each(v.event_json,'$.assetManifest') a ON json_extract(a.value,'$.assetKey')=json_extract(m.value,'$.assetKey') WHERE v.event_id=? ORDER BY v.revision LIMIT 10001").bind(eventId).all<Row>()
+   if(refs.results.length>10000)ctx.fail('LIMIT_EXCEEDED','历史引用超过10000项备份上限',413)
+   const assets=rows.results.map(r=>({...mediaDTO(r),sourceSha256:r.source_sha256||r.sha256,sourceSizeBytes:r.source_size_bytes||r.size_bytes,displaySha256:String(r.display_path).match(/display-([a-f0-9]{64})\.webp$/)?.[1],displayMimeType:r.display_mime_type,displayWidth:r.display_width,displayHeight:r.display_height}))
+   return {handled:true,data:{format:'tongye.media-backup.v1',eventId,revision:event!.revision,publicRevision:event!.public_revision,status:event!.status,updatedAt:event!.updated_at,refs:refs.results,assets}}
+  }
+  const assetId=params.get('assetId'),kind=params.get('kind');if(!assetId||!/^[-\w]{1,100}$/.test(assetId)||!['source','display'].includes(kind||''))ctx.fail('INVALID_REQUEST','备份文件请求无效')
+  const row=await first("SELECT * FROM media_assets WHERE id=? AND event_id=? AND state IN ('ready','revoked') AND source_path IS NOT NULL AND display_path IS NOT NULL",assetId,eventId);if(!row)ctx.fail('NOT_FOUND','已就绪历史资产不存在',404)
+  const source=kind==='source',pathname=source?row!.source_path:row!.display_path,sha256=source?(row!.source_sha256||row!.sha256):String(pathname).match(/display-([a-f0-9]{64})\.webp$/)?.[1],sizeBytes=source?(row!.source_size_bytes||row!.size_bytes):row!.display_size_bytes,base=`assets/${eventId}/${assetId}/`
+  if(!sha256||pathname!==(source?base+'source-'+sha256:base+'display-'+sha256+'.webp')||!Number.isInteger(sizeBytes)||sizeBytes<1||sizeBytes>(source?ACTIVITY_LIMITS.sourceBytes:3145728))ctx.fail('INVALID_MEDIA','历史媒体元数据无效')
+  return {handled:true,data:{pathname,sizeBytes,sha256,mimeType:source?row!.mime_type:row!.display_mime_type}}
+ }
  const maintenance=path.match(/^\/admin\/events\/([-\w]+)\/assets\/(usage|cleanup-plan|cleanup-commit)$/)
  if(maintenance){await ctx.admin();const eventId=maintenance[1],action=maintenance[2]
   if(action==='usage'&&method==='GET'){const usage=await first(`SELECT ${chargeSQL} AS charged FROM media_assets WHERE ${chargedWhere}`);return {handled:true,data:{budgetBytes:MEDIA_BUDGET_BYTES,chargedBytes:usage!.charged,remainingBytes:Math.max(0,MEDIA_BUDGET_BYTES-usage!.charged),basis:'conservative-application-budget'}}}

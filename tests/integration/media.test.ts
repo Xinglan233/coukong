@@ -79,6 +79,17 @@ describe.sequential('地图资产真实D1权限与CAS',()=>{
   for(let i=0;i<20;i++){const r=await api(path,'POST',auth,{...reserve(token()),sizeBytes:12582912});if(r.status!==200){expect(r.status).toBe(413);break}await db.prepare("UPDATE media_assets SET state='failed',expires_at=? WHERE id=?").bind(expiry,r.data.asset.id).run()}
   expect((await api(path,'POST',auth,{...reserve(token()),sizeBytes:12582912})).status).toBe(413)
  })
+ it('备份需要admin与Node双证明、仅活动内ready历史资产，不泄露ticket或内部路径到index',async()=>{
+  const db=await mf.getD1Database('DB'),r=(await db.prepare("SELECT * FROM media_assets WHERE state='ready' LIMIT 1").first<any>())!,path=`/admin/events/${eventId}/assets`
+  expect((await api(path+'/backup-index','GET',auth)).status).toBe(403)
+  expect((await api(path+'/backup-index','GET',token(),undefined,true)).status).toBe(401)
+  const index=await api(path+'/backup-index','GET',auth,undefined,true);expect(index.status).toBe(200);expect(index.data.assets).toHaveLength(1);expect(JSON.stringify(index.data)).not.toMatch(/ticket_hash|blob_path|source_path|display_path|assets\//)
+  expect((await api(path+'/backup-index?expectedRevision=999','GET',auth,undefined,true)).status).toBe(409)
+  const file=await api(path+`/backup-file?assetId=${r.id}&kind=source`,'GET',auth,undefined,true);expect(file.status).toBe(200);expect(file.data.pathname).toBe(r.source_path)
+  expect((await api(`/admin/events/other/assets/backup-file?assetId=${r.id}&kind=source`,'GET',auth,undefined,true)).status).toBe(404)
+  const pending=(await db.prepare("SELECT id FROM media_assets WHERE state='failed' LIMIT 1").first<any>())!.id
+  expect((await api(path+`/backup-file?assetId=${pending}&kind=source`,'GET',auth,undefined,true)).status).toBe(404)
+ })
  it('已发布并引用资产可公开读取；取消与撤销拒绝读取',async()=>{
   const db=await mf.getD1Database('DB'),r=(await db.prepare("SELECT * FROM media_assets WHERE state='ready' LIMIT 1").first<any>())!,p=structuredClone(pkg)
   p.event.extensions={convention:{maps:[{id:'map',assetKey:r.asset_key,width:64,height:32}],pois:[],routingGraphs:[]}};p.assetManifest=[{assetKey:r.asset_key,sha256:r.sha256,sizeBytes:r.size_bytes}]

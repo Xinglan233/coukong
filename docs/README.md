@@ -20,6 +20,7 @@
 
 ## 部署与维护
 
+- [媒体备份与隔离恢复](MEDIA_BACKUP.md)：数据库、历史引用、净化源图与显示图共同校验。
 - [部署决策](DEPLOYMENT_DECISION.md)、[部署指南](DEPLOYMENT.md)、[运维与恢复](OPERATIONS.md)、[发布检查表](RELEASE_CHECKLIST.md)。
 
 规范描述接口约束；勾选的发布检查才表示实际验证。历史基线与当前通用版不得混用。
