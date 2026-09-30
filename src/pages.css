@@ -429,3 +429,19 @@
   line-height: 1.6;
   margin-bottom: 12px;
 }
+
+/* Activity pages reuse the original page headings and grouped Me rows. */
+.activity-page-header { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; }
+.activity-page-header .page-title { flex:1; min-width:0; margin:4px 0; }
+.activity-page-header .activity-back { flex-shrink:0; margin:0; }
+.activity-context { color:var(--ink-2); font-size:13.5px; margin:0 0 20px; overflow-wrap:anywhere; }
+.activity-context p { margin:0 0 6px; }
+.activity-context details { font-size:12.5px; }
+.activity-context summary { cursor:pointer; padding:3px 0; }
+.activity-context details p { margin-top:6px; }
+.activity-list-group { margin-top:16px; }
+.activity-personal .activity-companion-empty { padding-top:72px; }
+.activity-empty-note { color:var(--ink-2); font-size:12px; line-height:1.6; margin:20px 0 0; }
+.activity-personal .activity-sync-status { margin:8px 0 0; font-size:12.5px; }
+.activity-personal .card.me-card { margin-bottom:16px; }
+.activity-personal .card.me-card .me-row { min-height:52px; }
