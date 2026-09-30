@@ -199,3 +199,37 @@ export function validatePersonalPlan(value:unknown,event:EventData,options:{allo
  plan.routes.forEach((raw,i)=>{const rp=`plan.routes[${i}]`,r=object(raw,['date','mapId','startPoiId','stops','spatialRevision'],['date','stops','spatialRevision'],rp);if(typeof r.date!=='string'||!event.days.some(d=>d.date===r.date)||dates.has(r.date))reject(`${rp}.date`,'日期不在活动内或重复');dates.add(r.date as string);if(r.mapId!==undefined&&(typeof r.mapId!=='string'||!r.mapId||(!options.allowMissingReferences&&!mapIds.has(r.mapId))))reject(`${rp}.mapId`,'地图不存在');if(!Number.isInteger(r.spatialRevision)||Number(r.spatialRevision)<1)reject(`${rp}.spatialRevision`,'空间版本须为正整数');if(r.startPoiId!==undefined){id(r.startPoiId,`${rp}.startPoiId`);const start=c?.pois.find(p=>p.id===r.startPoiId);if(r.mapId!==undefined&&start?.position&&start.position.mapId!==r.mapId)reject(`${rp}.startPoiId`,'首发路线不支持跨图')}if(!Array.isArray(r.stops)||r.stops.length>ACTIVITY_LIMITS.routeStops)reject(`${rp}.stops`,'路线最多100站','LIMIT_EXCEEDED');const stops=new Set<string>();r.stops.forEach((raw,j)=>{const sp=`${rp}.stops[${j}]`,s=object(raw,['poiId','visited','stayMinutes','queueMinutes'],['poiId','visited'],sp);id(s.poiId,`${sp}.poiId`);if(stops.has(s.poiId as string)||typeof s.visited!=='boolean')reject(sp,'站点重复或状态无效');stops.add(s.poiId as string);for(const k of ['stayMinutes','queueMinutes'])if(s[k]!==undefined&&(!Number.isInteger(s[k])||Number(s[k])<0||Number(s[k])>1440))reject(`${sp}.${k}`,'须为0–1440整数分钟');const poi=c?.pois.find(p=>p.id===s.poiId);if(r.mapId!==undefined&&poi?.position&&poi.position.mapId!==r.mapId)reject(`${sp}.poiId`,'首发路线不支持跨图')}) })
  return value as PersonalPlan
 }
+
+// Content identity belongs to the map revision. Replacing bytes under the same
+// logical key must never leave old points/graphs apparently matched to new art.
+function mapContentIdentity(pkg:EventPackage,mapId:string):string {
+ const map=pkg.event.extensions?.convention.maps.find(m=>m.id===mapId)
+ if(!map)return 'missing'
+ const asset=pkg.assetManifest?.find(a=>a.assetKey===map.assetKey)
+ return JSON.stringify([map.assetKey,map.width,map.height,asset?.sha256,asset?.sizeBytes,asset?.mimeType,asset?.width,asset?.height])
+}
+export function validateEventTransition(previous:EventPackage,next:EventPackage):void {
+ const old=previous.event.extensions?.convention,current=next.event.extensions?.convention
+ if(!old||!current)return
+ for(const [i,map] of current.maps.entries()) {
+  const before=old.maps.find(m=>m.id===map.id)
+  if(!before)continue
+  const path=`event.extensions.convention.maps[${i}]`
+  if(map.revision<before.revision)reject(`${path}.revision`,'地图版本不能回退，请以新版本恢复历史内容','MAP_REVISION_REQUIRED')
+  if(mapContentIdentity(previous,map.id)===mapContentIdentity(next,map.id))continue
+  if(map.revision<=before.revision)reject(`${path}.revision`,'地图文件身份已变化，必须递增地图版本','MAP_REVISION_REQUIRED')
+  const hasOldReferences=old.pois.some(p=>p.position?.mapId===map.id)||old.routingGraphs.some(g=>g.mapId===map.id)
+  if(hasOldReferences&&map.needsReview!==true)reject(`${path}.needsReview`,'底图文件已变化，旧点位与通道必须进入重新校对状态','MAP_REVIEW_REQUIRED')
+ }
+}
+export function eventSpatialSignature(pkg:EventPackage):string {
+ const c=pkg.event.extensions?.convention
+ if(!c)return 'none'
+ const byId=<T extends {id:string}>(values:T[])=>[...values].sort((a,b)=>a.id.localeCompare(b.id))
+ return JSON.stringify([
+  byId(c.maps).map(m=>[m.id,mapContentIdentity(pkg,m.id),m.revision,m.needsReview===true]),
+  byId(c.pois).map(p=>[p.id,p.position,p.routeNodeId,p.closed===true]),
+  byId(c.routingGraphs).map(g=>[g.id,g.mapId,g.mapRevision,g.revision,byId(g.nodes),byId(g.edges)]),
+  pkg.event.activities.flatMap(a=>a.sessions.map(s=>[s.id,s.poiId])).sort((a,b)=>a[0]!.localeCompare(b[0]!)),
+ ])
+}
