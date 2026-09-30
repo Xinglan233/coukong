@@ -1,0 +1,8 @@
+import {useEffect,useState} from 'react'
+import {Sheet} from '../../ui/Sheet'
+import type {PersonalPlan} from '../../../shared/activity-contract'
+export function PersonalSettings({open,plan,step,onClose,onSave}:{open:boolean;plan:PersonalPlan;step:number;onClose:()=>void;onSave:(buffer:number,step:number)=>Promise<boolean>}){
+ const [buffer,setBuffer]=useState('0'),[selection,setSelection]=useState(15),[error,setError]=useState(''),[saving,setSaving]=useState(false)
+ useEffect(()=>{if(open){setBuffer(String(plan.response.bufferMinutes));setSelection(step);setError('')}},[open])
+ return <Sheet open={open} title="时间设置" onClose={onClose}><div className="field"><label className="field-label">个人缓冲（分钟）</label><input className="input" aria-label="个人缓冲（分钟）" inputMode="numeric" type="number" min={0} max={120} value={buffer} onChange={e=>setBuffer(e.target.value)} disabled={saving}/><p className="page-sub">忙碌安排前后各留出这段时间。</p></div><div className="field"><label className="field-label">快捷步长</label><select className="select" aria-label="快捷步长" value={selection} onChange={e=>setSelection(Number(e.target.value))} disabled={saving}>{[5,10,15,30].map(n=><option key={n} value={n}>{n} 分钟</option>)}</select><p className="page-sub">只影响之后添加的区间。手动时间仍精确到分钟。</p></div>{error&&<p className="notice" role="alert">{error}</p>}<button className="btn btn-primary btn-block" disabled={saving} onClick={async()=>{if(!/^\d+$/.test(buffer)||Number(buffer)>120){setError('缓冲请输入0–120的整数分钟');return}setSaving(true);try{if(await onSave(Number(buffer),selection))onClose()}catch(e){setError((e as Error).message)}finally{setSaving(false)}}}>{saving?'保存中…':'保存设置'}</button></Sheet>
+}

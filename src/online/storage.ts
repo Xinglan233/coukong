@@ -8,3 +8,9 @@ export async function readLocal<T>(key:string):Promise<T|undefined>{const db=awa
 export function writeLocal(key:string,value:unknown){return track(key,(async()=>{const db=await database();await new Promise<void>((resolve,reject)=>{const t=db.transaction('records','readwrite');t.objectStore('records').put(value,key);t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>reject(t.error)})})())}
 export async function removeLocal(key:string){const db=await database();return new Promise<void>((resolve,reject)=>{const t=db.transaction('records','readwrite');t.objectStore('records').delete(key);t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>reject(t.error)})}
 export function download(name:string,value:unknown){const blob=new Blob([typeof value==='string'?value:JSON.stringify(value,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+// Clear one activity in a single IndexedDB transaction after outstanding writes.
+// Group identities, other activities, preferences and legacy data stay independent.
+export async function removeLocalWhere(matches:(key:string)=>boolean):Promise<void>{
+ await Promise.allSettled([...pendingWrites]);const db=await database()
+ await new Promise<void>((resolve,reject)=>{const t=db.transaction('records','readwrite'),r=t.objectStore('records').openKeyCursor();r.onsuccess=()=>{const cursor=r.result;if(cursor){if(typeof cursor.key==='string'&&matches(cursor.key))t.objectStore('records').delete(cursor.key);cursor.continue()}};t.oncomplete=()=>{db.close();for(const key of failedWrites)if(matches(key))failedWrites.delete(key);resolve()};t.onerror=()=>{db.close();reject(t.error)};t.onabort=()=>{db.close();reject(t.error||new Error('本机清理失败'))}})
+}

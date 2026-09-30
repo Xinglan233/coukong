@@ -10,7 +10,7 @@ import { createServer } from 'node:http'
 const directory = mkdtempSync(join(tmpdir(), 'coukong-e2e-'))
 console.log('Isolated E2E: bundling Worker')
 const built = await build({ entryPoints: ['worker/src/index.ts'], bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022' })
-const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: built.outputFiles[0].text, compatibilityDate: '2026-09-01', d1Databases: { DB: 'coukong-e2e-isolated' }, resourcePersistencePath: directory, bindings: { CREATION_MODE: 'invite', CREATION_CODE: 'test-create', ADMIN_ROOT_SECRET: process.env.TONGYE_E2E_ADMIN_ROOT || randomBytes(32).toString('hex'), ALLOWED_ORIGINS: 'http://localhost:5173,http://localhost:5174', BUILD_VERSION: 'e2e-isolated' } }))
+const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: built.outputFiles[0].text, compatibilityDate: '2026-09-01', d1Databases: { DB: 'coukong-e2e-isolated' }, resourcePersistencePath: directory, bindings: { CREATION_MODE: 'invite', CREATION_CODE: 'test-create', ADMIN_ROOT_SECRET: process.env.TONGYE_E2E_ADMIN_ROOT || randomBytes(32).toString('hex'), ALLOWED_ORIGINS: process.env.TONGYE_E2E_ORIGINS || 'http://localhost:5173,http://localhost:5174', BUILD_VERSION: 'e2e-isolated' } }))
 console.log('Isolated E2E: starting workerd')
 const db = await mf.getD1Database('DB')
 console.log('Isolated E2E: applying migrations')
