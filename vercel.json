@@ -37,6 +37,10 @@
       "destination": "/help/:slug/index.html"
     },
     {
+      "source": "/events/:path*",
+      "destination": "/index.html"
+    },
+    {
       "source": "/help/:slug/",
       "destination": "/help/:slug/index.html"
     },
@@ -75,9 +79,14 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://tongye-meet-api.xinglan233.workers.dev https://tongye-meet-api-staging.xinglan233.workers.dev; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://vercel.com/api/blob https://tongye-meet-api.xinglan233.workers.dev https://tongye-meet-api-staging.xinglan233.workers.dev; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/media/*.ts": {
+      "maxDuration": 120
+    }
+  }
 }

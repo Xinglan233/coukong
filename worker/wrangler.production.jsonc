@@ -7,7 +7,10 @@
   "vars": {
     "CREATION_MODE": "invite",
     "ALLOWED_ORIGINS": "https://coukong.vercel.app,https://tongye-meet-xinglan233s-projects.vercel.app",
-    "BUILD_VERSION": "0.2.0"
+    "BUILD_VERSION": "0.2.0",
+    "VERCEL_OIDC_ISSUER": "https://oidc.vercel.com/xinglan233s-projects",
+    "VERCEL_OIDC_AUDIENCE": "https://vercel.com/xinglan233s-projects",
+    "VERCEL_OIDC_SUBJECT": "owner:xinglan233s-projects:project:tongye-meet:environment:production"
   },
   "d1_databases": [
     {

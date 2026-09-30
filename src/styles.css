@@ -5,7 +5,7 @@
   --surface-3: #e6e9ed;
   --ink: #171a1f;
   --ink-2: #545b66;
-  --ink-3: #8b929d;
+  --ink-3: #66707c;
   --line: #e2e5e9;
   --line-strong: #d2d6db;
   --accent: #0c8578;
@@ -35,7 +35,7 @@
   --surface-3: #2a2f36;
   --ink: #e9ebef;
   --ink-2: #9aa2ad;
-  --ink-3: #6c7480;
+  --ink-3: #9aa2ad;
   --line: #292e35;
   --line-strong: #353b44;
   --accent: #2db9a6;
@@ -95,12 +95,12 @@ body {
 }
 
 .page {
-  padding: 20px 18px calc(96px + env(safe-area-inset-bottom));
+  padding: 24px 16px calc(96px + env(safe-area-inset-bottom));
 }
 
 .page-title {
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.01em;
   margin: 4px 0 4px;
 }
@@ -131,7 +131,7 @@ input,
 select,
 textarea {
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--ink);
 }
 
@@ -302,9 +302,9 @@ textarea {
 
 .segmented button {
   flex: 1;
-  height: 38px;
+  min-height: 44px;
   border-radius: 7px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink-2);
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;

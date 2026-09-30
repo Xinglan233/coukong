@@ -1,8 +1,9 @@
 import { handleActivity, loadPublicActivity } from './activity'
+import { handleMedia, verifyVercelOIDC, type VercelOIDCConfig } from './media'
 import { parseEventPackage, parseStrictJSON, validateEventPackage, validateResponse } from '../../shared/event-validation'
 import { personalAvailability } from '../../shared/availability'
 import type { EventPackage } from '../../shared/types'
-interface Env { DB:D1Database; ALLOWED_ORIGINS:string; CREATION_MODE:string; CREATION_CODE?:string; ADMIN_ROOT_SECRET?:string; BUILD_VERSION:string }
+interface Env extends VercelOIDCConfig { DB:D1Database; ALLOWED_ORIGINS:string; CREATION_MODE:string; CREATION_CODE?:string; ADMIN_ROOT_SECRET?:string; BUILD_VERSION:string }
 type Row=Record<string,any>
 class ApiError extends Error { constructor(public code:string, message:string, public status=400){super(message)} }
 const hash=async(s:string)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))),x=>x.toString(16).padStart(2,'0')).join('')
@@ -25,6 +26,7 @@ async function handle(req:Request,env:Env){
   if(method==='DELETE'){await run('DELETE FROM admin_sessions WHERE hash=?',authHash);return {revoked:true}}
   await limited('admin:'+ (req.headers.get('CF-Connecting-IP')||'local'),10);const b=await body();if(!env.ADMIN_ROOT_SECRET||await hash(String(b.rootSecret??b.rootToken))!==await hash(env.ADMIN_ROOT_SECRET))throw new ApiError('INVALID_CAPABILITY','管理员凭据无效',401);const session=token(b.sessionToken);await run('INSERT OR REPLACE INTO admin_sessions VALUES(?,?)',await hash(session),Date.now()+3600000);return {expiresAt:new Date(Date.now()+3600000).toISOString()}
  }
+ const media=await handleMedia({req,DB:env.DB,path,method,authHash,now,body,hash,token,op,admin,limited,fail:(code,message,status=400)=>{throw new ApiError(code,message,status)},verifyNode:async()=>{try{await verifyVercelOIDC(req,env)}catch{throw new ApiError('FORBIDDEN','媒体运行时证明无效',403)}}});if(media.handled)return media.data;
  const activity=await handleActivity({req,DB:env.DB,path,method,authHash,now,body,hash,token,op,admin,limited,fail:(code,message,status=400)=>{throw new ApiError(code,message,status)}});if(activity.handled)return activity.data;
  if(path==='/templates'&&method==='GET'){const rows=await env.DB.prepare('SELECT t.* FROM templates t WHERE t.published=1 AND NOT EXISTS (SELECT 1 FROM templates newer WHERE newer.id=t.id AND newer.revision>t.revision) ORDER BY t.updated_at DESC LIMIT 50').all<Row>();return rows.results.map(t=>({id:t.id,revision:t.revision,published:true,eventPackage:JSON.parse(t.event_json),updatedAt:t.updated_at}))}
  if(path.startsWith('/admin/')){
