@@ -1,0 +1,661 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:coukong:schema:event-package:v2",
+  "title": "Tongye You event package v2",
+  "description": "Activity data only. Never contains participant data or access credentials. This schema must be combined with the semantic checks in PROMPT.md section 8.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "const": "coukong.event",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": 2,
+      "type": "integer"
+    },
+    "event": {
+      "$ref": "#/$defs/event"
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "assetManifest": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/manifest"
+      }
+    }
+  },
+  "required": [
+    "kind",
+    "schemaVersion",
+    "event"
+  ],
+  "$defs": {
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(?:(?:[01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "day": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "openIntervals": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "$ref": "#/$defs/interval"
+          }
+        }
+      },
+      "required": [
+        "date",
+        "openIntervals"
+      ]
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "start": {
+          "type": "string",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(?:(?:[01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "poiId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "start",
+        "end"
+      ]
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30
+          }
+        },
+        "sessions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/session"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "sessions"
+      ]
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Must be checked against an IANA time-zone database in semantic validation."
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "defaultBufferMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "defaultMinSlotMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 240
+        },
+        "defaultSelectionStepMinutes": {
+          "type": "integer",
+          "enum": [
+            5,
+            10,
+            15,
+            30
+          ]
+        },
+        "days": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 31,
+          "items": {
+            "$ref": "#/$defs/day"
+          }
+        },
+        "activities": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/activity"
+          }
+        },
+        "eventType": {
+          "enum": [
+            "generic",
+            "comic_convention"
+          ]
+        },
+        "extensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "convention": {
+              "$ref": "#/$defs/convention"
+            }
+          },
+          "required": [
+            "convention"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "timezone",
+        "startDate",
+        "endDate",
+        "defaultBufferMinutes",
+        "defaultMinSlotMinutes",
+        "defaultSelectionStepMinutes",
+        "days",
+        "activities",
+        "eventType"
+      ]
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isExample": {
+          "type": "boolean"
+        },
+        "sourceNote": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      },
+      "required": []
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "mapId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "mapRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "mapId",
+        "mapRevision"
+      ]
+    },
+    "map": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "assetKey": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24000000
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24000000
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "coordinateSpace": {
+          "const": "normalized-image-top-left"
+        },
+        "sourceNote": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "needsReview": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "assetKey",
+        "width",
+        "height",
+        "revision",
+        "coordinateSpace"
+      ]
+    },
+    "poi": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "booth",
+            "stage",
+            "entrance",
+            "exit",
+            "service",
+            "toilet",
+            "food",
+            "medical",
+            "rest",
+            "meeting"
+          ]
+        },
+        "boothCode": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1
+          }
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "routeNodeId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "sourceNote": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "closed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "kind"
+      ]
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "id",
+        "x",
+        "y"
+      ]
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "from": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "to": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "bidirectional": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "reviewed": {
+          "type": "boolean"
+        },
+        "geometry": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/point"
+          },
+          "minItems": 2
+        },
+        "closedDates": {
+          "type": "array",
+          "maxItems": 31,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "distanceMeters": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "estimatedTravelSeconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 86400
+        }
+      },
+      "required": [
+        "id",
+        "from",
+        "to",
+        "bidirectional",
+        "enabled",
+        "reviewed"
+      ]
+    },
+    "graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "mapId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "mapRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 4000,
+          "items": {
+            "$ref": "#/$defs/edge"
+          }
+        },
+        "sourceNote": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "id",
+        "mapId",
+        "mapRevision",
+        "revision",
+        "nodes",
+        "edges"
+      ]
+    },
+    "convention": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maps": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/map"
+          }
+        },
+        "pois": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/poi"
+          }
+        },
+        "routingGraphs": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/graph"
+          }
+        }
+      },
+      "required": [
+        "maps",
+        "pois",
+        "routingGraphs"
+      ]
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetKey": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"
+        },
+        "mimeType": {
+          "enum": [
+            "image/png",
+            "image/jpeg",
+            "image/webp"
+          ]
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12582912
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "assetKey",
+        "mimeType",
+        "width",
+        "height",
+        "sizeBytes",
+        "sha256"
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import Ajv2020 from 'ajv/dist/2020.js'
 import addFormats from 'ajv-formats'
 import { parseEventPackage, parseStrictJSON } from '../shared/event-validation'
@@ -9,6 +10,8 @@ const root=resolve(import.meta.dirname,'..')
 const read=(p:string)=>readFileSync(resolve(root,p),'utf8')
 const schema=JSON.parse(read('schemas/event-package.v1.schema.json'))
 const ajv=new Ajv2020({strict:false,allErrors:true});addFormats(ajv);const valid=ajv.compile(schema)
+const validators=new Map([[1,valid]])
+for(const file of readdirSync(resolve(root,'schemas')).filter(f=>/^event-package\.v[2-9]\.schema\.json$/.test(f))){const next=JSON.parse(read('schemas/'+file));validators.set(next.properties.schemaVersion.const,ajv.compile(next));assert.equal(read('public/examples/'+file),read('schemas/'+file),`${file}: Schema 下载漂移`)}
 const docs=['README.md','SECURITY.md','CHANGELOG.md',...readdirSync(resolve(root,'docs')).filter(f=>f.endsWith('.md')).map(f=>'docs/'+f)]
 let links=0
 for(const file of docs){for(const m of read(file).matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){
@@ -18,7 +21,13 @@ for(const file of docs){for(const m of read(file).matchAll(/\[[^\]]+\]\(([^)]+)\
 let examples=0
 for(const file of readdirSync(resolve(root,'examples')).filter(f=>f.endsWith('.json'))){
  const raw=read('examples/'+file);const data=parseEventPackage(raw)
- assert(valid(data),`${file}: Schema 失败`)
+ const schemaCheck=validators.get(data.schemaVersion);assert(schemaCheck,`${file}: 未知结构版本`);assert(schemaCheck(data),`${file}: Schema 失败`)
+ for(const asset of data.assetManifest||[]){
+  assert(/^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$/.test(asset.assetKey),`${file}: 不安全资产键`)
+  const assetPath=resolve(root,'examples/assets',asset.assetKey);assert(existsSync(assetPath),`${file}: 缺资产 ${asset.assetKey}`)
+  const bytes=readFileSync(assetPath);assert.equal(bytes.length,asset.sizeBytes,`${file}: 资产大小漂移`);assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sha256,`${file}: 资产哈希漂移`)
+  assert.deepEqual(readFileSync(resolve(root,'public/examples/assets',asset.assetKey)),bytes,`${file}: 资产下载漂移`)
+ }
  assert.deepEqual(parseEventPackage(JSON.stringify(data)),data,`${file}: 回导漂移`)
  assert.equal(read('public/examples/'+file),raw,`${file}: 站内下载漂移`)
  assert(!/"(?:token|managerToken|memberToken|inviteToken|note|participant)"\s*:/.test(raw),`${file}: 示例含私人字段`)
