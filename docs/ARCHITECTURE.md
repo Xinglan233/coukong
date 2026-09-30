@@ -1,0 +1,15 @@
+# 架构与决策
+
+前端保留 Vite / React / TypeScript；Worker TypeScript 路由访问 D1。`shared/` 是 DTO、校验和时间纯函数的共同来源；不得复制两套校验。IndexedDB 保存草稿、设备访问能力、最近记录和离线快照，偏好可存 localStorage；D1 保存已提交的共享真相。
+
+活动包不含成员或权限。小队持有活动版本快照，模板版本独立；成员身份在小队内稳定、同名可存在。成员私人 JSON 回复和安全可用区间投影分开，读结果不暴露原始标题、地点、备注。管理与个人权限分离。
+
+写入带 operationId，幂等绑定授权主体和目标及请求内容摘要。客户端先生成 256 bit 凭据并保存，避免首响应丢失无法恢复。服务端仅保存哈希。成员回复 CAS 同时要求个人 revision 与小队 scheduleRevision；小队整包更新 CAS 要约束所有从属写入。D1 batch 的零行更新不会自动回滚，JS 事后抛错不能撤销已提交 SQL。
+
+时间结构改变递增 scheduleRevision，旧回复保留并需复核；文字修改不改变时间语义。有确认回复后禁止原地改时区。公共模板更新产生新版本，不自动污染已创建小队。
+
+请求使用 Bearer，不依赖第三方 Cookie；凭据只在 fragment 传递，页面读取后清除。CORS 精确匹配 origin，CSP 和纯文本渲染降低 XSS 风险。私密 API `private, no-store`，不进入 Service Worker 公共缓存。默认创建受保护，不配置创建码不能自动开放。
+
+旧 localStorage 原文先备份，不自动上传；缺年份仅在本人明确确认 REDLAND 2026 后转换。旧朋友是静态快照，不能冒名变为在线确认。保留原 OCR 辅助代码，语言资源与核心离线缓存分别处理。
+
+不增加社交、票务、短信账号、付费 OCR、ORM 或全新前端框架。发布范围与验证证据见 [检查表](RELEASE_CHECKLIST.md)。

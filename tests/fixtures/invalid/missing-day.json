@@ -1,0 +1,58 @@
+{
+  "kind": "coukong.event",
+  "schemaVersion": 1,
+  "event": {
+    "id": "redland-2026",
+    "title": "REDLAND 2026 待确认活动模板",
+    "description": "仅作五天活动导入框架。请核实每日开放时间并填写官方场次后再用于实际协调。",
+    "timezone": "Asia/Shanghai",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-06",
+    "defaultBufferMinutes": 10,
+    "defaultMinSlotMinutes": 30,
+    "defaultSelectionStepMinutes": 15,
+    "days": [
+      {
+        "date": "2026-10-02",
+        "openIntervals": [
+          {
+            "start": "09:00",
+            "end": "21:00"
+          }
+        ]
+      },
+      {
+        "date": "2026-10-03",
+        "openIntervals": [
+          {
+            "start": "09:00",
+            "end": "21:00"
+          }
+        ]
+      },
+      {
+        "date": "2026-10-04",
+        "openIntervals": [
+          {
+            "start": "09:00",
+            "end": "21:00"
+          }
+        ]
+      },
+      {
+        "date": "2026-10-05",
+        "openIntervals": [
+          {
+            "start": "09:00",
+            "end": "21:00"
+          }
+        ]
+      }
+    ],
+    "activities": []
+  },
+  "meta": {
+    "isExample": true,
+    "sourceNote": "日期范围来自用户需求；09:00–21:00 仅为用户此前待确认的默认值，并非已核实的官方开放时间。暂无官方场次，不得将本模板直接宣传为官方活动安排。"
+  }
+}

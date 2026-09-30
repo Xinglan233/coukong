@@ -1,0 +1,59 @@
+{
+  "rewrites": [
+    {
+      "source": "/help",
+      "destination": "/help/index.html"
+    },
+    {
+      "source": "/help/",
+      "destination": "/help/index.html"
+    },
+    {
+      "source": "/help/:slug",
+      "destination": "/help/:slug/index.html"
+    },
+    {
+      "source": "/help/:slug/",
+      "destination": "/help/:slug/index.html"
+    },
+    {
+      "source": "/groups/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/create",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/legacy",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.workers.dev; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>API 合同</h1>
+<p>基础路径 <code>/api/v1</code>。成功 <code>{data: ...}</code>；失败 <code>{error:{code,message,fields?}}</code>，fields 是 <code>{path,message}</code> 数组。所有凭据通过 <code>Authorization: Bearer</code>，不能放 query。CORS 仅精确允许配置的 origin；私密响应 <code>private, no-store</code>。</p>
+<div class="table-scroll"><table>
+<tr><td>方法与资源</td><td>权限/行为</td></tr>
+<tr><td>GET /health</td><td>进程与 BUILD_VERSION，不代表 DB 就绪</td></tr>
+<tr><td>GET /ready</td><td>实际 D1 查询，失败返回服务不可用</td></tr>
+<tr><td>POST /groups</td><td>创建码、operationId、managerToken、inviteToken、eventPackage</td></tr>
+<tr><td>GET /groups/:groupId</td><td>本队 invite/member/manager，GroupDTO</td></tr>
+<tr><td>PATCH /groups/:groupId</td><td>manager，expectedRevision 与 status（open/closed/archived）</td></tr>
+<tr><td>POST /groups/:groupId/join</td><td>invite，operationId、memberToken、name</td></tr>
+<tr><td>GET /groups/:groupId/members</td><td>本队读取，MemberSummary 列表</td></tr>
+<tr><td>GET /groups/:groupId/members/:memberId/response</td><td>仅该成员完整私人回复</td></tr>
+<tr><td>PUT /groups/:groupId/members/:memberId/response</td><td>仅本人，operationId、expectedRevision、scheduleRevision、response</td></tr>
+<tr><td>GET /groups/:groupId/availability</td><td>安全 availability 投影、状态、版本/更新时间</td></tr>
+<tr><td>DELETE /groups/:groupId/members/:memberId</td><td>本人或 manager，撤销权限</td></tr>
+<tr><td>POST /groups/:groupId/event-import/preview</td><td>manager，raw 或 eventPackage，预览无写入</td></tr>
+<tr><td>POST /groups/:groupId/event-import/commit</td><td>manager，operationId、expectedRevision、raw 或 eventPackage</td></tr>
+<tr><td>GET /groups/:groupId/event-export</td><td>本队读取，标准活动包，无成员或 token</td></tr>
+<tr><td>POST /groups/:groupId/invite/rotate</td><td>manager，operationId、inviteToken、expectedRevision，旧邀请失效</td></tr>
+<tr><td>DELETE /groups/:groupId</td><td>manager，{confirm:groupId,expectedRevision}，CAS删除</td></tr>
+<tr><td>GET /templates</td><td>已发布版本，单次最多 50 条，不列私人小队</td></tr>
+<tr><td>POST /admin/session</td><td>rootSecret、客户端高熵 sessionToken，1 小时会话</td></tr>
+<tr><td>DELETE /admin/session</td><td>当前管理员会话，撤销</td></tr>
+<tr><td>GET /admin/templates</td><td>管理会话，版本列表</td></tr>
+<tr><td>POST /admin/templates</td><td>管理会话，eventPackage/raw、expectedRevision、published，新不可变内容版本</td></tr>
+<tr><td>PATCH /admin/templates/:id/:revision</td><td>管理会话，published 发布/下架</td></tr>
+<tr><td>GET /admin/audit</td><td>管理会话，最近100条脱敏操作，不含凭据/私密正文</td></tr>
+<tr><td>GET /admin/groups</td><td>管理会话，必要元数据，不含私人回复</td></tr>
+<tr><td>PATCH /admin/groups/:groupId</td><td>管理会话，closed/archived 停用</td></tr>
+</table></div>
+<h2>DTO 与提交</h2>
+<p>共享合同为 types.ts。ParticipantResponse 包含 name、presence（每日 intervals）、busy（id/date/start/end/title/source 及可选 location/note/sessionId）、bufferMinutes。成员第一次 revision 为 0；提交使用当前成员 revision 和小队 scheduleRevision。服务端 UTC 时间不可用页面当前时间代替。</p>
+<p>MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/submittedAt；结果增加安全 availability。发起人不能调用他人私人回复接口。GroupDTO 是小队及 EventPackage 快照；event.id 是外部资料标识，不是权限依据。</p>
+<p>操作 ID 要在请求前持久保存，并以同内容/同主体重试；不能凭 operationId 获取秘密。相同操作 ID 不同内容拒绝。CAS 失败 409，保留草稿；从属写入也必须以同 CAS 成功条件约束。时间配置变化返回复核冲突，不覆盖新配置。</p>
+<p>错误码包括 INVALID_EVENT_PACKAGE、INVALID_TIME_RANGE、UNSUPPORTED_TIMEZONE_DATE、VERSION_CONFLICT、RECONFIRM_REQUIRED、INVALID_CAPABILITY、FORBIDDEN、GROUP_CLOSED、LIMIT_EXCEEDED、SERVICE_UNAVAILABLE。校验错误含中文字段路径，不回显 SQL/凭据。创建/无效认证按来源限制，合法成员写操作按主体限制；同 Wi-Fi 必须多身份实测。创建20次/分钟/来源、无效队凭据30次/分钟/来源、管理员登录10次/分钟/来源、成员写60次/分钟/主体。具体实现测试见 <a href="/help/testing/">测试</a>。</p>
+<p>当前列表限制不是完整游标分页；若超过单次返回上限需要补分页，不宣传无限模板列表。API 路由和前端入口均须经 <a href="/help/release_checklist/">发布检查</a> 验收。</p></main></body></html>

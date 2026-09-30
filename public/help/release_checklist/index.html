@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>发布检查表</h1>
+<p>记录日期：2026-09-30。通用版实施中，未声明上线完成。正式交付时由执行者用真实结果更新本表。</p>
+<div class="table-scroll"><table>
+<tr><td>环境</td><td>版本/提交</td><td>地址</td><td>状态</td></tr>
+<tr><td>本地</td><td>待最终提交记录</td><td>本机开发环境</td><td>实施与验收中</td></tr>
+<tr><td>隔离预发布</td><td>未记录</td><td>无已核验地址</td><td>待部署与验收</td></tr>
+<tr><td>生产</td><td>未记录</td><td>无本版本已核验地址</td><td>待部署与验收</td></tr>
+</table></div>
+<h2>门禁</h2>
+<p>- [ ] 类型、lint、单元、真实本地 D1 集成、文档、构建命令通过并保存日志。</p>
+<p>- [ ] 三个独立浏览器身份真实闭环、分钟往返、权限直接请求和 CAS 竞态通过。</p>
+<p>- [ ] 错误 JSON 原子拒绝、模板版本与两队隔离、旧数据和断网草稿通过。</p>
+<p>- [ ] 预发布写入/重启持久化、全量备份隔离恢复通过。</p>
+<p>- [ ] Vercel Hobby 个人非商业用途和 Cloudflare Free 计划实际核验。</p>
+<p>- [ ] 生产 CORS 精确 origin、Secrets 不入 bundle、SPA/帮助/下载/ready 只读核验。</p>
+<p>- [ ] iPhone/Android 与微信实际操作和中国大陆实际网络可达性完成。</p>
+<p>- [ ] REDLAND 每日开放时间与真实场次经用户确认。</p>
+<p>- [ ] 旧提交/部署和迁移前数据备份可恢复，回滚版本与操作人已记录。</p>
+<h2>证据与阻断</h2>
+<p>初始基线审查与 Git bundle 在工作区 <code>../evidence/</code>，不属于公开站点产物。后续测试报告须记录确切命令、结束码和日志位置，不能把附件静态校验记录当作网站测试。真实地址仅验证后填写。外部授权、创建 Secrets、云资源 ID、现场网络与真实活动资料缺失时列具体必要动作，禁止在本表放凭据。</p>
+<p>未完成真机/国内网络验证、最大包 Worker 10ms CPU 实测及远程部署时，不应把 P0 标为完成。</p></main></body></html>

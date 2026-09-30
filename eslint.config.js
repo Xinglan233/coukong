@@ -1,0 +1,2 @@
+import tseslint from 'typescript-eslint'
+export default tseslint.config({ ignores: ['dist/**','node_modules/**','shared/generated-event-validator.js','public/**','src/LegacyApp.tsx','src/pages/**','src/ui/**','src/store.ts','src/lib/**','src/types.ts','src/main.tsx','playwright-report/**','test-results/**'] }, ...tseslint.configs.recommended, {rules:{'@typescript-eslint/no-explicit-any':'off','@typescript-eslint/no-unused-vars':['error',{argsIgnorePattern:'^_',varsIgnorePattern:'^_'}]}})

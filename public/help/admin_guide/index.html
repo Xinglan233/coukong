@@ -1,0 +1,8 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>管理员指南</h1>
+<p>管理员根凭据只在 Worker Secret 保存，不放前端、示例或聊天。先按 <a href="/help/deployment/">部署说明</a> 创建免费 D1、迁移、配置精确 CORS，再由账号持有人安全生成至少 256 bit 的随机根凭据与独立创建码。Secret 输入在本机终端交互完成，不复制到公开日志。</p>
+<p>访问 <code>/admin</code>，输入根凭据换取 1 小时管理会话；会话尽量驻留内存/sessionStorage，退出撤销。隐藏路由不是鉴权。根凭据轮换通过重新设置 ADMIN_ROOT_SECRET；已有短期会话在过期前仍有效，紧急事件须撤销 admin_sessions 中相关记录并验证旧会话失败，不承诺更换根凭据会自动撤销所有已签发会话。</p>
+<p>CREATION_MODE 固定 invite，未配置 CREATION_CODE 时创建失败。创建码单独交给领头人，普通成员只需队邀请。禁止未实测防滥用时开放无限匿名创建；当前没有开放创建模式。</p>
+<h2>公共模板</h2>
+<p>上传或粘贴活动包，先本地/服务端校验预览，核对来源和字段，再保存模板版本。发布决定该版本进入公共列表；下架不会删除现有小队快照。更新必须带 expectedRevision 并生成新版本，不能就地改变所有队的安排。维护者用 <a href="/help/event_json_format/">JSON 格式</a>，不得在活动包写成员/管理权限。</p>
+<p>REDLAND 模板是 2026-10-02 至 10-06 空场次框架，09:00–21:00 待确认；真实资料要确认后再发布，不能宣传例子为官方资料。后台仅应展示必要小队元数据用于停用，不展示全员私密备注。滥用处理可关闭/归档小队，保留脱敏必要记录，避免输出凭据。</p>
+<p>日常查配额、备份、故障与回滚见 <a href="/help/operations/">运维</a>。发布前核验根凭据和创建码未进入 dist、Git 和日志，退出后会话失效。当前真实后台界面/远程操作是否通过以 <a href="/help/release_checklist/">发布检查</a> 为准。</p></main></body></html>

@@ -1,0 +1,13 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>测试与证据</h1>
+<p>运行 <code>npm run verify</code> 聚合类型、lint、单元、真实本地 D1/API 集成、文档与构建；<code>npm run test:e2e</code> 单独执行浏览器发布门禁。<code>npm run docs:check</code> 校验文档链接、Schema/业务例子、九个错误夹具、下载文件和命令环境变量一致性。测试环境须与生产隔离。</p>
+<h2>必测断言</h2>
+<p>- 分钟往返 <code>13:07–13:52</code>、选择步长不改数据、第 5.4 精确三段交集、半开边界、跨午夜缓冲、24:00、设备时区不漂移与 DST 过渡日拒绝。</p>
+<p>- 未确认不算全天空、明确不能参加有效、子集不忽略未确认、时间变更保留旧回复并要求复核。</p>
+<p>- 三个独立身份创建/加入/提交/回读；同名、跨队、私人回复、移除撤销、双 revision 并发、幂等响应丢失、同操作不同正文拒绝、CAS 零行从属写入无副作用。</p>
+<p>- 三个例子通过 Schema 与业务，九个夹具按阶段拒绝；未知字段、大小/数量、并行场次、原子导入、版本冲突、导出回导和下载一致。</p>
+<p>- 旧数据成功/失败原文均保留，旧朋友不冒名，旧分享过大/超时拒绝，hydration 不覆盖数据。</p>
+<p>- 断网/超时/HTML 错页/配额失败保留草稿；隐藏页面停轮询；深链接、恢复权限、PWA 更新、离线和冷启动。</p>
+<h2>设备与上线演练</h2>
+<p>375/390/430px、桌面、键盘、深色及减少动态效果；发起人/A/B 用三个隔离浏览器上下文完成约饭、JSON、修改和比较。WebKit 自动化不等于 iPhone 真机或微信实测。</p>
+<p>2026-10-02 前使用用户实际手机与中国大陆现场网络检查前端和 API 可达性；演练 REDLAND 前核实官方资料。预发布 D1 导出到全新隔离库，比较小队/成员/版本与私人回读，再删除演练资源。生产只读核验，不跑批量破坏测试。</p>
+<p>实际命令、环境、提交、通过数量、日志和仍待验项必须写进 <a href="/help/release_checklist/">发布检查表</a>。没有证据不勾选。</p></main></body></html>
