@@ -11,26 +11,22 @@ export function encodePayload(payload: SharePayload): string {
   return LZString.compressToEncodedURIComponent(JSON.stringify(payload))
 }
 
-export function decodePayload(encoded: string): SharePayload | null {
-  try {
-    const json = LZString.decompressFromEncodedURIComponent(encoded.trim())
-    if (!json) return null
-    const data = JSON.parse(json)
-    if (!data || typeof data.name !== 'string' || !Array.isArray(data.bookings) || !Array.isArray(data.days)) {
-      return null
-    }
-    return data as SharePayload
-  } catch {
-    return null
-  }
+export function decodePayload(encoded: string): Promise<SharePayload | null> {
+  if (typeof encoded !== 'string' || encoded.length > 65536) return Promise.resolve(null)
+  return new Promise(resolve => {
+    const worker = new Worker(new URL('../online/legacy-worker.ts', import.meta.url), {type: 'module'})
+    const finish = (value: SharePayload | null) => { clearTimeout(timeout); worker.terminate(); resolve(value) }
+    const timeout = setTimeout(() => finish(null), 1500)
+    worker.onmessage = event => finish(event.data)
+    worker.onerror = () => finish(null)
+    worker.postMessage(encoded)
+  })
 }
 
-// 粘贴的内容可能是裸字符串，也可能是整个分享链接，都能解析
-export function decodeShareText(text: string): SharePayload | null {
-  const direct = decodePayload(text)
-  if (direct) return direct
-  const m = text.match(/d=([^&\s]+)/)
-  return m ? decodePayload(m[1]) : null
+export async function decodeShareText(text: string): Promise<SharePayload | null> {
+  if (text.length > 70000) return null
+  const match = text.match(/(?:#|[&?])d=([^&\s]+)/)
+  return decodePayload(match ? match[1] : text.trim())
 }
 
 export function shareUrl(encoded: string): string {

@@ -11,8 +11,8 @@ export function ImportManual({ onClose }: ImportManualProps) {
   const openModal = useStore((s) => s.openModal)
   const [text, setText] = useState('')
 
-  function handleImport() {
-    const payload = decodeShareText(text)
+  async function handleImport() {
+    const payload = await decodeShareText(text)
     if (!payload) {
       showToast('没有识别出有效内容')
       return

@@ -1,0 +1,20 @@
+{
+  "name": "tongye-meet-api-staging",
+  "main": "src/index.ts",
+  "account_id": "c0df96c170cc2e624f1bd96c374dd096",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "vars": {
+    "CREATION_MODE": "invite",
+    "ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173,https://tongye-meet-git-feat-general-coordination-xinglan233s-projects.vercel.app",
+    "BUILD_VERSION": "0.2.0"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tongye-meet-staging",
+      "database_id": "f5749fb9-6aed-4339-8a22-c1a5a1d8cbf2",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

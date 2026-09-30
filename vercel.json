@@ -1,0 +1,93 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "tongye-meet.vercel.app"
+        }
+      ],
+      "destination": "https://tongye-meet-api.xinglan233.workers.dev/api/v1/:path*"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "coukong.vercel.app"
+        }
+      ],
+      "destination": "https://tongye-meet-api.xinglan233.workers.dev/api/v1/:path*"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "tongye-meet-xinglan233s-projects.vercel.app"
+        }
+      ],
+      "destination": "https://tongye-meet-api.xinglan233.workers.dev/api/v1/:path*"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://tongye-meet-api-staging.xinglan233.workers.dev/api/v1/:path*"
+    },
+    {
+      "source": "/help",
+      "destination": "/help/index.html"
+    },
+    {
+      "source": "/help/",
+      "destination": "/help/index.html"
+    },
+    {
+      "source": "/help/:slug",
+      "destination": "/help/:slug/index.html"
+    },
+    {
+      "source": "/help/:slug/",
+      "destination": "/help/:slug/index.html"
+    },
+    {
+      "source": "/groups/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/create",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/legacy",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://tongye-meet-api.xinglan233.workers.dev https://tongye-meet-api-staging.xinglan233.workers.dev; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+        }
+      ]
+    }
+  ]
+}

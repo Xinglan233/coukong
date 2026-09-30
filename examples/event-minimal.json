@@ -1,0 +1,30 @@
+{
+  "kind": "coukong.event",
+  "schemaVersion": 1,
+  "event": {
+    "id": "weekend-meetup-demo",
+    "title": "周末碰面示例",
+    "timezone": "Asia/Shanghai",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03",
+    "defaultBufferMinutes": 0,
+    "defaultMinSlotMinutes": 30,
+    "defaultSelectionStepMinutes": 15,
+    "days": [
+      {
+        "date": "2026-10-03",
+        "openIntervals": [
+          {
+            "start": "13:00",
+            "end": "20:00"
+          }
+        ]
+      }
+    ],
+    "activities": []
+  },
+  "meta": {
+    "isExample": true,
+    "sourceNote": "格式示例，不是正式活动安排。"
+  }
+}

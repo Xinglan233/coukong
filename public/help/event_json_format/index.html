@@ -1,0 +1,139 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>活动 JSON 格式 v1</h1>
+<p>UTF-8，最大 512 KiB；不接受注释、尾逗号、重复对象键、未知字段或远程 Schema。活动包只含活动资料，不能授予权限，也不能混入成员回复。结构与业务由前后端共享校验器再次验证。</p>
+<h2>root</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>kind</td><td>string</td><td>是</td><td>const=&quot;coukong.event&quot;</td></tr>
+<tr><td>schemaVersion</td><td>integer</td><td>是</td><td>const=1</td></tr>
+<tr><td>event</td><td>object</td><td>是</td><td>event</td></tr>
+<tr><td>meta</td><td>object</td><td>否</td><td>meta</td></tr>
+</table></div>
+<h2>event</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>id</td><td>string</td><td>是</td><td>pattern=&quot;^[a-z0-9][a-z0-9_-]{0,63}$&quot;</td></tr>
+<tr><td>title</td><td>string</td><td>是</td><td>minLength=1; maxLength=100</td></tr>
+<tr><td>description</td><td>string</td><td>否</td><td>maxLength=5000</td></tr>
+<tr><td>timezone</td><td>string</td><td>是</td><td>minLength=1; maxLength=100</td></tr>
+<tr><td>startDate</td><td>string</td><td>是</td><td>pattern=&quot;^\\d{4}-\\d{2}-\\d{2}$&quot;; format=&quot;date&quot;</td></tr>
+<tr><td>endDate</td><td>string</td><td>是</td><td>pattern=&quot;^\\d{4}-\\d{2}-\\d{2}$&quot;; format=&quot;date&quot;</td></tr>
+<tr><td>location</td><td>string</td><td>否</td><td>maxLength=200</td></tr>
+<tr><td>defaultBufferMinutes</td><td>integer</td><td>是</td><td>minimum=0; maximum=120</td></tr>
+<tr><td>defaultMinSlotMinutes</td><td>integer</td><td>是</td><td>minimum=1; maximum=240</td></tr>
+<tr><td>defaultSelectionStepMinutes</td><td>integer</td><td>是</td><td>enum=[5, 10, 15, 30]</td></tr>
+<tr><td>days</td><td>array</td><td>是</td><td>minItems=1; maxItems=31; items=day</td></tr>
+<tr><td>activities</td><td>array</td><td>是</td><td>maxItems=1000; items=activity</td></tr>
+</table></div>
+<h2>day</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>date</td><td>string</td><td>是</td><td>pattern=&quot;^\\d{4}-\\d{2}-\\d{2}$&quot;; format=&quot;date&quot;</td></tr>
+<tr><td>openIntervals</td><td>array</td><td>是</td><td>maxItems=24; items=interval</td></tr>
+</table></div>
+<h2>interval</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>start</td><td>string</td><td>是</td><td>pattern=&quot;^(?:[01]\\d|2[0-3]):[0-5]\\d$&quot;</td></tr>
+<tr><td>end</td><td>string</td><td>是</td><td>pattern=&quot;^(?:(?:[01]\\d|2[0-3]):[0-5]\\d|24:00)$&quot;</td></tr>
+</table></div>
+<h2>activity</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>id</td><td>string</td><td>是</td><td>pattern=&quot;^[a-z0-9][a-z0-9_-]{0,63}$&quot;</td></tr>
+<tr><td>title</td><td>string</td><td>是</td><td>minLength=1; maxLength=100</td></tr>
+<tr><td>description</td><td>string</td><td>否</td><td>maxLength=5000</td></tr>
+<tr><td>location</td><td>string</td><td>否</td><td>maxLength=200</td></tr>
+<tr><td>tags</td><td>array</td><td>否</td><td>maxItems=10; uniqueItems=true; items=string</td></tr>
+<tr><td>sessions</td><td>array</td><td>是</td><td>minItems=1; maxItems=1000; items=session</td></tr>
+</table></div>
+<h2>session</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>id</td><td>string</td><td>是</td><td>pattern=&quot;^[a-z0-9][a-z0-9_-]{0,63}$&quot;</td></tr>
+<tr><td>date</td><td>string</td><td>是</td><td>pattern=&quot;^\\d{4}-\\d{2}-\\d{2}$&quot;; format=&quot;date&quot;</td></tr>
+<tr><td>start</td><td>string</td><td>是</td><td>pattern=&quot;^(?:[01]\\d|2[0-3]):[0-5]\\d$&quot;</td></tr>
+<tr><td>end</td><td>string</td><td>是</td><td>pattern=&quot;^(?:(?:[01]\\d|2[0-3]):[0-5]\\d|24:00)$&quot;</td></tr>
+<tr><td>location</td><td>string</td><td>否</td><td>maxLength=200</td></tr>
+</table></div>
+<h2>meta</h2>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
+<tr><td>isExample</td><td>boolean</td><td>否</td><td></td></tr>
+<tr><td>sourceNote</td><td>string</td><td>否</td><td>maxLength=1000</td></tr>
+</table></div>
+<h2>业务规则与默认值</h2>
+<p>必填字段不会由导入器悄悄补齐。普通创建 UI 默认 Asia/Shanghai、缓冲 0、最短 30、步长 15；展会可用缓冲 10，导入以包中的合法值为准。title 去首尾空格后不为空；标签不能空白、重复。id 为稳定外部标识，不是服务器权限。</p>
+<p>日期必须在 1900–2100 年内真实有效，endDate 不早于 startDate，最长 31 天；范围内日期恰好一条，关闭日 openIntervals 为 []。每天开放区间最多 24 段，按升序且不重叠，相邻可合并。IANA 时区有效，DST 过渡日及相邻日期拒绝。interval 左闭右开，end 晚于 start，24:00 仅允许作结束。跨午夜必须拆两日。</p>
+<p>最多 1000 活动、整个包总计 1000 场次，每活动至少一场。活动 ID 包内唯一、场次 ID 全包唯一；场次完全落在该日某个开放区间内。不同活动并行场次合法。选择步长不改变手动/JSON 分钟；13:07–13:52 是 45 分钟。</p>
+<h2>复制使用的最小包</h2>
+<pre><code>
+{
+
+  &quot;kind&quot;: &quot;coukong.event&quot;,
+
+  &quot;schemaVersion&quot;: 1,
+
+  &quot;event&quot;: {
+
+    &quot;id&quot;: &quot;weekend-meetup-demo&quot;,
+
+    &quot;title&quot;: &quot;周末碰面示例&quot;,
+
+    &quot;timezone&quot;: &quot;Asia/Shanghai&quot;,
+
+    &quot;startDate&quot;: &quot;2026-10-03&quot;,
+
+    &quot;endDate&quot;: &quot;2026-10-03&quot;,
+
+    &quot;defaultBufferMinutes&quot;: 0,
+
+    &quot;defaultMinSlotMinutes&quot;: 30,
+
+    &quot;defaultSelectionStepMinutes&quot;: 15,
+
+    &quot;days&quot;: [
+
+      {
+
+        &quot;date&quot;: &quot;2026-10-03&quot;,
+
+        &quot;openIntervals&quot;: [
+
+          {
+
+            &quot;start&quot;: &quot;13:00&quot;,
+
+            &quot;end&quot;: &quot;20:00&quot;
+
+          }
+
+        ]
+
+      }
+
+    ],
+
+    &quot;activities&quot;: []
+
+  },
+
+  &quot;meta&quot;: {
+
+    &quot;isExample&quot;: true,
+
+    &quot;sourceNote&quot;: &quot;格式示例，不是正式活动安排。&quot;
+
+  }
+
+}
+
+</code></pre>
+<h2>下载与来源</h2>
+<p>- <a href="/examples/event-minimal.json">最小模板</a>：不带场次。</p>
+<p>- <a href="/examples/event-demo.json">完整示例</a>：多个开放范围、09:05 与 13:07–13:52 虚构场次。</p>
+<p>- <a href="/examples/redland-2026-template.json">REDLAND 五天框架</a>：2026-10-02 至 10-06；09:00–21:00 只是待确认默认值，暂无官方场次，不得冒充官方数据。</p>
+<p>- <a href="/examples/event-package.v1.schema.json">机器 Schema</a>：Draft 2020-12，结构检查不能替代业务检查。</p>
+<h2>更新、导出与错误</h2>
+<p>上传/粘贴 → 校验 → 预览标题、日期、开放、场次数、来源和变更 → 明确确认 → 服务端再次校验、CAS 原子提交 → 回读。event.id 无法越权指定小队。expectedRevision 过期返回 409，须重新预览。整包替换，任一非法则不写入；重复无变化导入不会增生场次。</p>
+<p>活动导出可无损回导同版本且无成员、令牌和内部主键。个人备份是另一 kind，旧备份另用兼容入口。时间结构改动保留原回复并要求复核，纯标题说明变化不影响确认。</p>
+<p>例如 09:60（非法分钟）、23:30–00:30（同日倒序）、重复场次 id、缺失日期、场次跨午休开放范围、空白标题或 schemaVersion=2 都拒绝。错误含稳定码、字段路径和中文说明。重复对象键在解析阶段拒绝，不能后值覆盖前值。九个 错误夹具 仅用于测试，绝不导入正式活动。</p></main></body></html>

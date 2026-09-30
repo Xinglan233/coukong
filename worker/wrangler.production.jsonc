@@ -1,0 +1,20 @@
+{
+  "name": "tongye-meet-api",
+  "main": "src/index.ts",
+  "account_id": "c0df96c170cc2e624f1bd96c374dd096",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "vars": {
+    "CREATION_MODE": "invite",
+    "ALLOWED_ORIGINS": "https://tongye-meet.vercel.app,https://coukong.vercel.app,https://tongye-meet-xinglan233s-projects.vercel.app",
+    "BUILD_VERSION": "0.2.0"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tongye-meet-production",
+      "database_id": "438278d0-cca7-4e7f-b64c-3e381e8d8671",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
