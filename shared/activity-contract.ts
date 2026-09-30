@@ -14,7 +14,7 @@ export interface AssetManifestEntry { assetKey: string; mimeType: 'image/png' | 
 export interface ActivityDTO { id: string; revision: number; scheduleRevision: number; spatialRevision: number; status: EventStatus; eventPackage: EventPackage; updatedAt: string }
 export interface Favorite { poiId: string; visited: boolean }
 export interface RouteStop { poiId: string; visited: boolean; stayMinutes?: number; queueMinutes?: number }
-export interface PersonalRoute { date: string; mapId: string; startPoiId?: string; stops: RouteStop[]; spatialRevision: number }
+export interface PersonalRoute { date: string; mapId?: string; startPoiId?: string; stops: RouteStop[]; spatialRevision: number }
 export interface PersonalPlan { response: ParticipantResponse; favorites: Favorite[]; routes: PersonalRoute[] }
 export interface PersonalDTO { id: string; eventId: string; revision: number; scheduleRevision: number; spatialRevision: number; plan: PersonalPlan; updatedAt: string }
 export interface PersonalCapability { eventId: string; personId?: string; token: string; operationId: string }
