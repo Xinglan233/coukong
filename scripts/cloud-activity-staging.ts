@@ -21,7 +21,9 @@ const tab=async(p:Page,name:string)=>p.locator('.tabbar').getByRole('button',{na
 const save=async(p:Page)=>{const reply=p.waitForResponse(r=>r.request().method()==='PUT'&&/\/personal\//.test(r.url()));await p.getByRole('button',{name:'保存个人计划',exact:true}).click();expect((await reply).status()).toBe(200);await expect(p.locator('p[role=status]')).toContainText('已保存到云端')}
 try{
  for(const page of [admin,a,b])await page.goto(access.url)
- await admin.goto(base+'/admin');await admin.getByLabel('管理员密码').fill(rootSecret);await admin.getByRole('button',{name:'进入管理',exact:true}).click()
+ await admin.goto(base+'/admin');await admin.getByLabel('管理员密码').fill(rootSecret);await admin.getByRole('button',{name:'进入管理',exact:true}).click();await expect(admin.getByRole('button',{name:'新建活动',exact:true})).toBeVisible()
+ const session=await admin.evaluate(()=>sessionStorage.getItem('coukong-admin'));if(!session||!/^([a-f0-9]{64})$/.test(session))throw new Error('Administrator session missing')
+ writeFileSync(output+'/admin-session.txt',session,{mode:0o600})
  const pack=JSON.parse(readFileSync('examples/convention-demo.v2.json','utf8')) as EventPackage
  pack.event.id=id;pack.event.title=title;pack.assetManifest=[];pack.event.extensions!.convention.maps=[];pack.event.extensions!.convention.routingGraphs=[]
  pack.event.extensions!.convention.pois.forEach(p=>{delete p.position;delete p.routeNodeId})
@@ -36,6 +38,7 @@ try{
  await a.screenshot({path:output+'/personal-plan-375.png',animations:'disabled'});await b.screenshot({path:output+'/personal-plan-430.png',animations:'disabled'})
  await tab(a,'我的');await a.getByRole('button',{name:'恢复与导出'}).click();const download=a.waitForEvent('download');await a.getByRole('button',{name:'导出个人计划',exact:true}).click();const exported=JSON.parse(readFileSync((await (await download).path())!,'utf8'));expect(exported.plan.response.busy[0]).toMatchObject({start:'13:07',end:'13:52'});expect(JSON.stringify(exported)).not.toMatch(/Bearer|personalToken|adminToken/);await close(a)
  report.checks.push('Personal export preserved minutes and excluded access credentials')
+ const activityResponse=await admin.request.get('https://tongye-meet-api-staging.xinglan233.workers.dev/api/v1/events/'+id);expect(activityResponse.status()).toBe(200);writeFileSync(output+'/event-package.json',JSON.stringify((await activityResponse.json()).data.eventPackage,null,2),{mode:0o600})
  report.result='passed'
 }catch(e){report.result='failed';report.error=(e instanceof Error?e.message:String(e)).replaceAll(rootSecret,'[redacted]').replaceAll(access.url,'[private preview link]').replace(/_vercel_share=[^\s"&]+/g,'_vercel_share=[redacted]').replace(/[a-f0-9]{64}/g,'[redacted]');process.exitCode=1}
 finally{writeFileSync(output+'/result.json',JSON.stringify({...report,finishedAt:new Date().toISOString()},null,2),{mode:0o600});await Promise.all(contexts.map(c=>c.close()));await browser.close();console.log(JSON.stringify({result:report.result,checks:report.checks.length,evidence:output+'/result.json'}))}
