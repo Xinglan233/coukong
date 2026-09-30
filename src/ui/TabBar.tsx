@@ -1,5 +1,6 @@
 import { CalendarDays, UserRound, Users } from "lucide-react"
 import { useStore, type Tab } from "../store"
+import type { LucideIcon } from 'lucide-react'
 
 const TABS: { key: Tab; label: string; icon: typeof CalendarDays }[] = [
   { key: "schedule", label: "日程", icon: CalendarDays },
@@ -7,15 +8,15 @@ const TABS: { key: Tab; label: string; icon: typeof CalendarDays }[] = [
   { key: "me", label: "我的", icon: UserRound }
 ]
 
-export function TabBar() {
+export function TabBar({items, value, onChange}:{items?:{key:string;label:string;icon:LucideIcon}[];value?:string;onChange?:(key:string)=>void}={}) {
   const tab = useStore((s) => s.tab)
   const setTab = useStore((s) => s.setTab)
 
   return (
     <nav className="tabbar">
-      {TABS.map(({ key, label, icon: Icon }) => (
-        <button key={key} className={tab === key ? "on" : ""} onClick={() => setTab(key)}>
-          <Icon size={22} strokeWidth={tab === key ? 2.4 : 2} />
+      {(items||TABS).map(({ key, label, icon: Icon }) => (
+        <button key={key} className={(value??tab) === key ? "on" : ""} aria-current={(value??tab)===key?'page':undefined} onClick={() => onChange?onChange(key):setTab(key as Tab)}>
+          <Icon size={22} strokeWidth={(value??tab) === key ? 2.4 : 2} />
           {label}
         </button>
       ))}
