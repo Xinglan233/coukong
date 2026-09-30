@@ -1,12 +1,18 @@
-# 游
+# 同野·游
 
-游（原凑空）：一个人发起，大家填时间，一起找到能碰面的空档。保留 Vite / React / TypeScript，在线回复由 Cloudflare Worker + D1 持久化；本机草稿与已提交回复分别显示。
+同野·游（原凑空）：围绕一场活动，安排自己的行程，也安排与朋友同行的时间。保留 Vite / React / TypeScript，在线回复由 Cloudflare Worker + D1 持久化；本机草稿与已提交回复分别显示。
 
 ## 当前发布状态
 
 生产入口：[打开游](https://coukong.vercel.app)。API：[数据库就绪](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready)。Vercel 项目名是 `tongye-meet`，沿用已有公开别名 `coukong.vercel.app`。
 
 2026-09-30 发布对应功能合并提交 `9090be47ed732b5afd5323d20515be1fbb4cb84f`，PR #2 已合并；前端功能源码与 Worker 就绪标识对应此功能版本，源码树与已验收提交 `7a9ab0a` 等价；后续纯文档发布可有不同前端部署提交，不改变 Worker 构建标识。已完成本地测试、真实云端多人读写、分钟往返与备份隔离恢复；真机、微信、中国大陆现场网络和 Worker CPU 尚未验证。详细证据与剩余门禁见 [发布检查表](docs/RELEASE_CHECKLIST.md)。
+
+## 本轮活动与地图升级
+
+正在实施“选活动 → 逛展/活动 → 计划 → 同行 → 我的”。公开浏览与个人收藏计划不以加入小队为前提；现有多人分钟协调保留。本轮新增能力尚未完成生产验收，当前地址的稳定多人版本不能当作地图升级已经上线。地图持久媒体资源待核验/必要审批，真实 REDLAND 地图与通道资料不足；GPS 和自托管适配未实现。
+
+[地图与标点](docs/MAP_GUIDE.md)、[路线限制](docs/ROUTING.md)、[部署决策](docs/DEPLOYMENT_DECISION.md) 说明准备与边界。
 
 ## 开始使用
 

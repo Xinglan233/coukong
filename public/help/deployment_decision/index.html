@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>部署决策</h1>
+<h2>当前选择</h2>
+<p>沿用已经上线的 Vite/React 前端、Vercel、Cloudflare Worker API 与 D1。多人业务有实际云端持久化，不是单机演示；增加活动、地图与路线不构成重写服务器的理由。首发保留无需购买或维护自有服务器的完整在线方案。</p>
+<p>当前生产多人功能 Worker 标识仍为 <code>9090be47ed732b5afd5323d20515be1fbb4cb84f</code>。后续纯文档前端 PR #4 合并提交 <code>b29c14a</code> 不代表本轮活动地图后端已上线。本轮活动优先、个人计划与地图扩展在功能分支实施，实际上线须另记测试、媒体恢复和真实版本。</p>
+<h2>媒体存储待验</h2>
+<p>数据库放资产 ID、哈希、尺寸、版本与引用，对象存储放图片。Vercel Blob 尚待账号计划、免费额度、私有访问、上传方式和超额行为核验/必要审批，当前不声称地图上传已生产可用。R2 未启用，不能因其有免费额度未经同意开通计费订阅。没有可持久存储时，不把临时 URL、构建内示例图或函数磁盘伪装成后台上传成功。</p>
+<p>公开图与草稿/私有图必须分别处理权限；长期管理密钥不能进入资产 URL。上传、校验、引用发布分阶段，失败不损坏旧版本；数据与媒体不是同一个数据库事务。导出恢复要覆盖两者与版本引用，不把私人资产提交公共仓库。</p>
+<h2>成本、网络与可迁移性</h2>
+<p>保持免费计划，不自动购买、升级、购买域名。Worker/D1 与 Vercel Hobby 个人非商业用途限制见 <a href="/help/operations/">运维说明</a>。托管额度与实际中国大陆网络需要实测；远程可访问不是现场可用证明，最大图像/JSON/路网规模也需验证 CPU、内存和流量。</p>
+<p>媒体与数据库操作集中在薄适配层，稳定 ID、权限验证、DTO、分钟算法和导出格式继续共用。每次部署只有一个有效后端，不做双写或自动跨云切换。换域名时提示本机凭据/缓存不会自动跨域，先保存恢复入口与导出。</p>
+<p>自托管适配是未实现的 P1。尚无可验收的 Node/SQLite/持久卷或 Docker Compose 自托管版本，不要求用户为本轮先买服务器；软件开源/免费不意味着服务器、域名和带宽免费。未来只有实际网络、托管限制或运行需求阻断时再评估，不能长期分叉两套协议。GPS 配准与自动定位同为未实现 P1。</p>
+<p>部署步骤见 <a href="/help/deployment/">部署指南</a>，现场资料与回滚仍需按 <a href="/help/release_checklist/">发布检查</a> 分别记录。</p></main></body></html>
