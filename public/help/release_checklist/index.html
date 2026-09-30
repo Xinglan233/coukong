@@ -1,21 +1,28 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>发布检查表</h1>
-<p>记录日期：2026-09-30。通用版实施中，未声明上线完成。正式交付时由执行者用真实结果更新本表。</p>
+<p>记录日期：2026-09-30。代码、预发布与生产部署已完成；现场使用仍有待验门禁，不能据此认定所有 P0 验收完成。</p>
 <div class="table-scroll"><table>
 <tr><td>环境</td><td>版本/提交</td><td>地址</td><td>状态</td></tr>
-<tr><td>本地</td><td>待最终提交记录</td><td>本机开发环境</td><td>实施与验收中</td></tr>
-<tr><td>隔离预发布</td><td>未记录</td><td>无已核验地址</td><td>待部署与验收</td></tr>
-<tr><td>生产</td><td>未记录</td><td>无本版本已核验地址</td><td>待部署与验收</td></tr>
+<tr><td>本地</td><td>验收源码 2741fc8</td><td>Mac 开发环境</td><td>verify 与浏览器自动化通过</td></tr>
+<tr><td>隔离预发布</td><td>同一验收源码</td><td>tongye-meet-api-staging.xinglan233.workers.dev</td><td>独立 D1，云端写入与隔离恢复通过</td></tr>
+<tr><td>生产</td><td>b80193d8ed30404f181917796919382b5efd890c</td><td><a href="https://coukong.vercel.app">前端</a>、<a href="https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready">API ready</a></td><td>实际部署及核验完成</td></tr>
 </table></div>
-<h2>门禁</h2>
-<p>- [ ] 类型、lint、单元、真实本地 D1 集成、文档、构建命令通过并保存日志。</p>
-<p>- [ ] 三个独立浏览器身份真实闭环、分钟往返、权限直接请求和 CAS 竞态通过。</p>
-<p>- [ ] 错误 JSON 原子拒绝、模板版本与两队隔离、旧数据和断网草稿通过。</p>
-<p>- [ ] 预发布写入/重启持久化、全量备份隔离恢复通过。</p>
-<p>- [ ] Vercel Hobby 个人非商业用途和 Cloudflare Free 计划实际核验。</p>
-<p>- [ ] 生产 CORS 精确 origin、Secrets 不入 bundle、SPA/帮助/下载/ready 只读核验。</p>
-<p>- [ ] iPhone/Android 与微信实际操作和中国大陆实际网络可达性完成。</p>
-<p>- [ ] REDLAND 每日开放时间与真实场次经用户确认。</p>
-<p>- [ ] 旧提交/部署和迁移前数据备份可恢复，回滚版本与操作人已记录。</p>
-<h2>证据与阻断</h2>
-<p>初始基线审查与 Git bundle 在工作区 <code>../evidence/</code>，不属于公开站点产物。后续测试报告须记录确切命令、结束码和日志位置，不能把附件静态校验记录当作网站测试。真实地址仅验证后填写。外部授权、创建 Secrets、云资源 ID、现场网络与真实活动资料缺失时列具体必要动作，禁止在本表放凭据。</p>
-<p>未完成真机/国内网络验证、最大包 Worker 10ms CPU 实测及远程部署时，不应把 P0 标为完成。</p></main></body></html>
+<p>PR #1 已合并；生产前端部署与 Worker ready 均对应完整合并 SHA。该提交源码树与 2741fc8 等价。公开地址使用既有 coukong 别名，Vercel 项目为 tongye-meet。</p>
+<h2>已执行门禁</h2>
+<p>- [x] <code>npm run verify</code>：类型、lint、30 个单元测试、8 组真实 D1 集成、文档与构建通过。</p>
+<p>- [x] <code>npm run test:e2e</code>：6 个 Playwright 用例通过，含真实 Service Worker 离线、慢 PUT、混合版本和有界旧分享处理。</p>
+<p>- [x] 生产三个隔离浏览器身份实际 UI 操作，7 项检查通过；远端请求 200，13:07–13:52 刷新与个人导出保留原值。</p>
+<p>- [x] Mac Chromium 375/390px 无页面横向溢出；这不是 iPhone 或微信证据。</p>
+<p>- [x] 本地直接 API 权限、CAS 与数据隔离验证通过，不能读写他人私人回复。</p>
+<p>- [x] 云端 998 场次、185548 字节候选包预览、原子导入、导出 deepEqual 与非法包不写入通过。</p>
+<p>- [x] 云端 SQL 导出到隔离环境恢复，API 回读 deepEqual 通过；生产初始与预发布上线前备份已受控保存，文件权限 600。</p>
+<p>- [x] Git 基线 bundle 与初始审查证据保留；前端/Worker 生产版本和公开入口实际核验。</p>
+<p>- [x] 生产同源 API 代理、预览独立 API/D1、站内帮助和例子已部署。</p>
+<h2>仍需完成</h2>
+<p>本轮交付新手与 JSON 静态帮助及仓库文档；后置完整项目文档站尚未完成，不宣称所有文档站要求已满足。</p>
+<p>- [ ] iPhone/Android 真机、微信实际操作与中国大陆现场网络可达性。</p>
+<p>- [ ] 最大限制及实际使用规模的 Worker 10ms CPU 实测；998 场次云端成功不是 CPU 指标证明。</p>
+<p>- [ ] REDLAND 每日官方开放时间与真实场次经用户确认。候选资料来自第三方且不完整，不能宣传为完整官方表。</p>
+<p>- [ ] 活动当日前复核账户免费计划、Vercel Hobby 个人非商业用途与剩余额度。</p>
+<h2>证据与保护</h2>
+<p>以上结果由执行任务的实际运行记录提供。发布交付保留测试日志、浏览器结果、云端回读/恢复结果和基线 Git bundle；私密 SQL、权限入口及本机绝对备份路径只通过受控交付提供，不写入公开文档或构建。附件格式校验不是产品上线证据。</p>
+<p>恢复和版本回滚见 <a href="/help/operations/">运维说明</a>。生产演练只用明确的隔离测试小队，不运行批量破坏性测试。</p></main></body></html>

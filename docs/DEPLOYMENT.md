@@ -11,27 +11,33 @@ npm run dev:all
 
 创建 `worker/.dev.vars`，按 [示例](../worker/.dev.vars.example) 填本地测试创建码和管理员根凭据。不要提交它。前端 `.env.local` 的 VITE_API_URL 指向本地 Worker `http://127.0.0.1:8787`，可参照 [.env.example](../.env.example)。`npm run db:migrate:local` 应用本地迁移后启动真实本地 D1；`dev:all` 的自动迁移行为以脚本为准。
 
-## 先隔离预发布
+## 已部署资源与环境隔离
 
-1. 通过官方 Wrangler 登录由本人确认授权，确认 Workers Free 与 D1 Free；没有权限不要跳到别的机器规避。
-2. 在 Cloudflare 建立独立预发布数据库，记录返回 database_id。版本控制里的全零 database_id 仅本地占位，不可直接生产部署。为预发布/生产分别保存配置与不同数据库绑定，勿让 Vercel 预览默认写生产。
-3. 从迁移前快照备份再运行下列命令；数据库名应替换为已绑定的明确环境名称。
+生产前端为 [coukong.vercel.app](https://coukong.vercel.app)，Vercel 项目 `tongye-meet`。生产 Worker `tongye-meet-api`，D1 `tongye-meet-production`，配置 [wrangler.production.jsonc](../worker/wrangler.production.jsonc)。预发布 Worker `tongye-meet-api-staging`、D1 `tongye-meet-staging`，配置 [wrangler.staging.jsonc](../worker/wrangler.staging.jsonc)。两库独立，不允许预览写生产。
+
+生产前端使用同源 `/api/v1`，由 Vercel rewrite 代理到生产 Worker；只有 `coukong.vercel.app` 及配置中的明确生产项目别名匹配生产代理，其余预览请求代理到 staging。见 [vercel.json](../vercel.json)。生产公开前端不要设置指向 staging 的 VITE_API_URL；同源模式留空。直接跨域开发时才填对应 Worker 根地址，不加 `/api/v1`。
+
+生产 CORS 仅列明确生产 origin；预发布仅列明确开发和预发布 origin，不泛匹配 `*.vercel.app`。新增预览入口需在 staging 加确切 origin；不要为方便测试扩大生产 CORS。创建保护仍为 invite，Secrets 在各 Worker 分别配置。
+
+## 维护部署步骤
+
+1. 确认免费账户与用途、CLI 授权及目标配置。浏览器登录不能代替 CLI 授权，新增持久权限由本人确认。
+2. 按 [运维说明](OPERATIONS.md) 导出当前目标数据库到受控目录，再应用版本化迁移。已应用迁移不回改。
+3. 必要 Secret 更新通过交互输入完成，不写公开文件：
 
 ```sh
-npx wrangler d1 create coukong-staging --config worker/wrangler.jsonc
-npx wrangler d1 migrations apply coukong-staging --remote --config worker/wrangler.jsonc
-npx wrangler secret put CREATION_CODE --config worker/wrangler.jsonc
-npx wrangler secret put ADMIN_ROOT_SECRET --config worker/wrangler.jsonc
-npx wrangler deploy --config worker/wrangler.jsonc
+npx wrangler secret put CREATION_CODE --config worker/wrangler.staging.jsonc
+npx wrangler secret put ADMIN_ROOT_SECRET --config worker/wrangler.staging.jsonc
+npx wrangler d1 migrations apply tongye-meet-staging --remote --config worker/wrangler.staging.jsonc
+npx wrangler deploy --config worker/wrangler.staging.jsonc
 ```
 
-create 返回后先更新隔离配置的 name / database_name / database_id；上述后续命令必须使用该配置，不能误用本地占位配置。Secrets 交互输入，真实值不入文件和公开命令。配置 CREATION_MODE=invite，ALLOWED_ORIGINS 为确切预发布 origin 列表，BUILD_VERSION 为实际提交号；不允许 `*.vercel.app` 泛匹配。
+4. 用待发布提交部署预发布，BUILD_VERSION 使用实际完整 SHA。运行 verify、浏览器与三身份云端写入回读，完成备份隔离恢复，再核验真机和现场网络。
+5. 生产重复备份与迁移，使用 production 配置；`npm run db:migrate:remote`、`npm run worker:deploy` 的具体目标先核对 package.json。Worker BUILD_VERSION 与 Vercel 生产部署必须对应同一提交。
+6. 生产只读核验 `/api/v1/health`、`/api/v1/ready`、首页、深链接、帮助与三个下载。写入演练限明确测试小队，记录并清理。
 
-4. Vercel 导入已有 GitHub 仓库/项目，Vite 构建输出 dist。Production 与 Preview 的 VITE_API_URL 分别指向对应 Worker。此变量只有公开 API 根地址，不包含 `/api/v1`，Secret 不能用 VITE_ 前缀。SPA rewrite 保留 `/help/`、JSON 下载和静态资源；深链接刷新必须实测。
-5. 查询 `/api/v1/health` 与 `/api/v1/ready`，然后三个隔离身份真实创建、加入、提交、读取和权限测试。导出 D1 并在隔离库恢复，按 [运维](OPERATIONS.md) 核对，再完成手机/现场网络验收。
+首次搭建其他环境时，先 `wrangler d1 create` 建独立免费库，填写返回的 database_id 和该环境 Worker 名，再迁移和配置 Secrets；本地全零 ID 不可作为远程部署配置。
 
-## 生产
+## 当前发布与待验
 
-保留旧 Vercel deployment ID、原提交和旧数据导出；备份生产 D1，应用已验证的版本化迁移，设置生产精确 origin 和 BUILD_VERSION。通过预发布门禁后部署；生产只读核验版本、ready、首页、深链接、帮助和三个示例下载。需要写入演练时只用明确测试小队并记录清理。
-
-最终记录实际前端/API URL、提交、部署 ID、迁移版本和证据于 [检查表](RELEASE_CHECKLIST.md)。目前本文是配置步骤，不证明任何云资源已创建或本版本已上线。用户需要的动作仅包括官方授权、确认免费计划/用途、安全初始化 Secrets、REDLAND 资料确认与真机/国内网络测试。
+本次生产前端和 API 均对应 `b80193d8ed30404f181917796919382b5efd890c`；生产三身份 UI、分钟往返、候选包云端导入及隔离恢复已验证。真机、微信、中国大陆现场网络、CPU 指标和官方活动资料确认仍待完成，见 [发布检查表](RELEASE_CHECKLIST.md)。私密管理/成员恢复入口另行安全保存，不能放公开文档。

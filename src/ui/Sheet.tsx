@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { X } from "lucide-react"
-import type { ReactNode } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 
 interface SheetProps {
   open: boolean
@@ -11,6 +11,24 @@ interface SheetProps {
 
 export function Sheet({ open, title, onClose, children }: SheetProps) {
   const reduce = useReducedMotion()
+  const dialog = useRef<HTMLDivElement>(null)
+  const close = useRef(onClose)
+  close.current = onClose
+  useEffect(() => {
+    if (!open) return
+    const previous = document.activeElement as HTMLElement | null
+    const focusable = () => Array.from(dialog.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex="0"]')||[]).filter(element=>element.getClientRects().length>0)
+    const frame = requestAnimationFrame(()=>focusable()[0]?.focus())
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault();close.current();return }
+      if (event.key !== 'Tab') return
+      const items = focusable(), first = items[0], last = items[items.length-1]
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault();last?.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault();first?.focus() }
+    }
+    document.addEventListener('keydown',keyboard)
+    return () => { cancelAnimationFrame(frame);document.removeEventListener('keydown',keyboard);previous?.focus() }
+  },[open])
 
   return (
     <AnimatePresence>
@@ -26,6 +44,10 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
           />
           <motion.div
             className="sheet"
+            ref={dialog}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
             style={{ x: "-50%" }}
             initial={reduce ? { opacity: 0 } : { y: "100%" }}
             animate={reduce ? { opacity: 1 } : { y: 0 }}

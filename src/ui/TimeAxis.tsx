@@ -3,13 +3,18 @@ import type { Booking, Interval } from "../types"
 import { formatTime, fromMinute } from "../lib/dates"
 
 export interface AxisPerson {
+  id?: string
   name: string
-  bookings: Booking[]
+  bookings?: Booking[]
+  /** Safe unavailable projection from the API; contains no private titles. */
+  ranges?: Interval[]
 }
 
 interface TimeAxisProps {
   openHour: number
   closeHour: number
+  openMinute?: number
+  closeMinute?: number
   buffer: number
   free: Interval[]
   people: AxisPerson[]
@@ -18,21 +23,22 @@ interface TimeAxisProps {
 const ROW_H = 42
 const BAND_H = 26
 
-export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxisProps) {
-  const span = (closeHour - openHour) * 60
-  const openMin = openHour * 60
+export function TimeAxis({ openHour, closeHour, openMinute, closeMinute, buffer, free, people }: TimeAxisProps) {
+  const openMin = openMinute ?? openHour * 60
+  const closeMin = closeMinute ?? closeHour * 60
+  const span = Math.max(1, closeMin - openMin)
 
   const pos = (min: number) => ((min - openMin) / span) * 100
   const width = (start: number, end: number) => ((end - start) / span) * 100
 
   const hours: number[] = []
-  for (let h = openHour; h <= closeHour; h++) hours.push(h)
+  for (let h = Math.ceil(openMin / 60); h <= Math.floor(closeMin / 60); h++) hours.push(h)
 
-  const busyBlocks = (bookings: Booking[]): ReactNode =>
-    bookings.map((b) => {
+  const busyBlocks = (person: AxisPerson): ReactNode =>
+    (person.ranges ? person.ranges.map((r, i) => ({id:String(i), start:r.start,end:r.end,title:''})) : (person.bookings||[]).map(b=>({...b,start:parseHHMM(b.start)-buffer,end:parseHHMM(b.end)+buffer}))).map((b) => {
       // 缓冲可能把块推出开放时间边界，夹回轴内避免溢出
-      const from = Math.min(Math.max(parseHHMM(b.start) - buffer, openMin), openMin + span)
-      const to = Math.min(Math.max(parseHHMM(b.end) + buffer, openMin), openMin + span)
+      const from = Math.min(Math.max(b.start, openMin), closeMin)
+      const to = Math.min(Math.max(b.end, openMin), closeMin)
       if (to <= from) return null
       const w = width(from, to)
       return (
@@ -41,7 +47,7 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
           className="tl-busy"
           style={{ left: `${pos(from)}%`, width: `${w}%` }}
         >
-          {w > 13 ? <span className="tl-busy-text">{b.title}</span> : null}
+          {w > 13 && b.title ? <span className="tl-busy-text">{b.title}</span> : null}
         </div>
       )
     })
@@ -49,16 +55,16 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
   const totalRows = 1 + people.length
 
   return (
-    <div className="tl" style={{ minHeight: BAND_H + totalRows * (ROW_H + 22) }}>
+    <div className={`tl ${openMinute!==undefined?'tl-online':''}`} style={{ minHeight: BAND_H + totalRows * (ROW_H + 22) }}>
       <div className="tl-grid">
         {hours.map((h) => {
-          const top = pos(h * 60)
+          const left = pos(h * 60)
           return (
             <Fragment key={h}>
-              <span className="tl-time" style={{ top: `${top}%` }}>
+              <span className="tl-time" style={openMinute!==undefined?{left:`${left}%`}:{top:`${left}%`}}>
                 {h}:00
               </span>
-              <span className="tl-line" style={{ top: `${top}%` }} />
+              <span className="tl-line" style={openMinute!==undefined?{left:`${left}%`}:{top:`${left}%`}} />
             </Fragment>
           )
         })}
@@ -82,10 +88,10 @@ export function TimeAxis({ openHour, closeHour, buffer, free, people }: TimeAxis
       </div>
 
       {people.map((p, i) => (
-        <Fragment key={`${p.name}-${i}`}>
+        <Fragment key={p.id||`${p.name}-${i}`}>
           <div className="tl-label">{p.name}</div>
           <div className="tl-row" style={{ height: ROW_H }}>
-            {busyBlocks(p.bookings)}
+            {busyBlocks(p)}
           </div>
         </Fragment>
       ))}

@@ -4,7 +4,9 @@
 
 ## 当前发布状态
 
-通用版正在本地实施与验收。尚无本版本已验证的生产地址；旧部署只是回滚基线。最终提交、测试结果、真实地址及缺口以 [发布检查表](docs/RELEASE_CHECKLIST.md) 为准。构建通过不等于多人上线通过。
+生产入口：[打开游](https://coukong.vercel.app)。API：[数据库就绪](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready)。Vercel 项目名是 `tongye-meet`，沿用已有公开别名 `coukong.vercel.app`。
+
+2026-09-30 发布对应合并提交 `b80193d8ed30404f181917796919382b5efd890c`，PR #1 已合并；前端与 Worker 就绪版本一致，源码树与已验收提交 `2741fc8` 等价。已完成本地测试、真实云端多人读写、分钟往返与备份隔离恢复；真机、微信、中国大陆现场网络和 Worker CPU 尚未验证。详细证据与剩余门禁见 [发布检查表](docs/RELEASE_CHECKLIST.md)。
 
 ## 开始使用
 

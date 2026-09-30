@@ -20,11 +20,11 @@
 | GET /groups/:groupId/event-export | 本队读取，标准活动包，无成员或 token |
 | POST /groups/:groupId/invite/rotate | manager，operationId、inviteToken、expectedRevision，旧邀请失效 |
 | DELETE /groups/:groupId | manager，{confirm:groupId,expectedRevision}，CAS删除 |
-| GET /templates | 已发布版本，单次最多 50 条，不列私人小队 |
+| GET /templates | 每个模板只取最新版本，再筛选已发布状态并去重；最多 50 条，不列私人小队 |
 | POST /admin/session | rootSecret、客户端高熵 sessionToken，1 小时会话 |
 | DELETE /admin/session | 当前管理员会话，撤销 |
-| GET /admin/templates | 管理会话，版本列表 |
-| POST /admin/templates | 管理会话，eventPackage/raw、expectedRevision、published，新不可变内容版本 |
+| GET /admin/templates | 管理会话，每个模板的最新版本列表；历史内容保留 |
+| POST /admin/templates | 管理会话，eventPackage/raw、expectedRevision、published，新不可变内容版本并切换最新公开状态 |
 | PATCH /admin/templates/:id/:revision | 管理会话，published 发布/下架 |
 | GET /admin/audit | 管理会话，最近100条脱敏操作，不含凭据/私密正文 |
 | GET /admin/groups | 管理会话，必要元数据，不含私人回复 |
