@@ -8,7 +8,7 @@
 | 隔离预发布 | Worker 35fb8fa（本轮 API 源码相同） | tongye-meet-api-staging.xinglan233.workers.dev | 独立 D1，云端写入与隔离恢复通过 |
 | 生产 | 9090be47ed732b5afd5323d20515be1fbb4cb84f | [前端](https://coukong.vercel.app)、[API ready](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready) | 实际部署及核验完成 |
 
-PR #2 已合并；生产前端部署与 Worker ready 均对应完整合并 SHA。该提交源码树与 7a9ab0a 等价。公开地址使用既有 coukong 别名，Vercel 项目为 tongye-meet。
+PR #2 已合并；生产前端功能代码与 Worker ready 对应上述9090完整功能合并SHA。其源码树与7a9ab0a等价；后续纯文档发布的前端部署提交另行记录，不改变Worker构建标识或已验收功能。公开地址使用既有 coukong 别名，Vercel 项目为 tongye-meet。
 
 ## 已执行门禁
 
