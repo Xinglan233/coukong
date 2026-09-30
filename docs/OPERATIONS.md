@@ -15,11 +15,14 @@ Vercel Hobby 限个人非商业用途，见 [官方公平使用规则](https://v
 生产使用 `tongye-meet-production` / `worker/wrangler.production.jsonc`；预发布使用 `tongye-meet-staging` / `worker/wrangler.staging.jsonc`。本次已执行云端导出、隔离恢复与 API deepEqual；生产初始和预发布上线前 SQL 备份以权限 600 保存在受控位置，路径由交付者单独提供。
 
 ```sh
-npx wrangler d1 export tongye-meet-production --remote --output ./private-backups/production.sql --config worker/wrangler.production.jsonc
-npx wrangler d1 export tongye-meet-staging --remote --output ./private-backups/staging.sql --config worker/wrangler.staging.jsonc
+umask 077
+TONGYE_BACKUP_DIR="/请替换为仓库外的私密备份目录"
+mkdir -p "$TONGYE_BACKUP_DIR"
+npx wrangler d1 export tongye-meet-production --remote --output "$TONGYE_BACKUP_DIR/production.sql" --config worker/wrangler.production.jsonc > "$TONGYE_BACKUP_DIR/production-export.log" 2>&1
+npx wrangler d1 export tongye-meet-staging --remote --output "$TONGYE_BACKUP_DIR/staging.sql" --config worker/wrangler.staging.jsonc > "$TONGYE_BACKUP_DIR/staging-export.log" 2>&1
 ```
 
-运行前在仓库与公开构建之外选受控工作目录建立 private-backups，目录权限 700、导出权限 600；示意相对路径不表示仓库可提交目录。导出后再次检查权限与完整性。
+运行前填写仓库与公开构建之外的受控目录，目录权限700，SQL和日志权限600。CLI可能输出一小时有效的私密数据库下载链接，所以stdout/stderr必须重定向至该目录；不要直接显示、上传或分享原始日志。对外只报告脱敏状态、退出码和文件大小。导出会短暂阻塞数据库请求，选低流量时执行，失败先确认状态再重试。导出后检查权限与完整性。
 
 恢复最短步骤：创建全新隔离 D1 → 复制 staging 配置为临时恢复配置并填写新 database_id/name → `wrangler d1 execute <新隔离库名> --remote --file <受控SQL文件> --config <恢复配置>` → 绑定独立 Worker → 检查 ready、三身份回读及活动导出 deepEqual。禁止把恢复 SQL 直接导入当前生产库。保留结束码与脱敏证据；只生成文件不算恢复通过。演练资源后续清理由持有人确认，免费 Time Travel 仅补充。
 
@@ -31,6 +34,15 @@ npx wrangler d1 export tongye-meet-staging --remote --output ./private-backups/s
 
 ## 回滚
 
-当前生产基线为合并提交 `b80193d8ed30404f181917796919382b5efd890c`。先保存当前数据备份与部署 ID；Vercel 项目 tongye-meet 选择已验证旧 deployment 恢复到公开别名 coukong.vercel.app。Worker 使用 `wrangler rollback <已验证版本ID> --config worker/wrangler.production.jsonc` 回滚，版本 ID 从实际部署历史选取，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。
+当前功能版本为合并提交 `9090be47ed732b5afd5323d20515be1fbb4cb84f`；可恢复的上一版为 `b80193d8ed30404f181917796919382b5efd890c`。纯文档提交不改变此功能源码或Worker构建标识。先保存当前数据备份与部署 ID；Vercel 项目 tongye-meet 选择已验证旧 deployment 恢复到公开别名 coukong.vercel.app。Worker 使用 `wrangler rollback <已验证版本ID> --config worker/wrangler.production.jsonc` 回滚，版本 ID 从实际部署历史选取，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。
 
 [发布检查](RELEASE_CHECKLIST.md) 必须注明备份路径、演练结果、旧部署和恢复版本，不能在公开记录里写私人链接或秘密。
+
+本轮实际回滚点（仅需要回滚时执行；这不是数据库降级）：
+
+```sh
+npx vercel rollback dpl_7be2CRr7gnH8RvtNG367F2oSZ93Y --scope xinglan233s-projects --non-interactive
+npx wrangler rollback a01d359b-b1fe-49a7-a1e4-dcb5e57d2e93 --config worker/wrangler.production.jsonc
+```
+
+纯文档发布后，前端前一个已验收部署是9090功能版本的 `dpl_7be2CRr7gnH8RvtNG367F2oSZ93Y`。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)；每次操作先核对项目部署列表。更早b801前端部署 `dpl_3FT8Y15H4F3ZVnPpT1VZZqnvYXhU` 仍保留，但如果免费计划拒绝直接回滚，则用b801源码经正常恢复分支、PR和CI重新发布，不升级付费。Worker命令回到b801功能版本；两者应按故障范围选择并核验，单独回滚文档无需回滚Worker。CLI需要相应账户登录；不要为失败扩权。回滚之后核对公开站点和 `/api/v1/ready`；旧版本会重新带回其已知界面与模板下架缺陷，数据库及个人草稿不因代码回滚而删除。

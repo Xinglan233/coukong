@@ -6,7 +6,7 @@
 
 生产入口：[打开游](https://coukong.vercel.app)。API：[数据库就绪](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready)。Vercel 项目名是 `tongye-meet`，沿用已有公开别名 `coukong.vercel.app`。
 
-2026-09-30 发布对应合并提交 `b80193d8ed30404f181917796919382b5efd890c`，PR #1 已合并；前端与 Worker 就绪版本一致，源码树与已验收提交 `2741fc8` 等价。已完成本地测试、真实云端多人读写、分钟往返与备份隔离恢复；真机、微信、中国大陆现场网络和 Worker CPU 尚未验证。详细证据与剩余门禁见 [发布检查表](docs/RELEASE_CHECKLIST.md)。
+2026-09-30 发布对应功能合并提交 `9090be47ed732b5afd5323d20515be1fbb4cb84f`，PR #2 已合并；前端与 Worker 就绪版本一致，源码树与已验收提交 `7a9ab0a` 等价。已完成本地测试、真实云端多人读写、分钟往返与备份隔离恢复；真机、微信、中国大陆现场网络和 Worker CPU 尚未验证。详细证据与剩余门禁见 [发布检查表](docs/RELEASE_CHECKLIST.md)。
 
 ## 开始使用
 
