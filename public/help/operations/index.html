@@ -2,21 +2,21 @@
 <h2>免费限制</h2>
 <p>核查日期 2026-09-30 UTC。Workers Free 每账户 100,000 请求/日，UTC 00 重置，每请求 10ms CPU、128MB；请求耗尽错误 1027，CPU 超限 1102，见 <a href="https://developers.cloudflare.com/workers/platform/limits/">Workers 官方限制</a>。</p>
 <p>D1 Free 每日 500 万读行、10 万写行，总 5GB，最多 10 库、单库 500MB；每 Worker 调用最多 50 查询、SQL 最多 100 绑定参数/100KB、行/BLOB 2MB、单查询 30 秒、Time Travel 7 天，见 <a href="https://developers.cloudflare.com/d1/platform/pricing/">D1 价格</a> 和 <a href="https://developers.cloudflare.com/d1/platform/limits/">D1 限制</a>。扫描行算读、索引更新增加写。自 2026-09-01 日额度强制执行，超额 Binding 和 REST 查询均失败至 UTC 午夜，数据保留，见 <a href="https://developers.cloudflare.com/changelog/post/2026-09-01-d1-free-tier-limit-enforcement/">官方变更</a>。</p>
-<p>Vercel Hobby 限个人非商业用途，见 <a href="https://vercel.com/docs/limits/fair-use-guidelines#commercial-usage">官方公平使用规则</a>。这些规则不是当前实现已测满足 10ms CPU 的证明；最大 512KiB/1000 场次和预期规模仍需部署实测。不得为超额自动付费。</p>
+<p>Vercel Hobby 限个人非商业用途，见 <a href="https://vercel.com/docs/limits/fair-use-guidelines#commercial-usage">官方公平使用规则</a>。这些规则不是当前实现已测满足 10ms CPU 的证明；998 场次、185548 字节候选包的云端导入/导出已通过，但最大 512KiB/1000 场次、10ms CPU 指标和预期规模仍需专门实测。不得为超额自动付费。</p>
 <h2>受控备份与隔离恢复</h2>
 <p>活动 JSON、个人导出、本机草稿和数据库备份用途不同。D1 全量 SQL 含私人信息和凭据哈希，存受控路径，不提交 GitHub、不放 public/dist。更新重要活动与迁移前备份。</p>
+<p>生产使用 <code>tongye-meet-production</code> / <code>worker/wrangler.production.jsonc</code>；预发布使用 <code>tongye-meet-staging</code> / <code>worker/wrangler.staging.jsonc</code>。本次已执行云端导出、隔离恢复与 API deepEqual；生产初始和预发布上线前 SQL 备份以权限 600 保存在受控位置，路径由交付者单独提供。</p>
 <pre><code>
-npx wrangler d1 export coukong-production --remote --output /受控本地目录/coukong-backup.sql --config worker/production.jsonc
+npx wrangler d1 export tongye-meet-production --remote --output ./private-backups/production.sql --config worker/wrangler.production.jsonc
 
-npx wrangler d1 create coukong-restore-drill --config worker/restore.jsonc
-
-npx wrangler d1 execute coukong-restore-drill --remote --file /受控本地目录/coukong-backup.sql --config worker/restore.jsonc
+npx wrangler d1 export tongye-meet-staging --remote --output ./private-backups/staging.sql --config worker/wrangler.staging.jsonc
 
 </code></pre>
-<p>上面 production.jsonc/restore.jsonc 是部署者需从本地配置复制建立的隔离配置名称，不是仓库默认现成文件。先写入新库准确 ID，再恢复；绝不能导入当前生产库。备份覆盖是否完整以 Wrangler 导出提示为准。对恢复库运行 ready、三身份回读、记录条数/版本/活动导出比对，保留结束码和证据；只生成文件不算恢复通过。演练完成由持有人确认删除独立演练资源。免费 Time Travel 只作补充。</p>
+<p>运行前在仓库与公开构建之外选受控工作目录建立 private-backups，目录权限 700、导出权限 600；示意相对路径不表示仓库可提交目录。导出后再次检查权限与完整性。</p>
+<p>恢复最短步骤：创建全新隔离 D1 → 复制 staging 配置为临时恢复配置并填写新 database_id/name → <code>wrangler d1 execute &lt;新隔离库名&gt; --remote --file &lt;受控SQL文件&gt; --config &lt;恢复配置&gt;</code> → 绑定独立 Worker → 检查 ready、三身份回读及活动导出 deepEqual。禁止把恢复 SQL 直接导入当前生产库。保留结束码与脱敏证据；只生成文件不算恢复通过。演练资源后续清理由持有人确认，免费 Time Travel 仅补充。</p>
 <h2>故障</h2>
 <p>线上配额/Worker/超时或 HTML 错页时停止密集重试，显示暂不可用、最后获取时间，保留本机草稿。联网后主动重试，版本变化先复核。前端 origin 变更会使原 IndexedDB 与凭据不自动跟随，新入口启用前提示保存恢复链接/导出。</p>
 <p>管理员看 Cloudflare D1 行读写、存储和 Worker 请求/CPU指标，排查按小队索引查询，避免全表与多组件重复轮询。活动前完成预发布恢复、三身份、实际手机与国内网络演练，确认真实活动资料。当前手动删除/清理，不承诺自动保留期限。</p>
 <h2>回滚</h2>
-<p>记录部署提交、Worker 版本与迁移版本。前端恢复到旧 Vercel deployment；Worker 回滚到已验证版本，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。</p>
+<p>当前生产基线为合并提交 <code>b80193d8ed30404f181917796919382b5efd890c</code>。先保存当前数据备份与部署 ID；Vercel 项目 tongye-meet 选择已验证旧 deployment 恢复到公开别名 coukong.vercel.app。Worker 使用 <code>wrangler rollback &lt;已验证版本ID&gt; --config worker/wrangler.production.jsonc</code> 回滚，版本 ID 从实际部署历史选取，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。</p>
 <p><a href="/help/release_checklist/">发布检查</a> 必须注明备份路径、演练结果、旧部署和恢复版本，不能在公开记录里写私人链接或秘密。</p></main></body></html>

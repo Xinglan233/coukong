@@ -6,7 +6,7 @@
   "workers_dev": true,
   "vars": {
     "CREATION_MODE": "invite",
-    "ALLOWED_ORIGINS": "https://tongye-meet.vercel.app,https://coukong.vercel.app,https://tongye-meet-xinglan233s-projects.vercel.app",
+    "ALLOWED_ORIGINS": "https://coukong.vercel.app,https://tongye-meet-xinglan233s-projects.vercel.app",
     "BUILD_VERSION": "0.2.0"
   },
   "d1_databases": [

@@ -5,16 +5,6 @@
       "has": [
         {
           "type": "host",
-          "value": "tongye-meet.vercel.app"
-        }
-      ],
-      "destination": "https://tongye-meet-api.xinglan233.workers.dev/api/v1/:path*"
-    },
-    {
-      "source": "/api/v1/:path*",
-      "has": [
-        {
-          "type": "host",
           "value": "coukong.vercel.app"
         }
       ],
