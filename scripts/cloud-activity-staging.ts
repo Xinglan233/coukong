@@ -11,11 +11,11 @@ if(!base.endsWith('-xinglan233s-projects.vercel.app')||!new URL(access.url).sear
 const rootSecret=JSON.parse(readFileSync(secretFile,'utf8')).ADMIN_ROOT_SECRET as string
 if(!rootSecret)throw new Error('Staging administrator secret missing')
 const output=process.env.TONGYE_DRILL_OUTPUT||'/tmp/tongye-meet-private/activity-cloud-evidence';mkdirSync(output,{recursive:true,mode:0o700})
-const id='cloud-media-drill-'+randomUUID(),title='虚构活动：图片与个人计划演练'
-const report={deployment:base,eventId:id,startedAt:new Date().toISOString(),checks:[] as string[],result:'running',error:''}
+const resume=process.env.TONGYE_DRILL_RESUME_EVENT;const id=resume||'cloud-media-drill-'+randomUUID(),title='虚构活动：图片与个人计划演练'
+const report={deployment:base,eventId:id,startedAt:new Date().toISOString(),checks:[] as string[],result:'running',error:'',network:[] as {path:string;status:number}[]}
 const browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE})
 const contexts=await Promise.all([390,375,430].map(width=>browser.newContext({viewport:{width,height:900},serviceWorkers:'allow'})))
-const [admin,a,b]=await Promise.all(contexts.map(c=>c.newPage()))
+const [admin,a,b]=await Promise.all(contexts.map(c=>c.newPage()));admin.on('response',r=>{const path=new URL(r.url()).pathname;if(path.startsWith('/api/media/')||path==='/api/blob'||path==='/api/blob/')report.network.push({path,status:r.status()})})
 const close=async(p:Page)=>p.getByRole('dialog').getByRole('button',{name:'关闭',exact:true}).click()
 const tab=async(p:Page,name:string)=>p.locator('.tabbar').getByRole('button',{name,exact:true}).click()
 const save=async(p:Page)=>{const reply=p.waitForResponse(r=>r.request().method()==='PUT'&&/\/personal\//.test(r.url()));await p.getByRole('button',{name:'保存个人计划',exact:true}).click();expect((await reply).status()).toBe(200);await expect(p.locator('p[role=status]')).toContainText('已保存到云端')}
@@ -27,9 +27,10 @@ try{
  const pack=JSON.parse(readFileSync('examples/convention-demo.v2.json','utf8')) as EventPackage
  pack.event.id=id;pack.event.title=title;pack.assetManifest=[];pack.event.extensions!.convention.maps=[];pack.event.extensions!.convention.routingGraphs=[]
  pack.event.extensions!.convention.pois.forEach(p=>{delete p.position;delete p.routeNodeId})
- await admin.getByRole('button',{name:'新建活动',exact:true}).click();await admin.getByRole('dialog').getByRole('button',{name:'导入或导出活动文件'}).click();await admin.getByLabel('或粘贴 JSON').fill(JSON.stringify(pack));await admin.getByRole('button',{name:'校验并使用'}).click();await admin.getByRole('button',{name:'预览保存'}).click();await admin.getByRole('button',{name:'确认保存'}).click();await expect(admin.getByRole('dialog')).toHaveCount(0)
- report.checks.push('Administrator visibly imported and persisted an explicitly fictional draft in remote staging D1')
- await admin.getByRole('button',{name:new RegExp(title)}).click();await admin.locator('summary').filter({hasText:'地图与通道'}).click();await admin.locator('summary').filter({hasText:'上传或替换地图'}).click();await admin.getByLabel('地图名称',{exact:true}).fill('虚构地图测试');await admin.getByLabel('地图来源与授权').fill('项目隔离测试样例；不代表真实园区或官方通道')
+ if(!resume){await admin.getByRole('button',{name:'新建活动',exact:true}).click();await admin.getByRole('dialog').getByRole('button',{name:'导入或导出活动文件'}).click();await admin.getByLabel('或粘贴 JSON').fill(JSON.stringify(pack));await admin.getByRole('button',{name:'校验并使用'}).click();await admin.getByRole('button',{name:'预览保存'}).click();await admin.getByRole('button',{name:'确认保存'}).click();await expect(admin.getByRole('dialog')).toHaveCount(0)
+ }
+ report.checks.push(resume?'Read-only confirmed existing fictional draft, then explicitly resumed its isolated media drill':'Administrator visibly imported and persisted an explicitly fictional draft in remote staging D1')
+ await admin.getByRole('button',{name:new RegExp(title)}).click();await admin.locator('button[aria-expanded]').filter({hasText:'地图与通道'}).click();await admin.locator('button[aria-expanded]').filter({hasText:'上传或替换地图'}).click();await admin.getByLabel('地图名称',{exact:true}).fill('虚构地图测试');await admin.getByLabel('地图来源与授权').fill('项目隔离测试样例；不代表真实园区或官方通道')
  await admin.getByLabel('地图文件',{exact:true}).setInputFiles('examples/assets/convention-demo.png');await expect(admin.getByText('地图已上传，请预览并保存活动资料。',{exact:true})).toBeVisible({timeout:90000})
  report.checks.push('Browser directly uploaded a real PNG to private staging Blob; Node processed it and activated remote D1 metadata')
  await admin.getByLabel('活动状态').selectOption('published');await admin.getByRole('button',{name:'预览保存'}).click();await admin.getByRole('button',{name:'确认保存'}).click();await expect(admin.getByRole('dialog')).toHaveCount(0)
@@ -40,5 +41,5 @@ try{
  report.checks.push('Personal export preserved minutes and excluded access credentials')
  const activityResponse=await admin.request.get('https://tongye-meet-api-staging.xinglan233.workers.dev/api/v1/events/'+id);expect(activityResponse.status()).toBe(200);writeFileSync(output+'/event-package.json',JSON.stringify((await activityResponse.json()).data.eventPackage,null,2),{mode:0o600})
  report.result='passed'
-}catch(e){report.result='failed';report.error=(e instanceof Error?e.message:String(e)).replaceAll(rootSecret,'[redacted]').replaceAll(access.url,'[private preview link]').replace(/_vercel_share=[^\s"&]+/g,'_vercel_share=[redacted]').replace(/[a-f0-9]{64}/g,'[redacted]');process.exitCode=1}
+}catch(e){try{await admin.screenshot({path:output+'/upload-failure.png',animations:'disabled'});report.error=(await admin.locator('[role=alert]').allTextContents()).join(' ')}catch{}report.result='failed';report.error=(report.error+' '+(e instanceof Error?e.message:String(e))).replaceAll(rootSecret,'[redacted]').replaceAll(access.url,'[private preview link]').replace(/_vercel_share=[^\s"&]+/g,'_vercel_share=[redacted]').replace(/[a-f0-9]{64}/g,'[redacted]');process.exitCode=1}
 finally{writeFileSync(output+'/result.json',JSON.stringify({...report,finishedAt:new Date().toISOString()},null,2),{mode:0o600});await Promise.all(contexts.map(c=>c.close()));await browser.close();console.log(JSON.stringify({result:report.result,checks:report.checks.length,evidence:output+'/result.json'}))}

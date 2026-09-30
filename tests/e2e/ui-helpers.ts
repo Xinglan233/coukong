@@ -1,6 +1,6 @@
 import {expect,type Page,type Locator} from '@playwright/test'
 import {readFileSync} from 'node:fs'
-export async function reveal(locator:Locator){await locator.waitFor({state:'attached'});const details=locator.locator('xpath=ancestor::details');for(let i=await details.count()-1;i>=0;i--){const section=details.nth(i);if(await section.getAttribute('open')===null)await section.locator(':scope > summary').click()}return locator}
+export async function reveal(locator:Locator){await locator.waitFor({state:'attached'});const sections=locator.locator("xpath=ancestor::*[self::details or contains(concat(' ',normalize-space(@class),' '),' disclosure ')]");for(let i=0;i<await sections.count();i++){const section=sections.nth(i);if(await section.evaluate(e=>e.tagName==='DETAILS')){if(await section.getAttribute('open')===null)await section.locator(':scope > summary').click()}else{const toggle=section.locator(':scope > button[aria-expanded]');if(await toggle.getAttribute('aria-expanded')==='false')await toggle.click()}}return locator}
 export async function field(page:Page,name:string){return reveal(page.getByLabel(name).first())}
 export async function action(page:Page,name:string){return reveal(page.getByRole('button',{name,exact:true,includeHidden:true}).first())}
 export async function closeSheet(page:Page){const d=page.getByRole('dialog');if(await d.count()){await d.getByRole('button',{name:'关闭',exact:true}).click();await expect(d).toHaveCount(0)}}

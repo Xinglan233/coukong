@@ -14,7 +14,7 @@ async function transferMap(pending:Pending,adminToken:string,file:File):Promise<
  pending.assetId=ticket.asset.id;localStorage.setItem(key,JSON.stringify(pending))
  if(ticket.asset.state==='failed'||ticket.asset.state==='revoked')throw new ApiFailure('INVALID_MEDIA','此次地图上传失败，请重新选择地图',409)
  if(ticket.asset.state==='pending'){
-  try{await uploadPresigned(ticket.pathname,file,{access:'private',contentType:file.type,handleUploadUrl:'/api/media/upload',clientPayload:JSON.stringify({eventId:pending.eventId,assetId:pending.assetId,uploadToken:pending.uploadToken})})}catch{
+  try{await uploadPresigned(ticket.pathname,file,{access:'private',contentType:file.type,handleUploadUrl:'/api/media/upload',abortSignal:AbortSignal.timeout(120000),clientPayload:JSON.stringify({eventId:pending.eventId,assetId:pending.assetId,uploadToken:pending.uploadToken})})}catch{
    // An upload response may be lost after the private object exists; finish verifies actual bytes.
    return finishMapUpload(pending)
   }
