@@ -24,3 +24,5 @@
 - [部署决策](DEPLOYMENT_DECISION.md)、[部署指南](DEPLOYMENT.md)、[运维与恢复](OPERATIONS.md)、[发布检查表](RELEASE_CHECKLIST.md)。
 
 规范描述接口约束；勾选的发布检查才表示实际验证。历史基线与当前通用版不得混用。
+
+本轮活动升级的完整范围与未实现/待验分项见[活动升级P0状态](ACTIVITY_P0_STATUS.md)。

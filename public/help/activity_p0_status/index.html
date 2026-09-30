@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>活动升级 P0 逐项状态</h1>
+<p>核对基准：用户完整700行活动升级要求、视觉专项和三张原版参考图。记录时间2026-09-30 UTC。下表保留原范围，不把实现缺项降为P1。本轮新版尚未生产发布，不能将“本地通过”读作“已上线”。</p>
+<p>运行时代码为937b8ab；1ab339b仅补SQL恢复脚本、测试与文档。1ab完整CI的verify、CodeQL及Vercel检查均成功。937本地80单元/30真实本地D1集成/一次完整33浏览器；1ab本地81单元、类型/lint/文档通过，最新CI再次执行发布门禁。真实云媒体只对应c265前端加修补Worker（该Worker运行时代码等价937）；新受保护937/1ab预览没有完整云端验收。</p>
+<p>状态用语：**已实现/本地验证**、**隔离云部分验证**、**实现缺项**、**待验证**、**资料待核**。一个大项内有缺项时，不把该大项勾为全部完成。</p>
+<h2>入口、角色与个人记录（功能MD第1–6节）</h2>
+<div class="table-scroll"><table>
+<tr><td>要求</td><td>当前状态</td><td>依据与剩余</td></tr>
+<tr><td>同野·游品牌、活动优先、通用/漫展实际差异</td><td>已实现/本地验证</td><td>ActivityApp、AdminActivity、v2 Schema；四入口，通用不显示地图摊位编辑</td></tr>
+<tr><td>原灰白青绿/TabBar/Sheet/列表风格</td><td>已实现/待用户确认</td><td>唯一src/styles.css；390同尺寸八页及375/430/桌面浅深实屏；不能以CI代替用户视觉确认</td></tr>
+<tr><td>公开活动列表/名称搜索/加载错误空态/切换</td><td>已实现/本地验证</td><td>ActivityApp与activity-personal浏览器测试</td></tr>
+<tr><td>类型筛选、日期状态筛选、列表资料更新时间</td><td>实现缺项</td><td>当前列表仅名称搜索、类型文字和日期；尚无筛选控件、结束状态及更新时间呈现</td></tr>
+<tr><td>最近活动与私人小队分开、不自动跳转覆盖邀请</td><td>部分实现/待验证</td><td>最近小队按本机能力记录显示；独立个人最近活动列表尚未实现；邀请直达现有小队，但未统一到活动四入口上下文</td></tr>
+<tr><td>私人日常活动及小队</td><td>部分实现</td><td>/create保存私人小队活动快照；未建立可供不入队独立使用的私人ActivityDTO及个人活动空间</td></tr>
+<tr><td>活动/地点/场次/计划深链接、资源归属</td><td>已实现/本地验证</td><td>/events/:id及poi/session/view/date/group参数；API校验归属，旧/groups与legacy保留</td></tr>
+<tr><td>日程点地点高亮/返回保持日期滚动草稿/微信冷启动</td><td>部分实现/待验证</td><td>地点选中和日期上下文已有；未完整覆盖跨页返回滚动、微信与真机PWA冷启动</td></tr>
+<tr><td>管理员、队长、队员API权限与私人DTO裁剪</td><td>已实现/本地验证</td><td>activity/media/api集成；队长不能改公共活动、私人回复本人限定、跨活动/跨队拒绝</td></tr>
+<tr><td>管理员表单选类型、资料日期时区开放区间、来源</td><td>已实现/本地验证</td><td>AdminActivity；admin-activity真实本地D1表单发布/导出；云端JSON及地图上传已实走，云端完整表单矩阵待验</td></tr>
+<tr><td>JSON与网页编辑均可用，取消/归档/草稿/发布</td><td>已实现/本地验证</td><td>保存草稿保留已公开版本；取消独立状态；无地图可发布；切类型保留扩展</td></tr>
+<tr><td>已发布与来源核实分离、私人队长不能公开资料</td><td>已实现/本地验证</td><td>meta/来源提示；服务端admin门禁；公共资料版本只读复制</td></tr>
+<tr><td>不入队匿名个人身份、先保存能力材料再请求</td><td>已实现/隔离云部分验证</td><td>personal-state/ActivityApp；真实首次POST延迟后PUT回读，两个独立身份；无昵称认领</td></tr>
+<tr><td>收藏/去过/路线/安排独立刷新与CAS保存</td><td>已实现/本地验证</td><td>activity-personal及personal-storage集成；云端收藏/分钟保存验证，云端全部路线状态待验</td></tr>
+<tr><td>同活动加入多个小队并明确逐队同步</td><td>部分实现/待验证</td><td>小队列表及“同步本人计划到此小队”保留私人源计划；API有个人成员关联，UI未持久维护该关联；跨配置多队完整浏览器演练待验</td></tr>
+<tr><td>私人恢复链接及无凭据个人导出</td><td>已实现/本地验证</td><td>恢复fragment立即移除、独立能力；个人导出不含token；云端分钟导出实测</td></tr>
+<tr><td>个人备份回导及删除云端个人记录的可见入口</td><td>实现缺项</td><td>API DELETE已有，普通个人界面仅导出/恢复/移除此设备，尚无计划JSON回导和云端删除按钮</td></tr>
+<tr><td>收藏不占时间、路线不自动预约、取消收藏不删安排</td><td>已实现/本地验证</td><td>独立字段与浏览器断言；不承诺官方预约/签到</td></tr>
+<tr><td>稳定POI类别/编号/标签/来源、场次poiId关联</td><td>已实现/本地验证</td><td>activity-contract/v2语义校验；POI未定位合法；POI逐项更新时间当前只有所属活动updatedAt，未单独呈现</td></tr>
+<tr><td>名称编号标签搜索、地图/列表同选中与收藏</td><td>已实现/本地验证</td><td>编号连字符/空格归一化；共享选中状态；同号不同活动不合并</td></tr>
+<tr><td>收藏区域/未去过筛选、失效地点提示</td><td>已实现/本地验证</td><td>PersonalPlanView区域、去过、稳定id，删除显示“地点已移除”</td></tr>
+<tr><td>收藏/地图快速过滤及列表地图切换</td><td>部分实现</td><td>收藏页筛选已有；地图只显示收藏视觉标记，未有仅收藏地图过滤；浏览页地图与列表同时呈现，未提供移动端两视图切换</td></tr>
+</table></div>
+<h2>地图、路网与时间（第7–11节）</h2>
+<div class="table-scroll"><table>
+<tr><td>要求</td><td>当前状态</td><td>依据与剩余</td></tr>
+<tr><td>真正私有PNG/JPEG/WebP上传/可信格式尺寸像素/EXIF清理</td><td>已实现/隔离云部分验证</td><td>Node Sharp可信处理、直传私有Blob、Worker OIDC；真实云仅PNG实走；JPEG/WebP/超限为本地测试证据</td></tr>
+<tr><td>净化原图与显示图元数据、失败状态、后台新路径持久化</td><td>已实现/隔离云验证</td><td>c265实际上传/finish/read200；新活动从备份上传原图，ready+manifest匹配且独立浏览器显示</td></tr>
+<tr><td>12MiB/24MP/5图、显示长边2048与3MiB限额</td><td>已实现/最大规模待验证</td><td>共享限制/Node校验；云只实测2000×1000小图，不宣称最大图或多图免费容量通过</td></tr>
+<tr><td>草稿图私有、公开图鉴权按状态、撤回/取消禁读</td><td>已实现/本地验证</td><td>media integration与Node读取；云完整撤回矩阵待验；已下载副本不可远程抹除</td></tr>
+<tr><td>来源授权/assetKey绑定/不抓任意URL</td><td>已实现/本地验证</td><td>用户上传来源说明、manifest校验；无远程Schema/图片抓取</td></tr>
+<tr><td>归一化左上坐标、非方图留白/缩放/平移/触摸</td><td>已实现/本地验证</td><td>MapCanvas与transform测试；真实截图2000×1000；自动化不等于真机</td></tr>
+<tr><td>标点/拖动微调/坐标编辑/删除撤销/未定位筛选</td><td>已实现/本地验证</td><td>MapEditor模式、POI编辑和撤销；真实本地D1管理员实走，云端标点全流程待验</td></tr>
+<tr><td>换图升版/重新校对/保留旧资产/严选对应底图</td><td>已实现/本地验证</td><td>内容hash参与空间签名；同key换图必须升map版；B公开后旧DTO拒取新图，新DTO绘新坐标</td></tr>
+<tr><td>多地图结构/单图首发/多楼层不假导航</td><td>已实现/本地验证</td><td>maps数组有界5、区域选择；跨图/楼层自动路线P1未实现</td></tr>
+<tr><td>密集标点按缩放控制标签、键盘列表兜底、不反色地图</td><td>已实现/本地验证</td><td>MapCanvas标签避让和键盘，原图filter:none；1000点交互性能待实测</td></tr>
+<tr><td>手动POI起点/固定站点顺序/上移下移/经过与剩余</td><td>已实现/本地验证</td><td>PersonalPlanView、route-editor；起点选择入口/地点，任意图上起点未实现；首发不依赖GPS</td></tr>
+<tr><td>通道节点/折线/双单向/启闭/关闭日期/人工确认</td><td>已实现/本地验证</td><td>MapEditor可见模式及字段；未核实边不入Dijkstra；图上相交不会自动连接</td></tr>
+<tr><td>地点显式连接路网节点、断开诚实缺段</td><td>已实现/本地验证</td><td>routeNodeId引用；缺数据返回missing/unreachable，不连直线穿墙</td></tr>
+<tr><td>Dijkstra固定顺序绕A→B→C→D、统一单位</td><td>已实现/本地验证</td><td>routing.test；二叉堆；部分时间未知整体ETA为null，像素不冒充米</td></tr>
+<tr><td>已固定场次按时间查看地点、不更改预约</td><td>已实现/本地验证</td><td>只读固定场次提醒；路线操作不修改busy起止</td></tr>
+<tr><td>移动与缓冲取max、不双扣、未知不当0</td><td>已实现/本地验证</td><td>requiredTravelMinutes及路线提醒；13:07–13:52不取整</td></tr>
+<tr><td>插入游逛的停留/排队时间和窗口适配</td><td>实现缺项</td><td>数据合同保留stayMinutes/queueMinutes且纯函数支持；尚无普通用户编辑与完整插入窗口建议UI</td></tr>
+<tr><td>成员独立缓冲和5/10/15/30步长</td><td>部分实现</td><td>原小队日程设置完整保留；新个人计划当前用活动默认缓冲，未提供独立个人缓冲/步长选择控件</td></tr>
+<tr><td>三段精确共同空闲、半开/24:00/跨日/DST门禁</td><td>已实现/原回归保留</td><td>shared时间测试及原多人集成；未提交/空回复/子集状态门禁保留</td></tr>
+<tr><td>小队关系、状态、邀请管理、公共快照更新不覆盖</td><td>已实现/本地验证</td><td>原Group嵌入同行；来源公共资料仅明确source-refresh；原生产三身份与新版本地回归</td></tr>
+<tr><td>集合提议/共享地点链接降级</td><td>未实现完整提议/部分降级</td><td>地点深链接可以复制地址；尚无可见“共享地点”按钮与小队提议接受/拒绝流程；不显示假的全员确认</td></tr>
+<tr><td>时间/空间/个人/内容版本分离及CAS</td><td>已实现/本地验证</td><td>activity/api/personal-storage；仅标题不升时间版，空间变更路线待复核，失败保留草稿</td></tr>
+<tr><td>已取消/下架/撤回对旧快照及时提示</td><td>部分实现</td><td>刷新后取消提示与读取拒绝；活动页目前只打开/刷新取资料，无活动变更轮询，离线无法保证及时收到撤回</td></tr>
+</table></div>
+<h2>格式、离线、部署、文档与发布（第12–18节）</h2>
+<div class="table-scroll"><table>
+<tr><td>要求</td><td>当前状态</td><td>依据与剩余</td></tr>
+<tr><td>v1严格兼容、v2完整Schema/共享校验/重复键拒绝</td><td>已实现/本地验证</td><td>generated validators与event/activity-v2；v1大小不放宽，v2有界1MiB</td></tr>
+<tr><td>JSON文件/粘贴/差异预览/再校验/CAS/导出回导</td><td>已实现/本地验证</td><td>AdminActivity、Group原子导入；管理员预览地图/POI/边变化；不存在自动远程文件抓取</td></tr>
+<tr><td>JSON加地图文件关联导入及有效真实配套示例</td><td>已实现/云部分验证</td><td>先保存活动、单独上传地图再绑定新manifest；examples中v1/generic-v2/convention-v2与真PNG；错误输入测试；ZIP增强未实现</td></tr>
+<tr><td>REDLAND原图/87目录/998候选场次</td><td>资料部分齐全</td><td>真图2048×1323、12:30入场已确认；998第三方资料非完整官方，缺A02/C04；不虚构点位和路网</td></tr>
+<tr><td>托管完整在线方案、生产/staging隔离</td><td>已实现/部分部署</td><td>Vite/Vercel+Worker/D1+两个私有Blob；新代码仅staging，旧生产保留；无需自有服务器</td></tr>
+<tr><td>高熵权限、撤销、幂等、隐私DTO、安全渲染</td><td>已实现/本地验证</td><td>原及新API测试；个人128MiB共享逻辑预算、64条/24h幂等摘要保留，不累计历史完整计划</td></tr>
+<tr><td>可见离线准备、一致版本原子激活、失败保旧</td><td>已实现/本地验证</td><td>offline.ts与真实SW回归；地图/资料同IDB记录、下载期间变更拒绝、离线草稿及409保留</td></tr>
+<tr><td>离线选择地图/显示预计大小、版本与更新时间</td><td>部分实现</td><td>当前默认下载全部地图、显示完成时间；未提供逐地图选择和下载前预计大小/明确版本呈现</td></tr>
+<tr><td>移除本机入口完整清除相应缓存/未保存编辑稿</td><td>实现缺项</td><td>当前只清cap/personal/snapshot三键；prepared公共地图、个人编辑/待提交相关键尚未完整清理；不能宣称全部本机数据已删</td></tr>
+<tr><td>活动变化有界刷新、隐藏停止、同WiFi保护</td><td>部分实现/待验证</td><td>原Group单次/60s刷新与隐藏停止保留；新ActivityApp尚无自动刷新；会场同WiFi真机未验</td></tr>
+<tr><td>小队50人/五天/千级点场次/免费CPU图算法性能</td><td>待验证</td><td>有界输入测试和998旧包真实云导入；最新v2规模10ms CPU、图算法/拥挤标签性能、媒体最高额度未实测</td></tr>
+<tr><td>数据库全量隔离云恢复</td><td>隔离云验证</td><td>实际18表schema+全部行一致、导出字节相同、独立恢复Workerready及公开活动DTO一致；不是所有私人恢复入口浏览器验证</td></tr>
+<tr><td>地图新路径恢复/历史引用/实际图片打开</td><td>隔离云验证</td><td>同已批staging store新虚构活动：原备份源图再上传、不同asset路径、对应manifest、实际显示；第二备份完整历史引用/哈希</td></tr>
+<tr><td>恢复活动的收藏与个人分钟计划实际打开</td><td>隔离云部分验证</td><td>新恢复活动本机937UI→真实staging，两独立身份保存/刷新/导出与403；不是937保护预览或原用户身份迁移</td></tr>
+<tr><td>新指南/地图/路线/JSON/运维/隐私/docs门禁</td><td>已实现/持续同步</td><td>docs及生成help存在，实际按钮按阶段注明；逐项状态以本文件为准；不把完整docsite已发布或文档演练都完成</td></tr>
+<tr><td>新版三角色全云链路、空环境部署演练</td><td>待验证</td><td>本地角色实走与部分真实云链路；尚未在同一最新受保护前端部署跑完管理员→队长→队员全过程</td></tr>
+<tr><td>生产更新、只读核验、回滚依据</td><td>未执行新版发布</td><td>生产b29c14a文档/9090业务不变；等视觉确认和剩余P0；备份与免费回滚步骤已留</td></tr>
+<tr><td>中国大陆手机/微信/PWA现场离线及恢复</td><td>待用户设备验证</td><td>Chromium视口自动化只证明自动化范围，不能称iPhone或微信真机通过</td></tr>
+<tr><td>REDLAND几个目标POI与至少一段确认通道</td><td>资料待核</td><td>原图有重号异名，未经逐像素名称+来源核对不发布位置；闭馆/箭头通道意义待核</td></tr>
+</table></div>
+<h2>P1独立记录</h2>
+<p>GPS配准/自动定位、跨图多楼层路线、自由顺路优化、实时位置分享、复杂集合投票、全站账号/SSO、自托管适配、任意OCR、3D与人流分析未实现，不作首发阻断或可用承诺。共享地点的基础降级入口、上表个人/离线细项仍保留在首发待办，不能借P1列表掩盖。</p>
+<h2>继续顺序</h2>
+<p>先补本表实现缺项及未完成基础降级，逐项写失败回归并在原公共组件内接入；再跑统一最新部署的三角色链路、最大输入性能和真实用户设备验收。用户视觉未确认前保留生产。缺官方资料只限制对应REDLAND覆盖，不阻挡软件功能验收，不用猜数据填空。</p>
+<p>相关入口：<a href="/help/testing/">测试</a>、<a href="/help/release_checklist/">发布记录</a>、<a href="/help/map_guide/">地图</a>、<a href="/help/routing/">路线</a>、<a href="/help/media_backup/">媒体恢复</a>、<a href="/help/operations/">运维与回滚</a>。</p></main></div></body></html>
