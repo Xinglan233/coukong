@@ -1,12 +1,12 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>管理员指南</h1>
-<p>当前按钮路径已上线；版本与待验项见 <a href="/help/release_checklist/">发布检查表</a>。</p>
+<p>公共模板管理已上线；本轮活动与地图管理仍在隔离预发布验收。版本与待验项见 <a href="/help/release_checklist/">发布检查表</a>。</p>
 <p>管理员根凭据只在 Worker Secret 保存，不放前端、示例或聊天。先按 <a href="/help/deployment/">部署说明</a> 创建免费 D1、迁移、配置精确 CORS，再由账号持有人安全生成至少 256 bit 的随机根凭据与独立创建码。Secret 输入在本机终端交互完成，不复制到公开日志。</p>
 <p>从首页“管理员入口”进入 <code>/admin</code>，填写“管理员密码”，点“进入管理”，换取 1 小时管理会话；会话尽量驻留内存/sessionStorage，“退出登录”撤销。隐藏路由不是鉴权。根凭据轮换通过重新设置 ADMIN_ROOT_SECRET；已有短期会话在过期前仍有效，紧急事件须撤销 admin_sessions 中相关记录并验证旧会话失败，不承诺更换根凭据会自动撤销所有已签发会话。</p>
 <p>CREATION_MODE 固定 invite，未配置 CREATION_CODE 时创建失败。创建码单独交给队长，队员只需小队邀请。禁止未实测防滥用时开放无限匿名创建；当前没有开放创建模式。</p>
 <h2>创建活动与维护地图（本轮新界面，尚未云上线）</h2>
 <p>1. 进入活动管理，点“新建活动”，选择“通用活动”或“漫展”，填写名称、日期、时区、每日开放时间、地点和资料来源。通用活动不用填地图。</p>
 <p>2. 用“添加场次”“添加地点”录入，或在“导入或导出活动文件”上传JSON。点“预览保存”，核对后确认保存；修改先是本机草稿。新活动先保存，再上传地图。</p>
-<p>3. 漫展地图编辑填写地图名称与来源，上传有权使用图片。上传净化完成后再把资产绑定活动，标点、通道仍先进入本机草稿；返回预览并确认保存后才更新公开资料。云媒体尚未验收，不能把本机预览当作上传上线证据。</p>
+<p>3. 漫展地图编辑填写地图名称与来源，上传有权使用图片。上传净化完成后再把资产绑定活动，标点、通道仍先进入本机草稿；返回预览并确认保存后才更新公开资料。隔离预发布已实际验证图片上传、净化、绑定和读取，完整媒体恢复及新版本云端个人流程仍待验，尚未生产发布。</p>
 <p>4. 核对地点位置及其“通道连接点”，人工建立真实通道，标明方向、可用与确认状态。缺通道不假称导航，换图需要重新校对。预览普通用户资料后选择活动状态保存；发布与来源核实是两件事。</p>
 <p>5. “图片空间与失败上传”可查看预算；需要时明确确认“清理失败上传”，只清理到期15分钟后且没有历史/当前引用的未完成或失败资产，ready不删除。</p>
 <p>当前已收到2048×1323的用户全场图，12:30入场已确认；闭馆、箭头可走含义与C17目录/图名称冲突仍需核实。地图来源授权记录、真实入口和至少一段可信通道准备独立于软件完成。详见 <a href="/help/map_guide/">地图指南</a>、<a href="/help/routing/">路线限制</a> 与 <a href="/help/deployment_decision/">部署决策</a>。</p>

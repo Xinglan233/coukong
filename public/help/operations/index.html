@@ -25,7 +25,7 @@ npx wrangler d1 export tongye-meet-staging --remote --output &quot;$TONGYE_BACKU
 python3 scripts/prepare-d1-restore.py &quot;$PRIVATE_EXPORT_SQL&quot; &quot;$PRIVATE_RESTORE_SQL&quot;
 
 </code></pre>
-<p>此命令先建全部表、再导入数据、最后恢复索引与触发器，避免前向外键引用和重新触发审计/预算计数。仅用于可信数据库导出；输出必须是新路径，文件权限600。将准备后的 SQL 用于隔离 D1 导入与媒体备份的 <code>--db-file</code>。导入后仍需检查外键、预算计数和业务回读，不能关闭云端外键校验。<a href="https://developers.cloudflare.com/d1/sql-api/foreign-keys/">D1 外键与隐式事务规则</a>。</p>
+<p>此命令先建全部表、再导入数据、最后恢复索引与触发器，避免前向外键引用和重新触发审计/预算计数。大的内联文本会在临时辅助表中无损拼接，单条SQL控制在80KiB以内，再一次插入原记录；辅助表在导入结束前移除。原JSON、行和原备份不截断、不覆盖。仅用于可信数据库导出；输出必须是新路径，文件权限600。将准备后的 SQL 用于隔离 D1 导入与媒体备份的 <code>--db-file</code>。导入后仍需检查外键、预算计数和业务回读，不能关闭云端外键校验。<a href="https://developers.cloudflare.com/d1/sql-api/foreign-keys/">D1 外键与隐式事务规则</a>。</p>
 <h2>故障</h2>
 <p>线上配额/Worker/超时或 HTML 错页时停止密集重试，显示暂不可用、最后获取时间，保留本机草稿。联网后主动重试，版本变化先复核。前端 origin 变更会使原 IndexedDB 与凭据不自动跟随，新入口启用前提示保存恢复链接/导出。</p>
 <p>管理员看 Cloudflare D1 行读写、存储和 Worker 请求/CPU指标，排查按小队索引查询，避免全表与多组件重复轮询。活动前完成预发布恢复、三身份、实际手机与国内网络演练，确认真实活动资料。当前手动删除/清理，不承诺自动保留期限。</p>

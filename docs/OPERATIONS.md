@@ -32,7 +32,7 @@ npx wrangler d1 export tongye-meet-staging --remote --output "$TONGYE_BACKUP_DIR
 python3 scripts/prepare-d1-restore.py "$PRIVATE_EXPORT_SQL" "$PRIVATE_RESTORE_SQL"
 ```
 
-此命令先建全部表、再导入数据、最后恢复索引与触发器，避免前向外键引用和重新触发审计/预算计数。仅用于可信数据库导出；输出必须是新路径，文件权限600。将准备后的 SQL 用于隔离 D1 导入与媒体备份的 `--db-file`。导入后仍需检查外键、预算计数和业务回读，不能关闭云端外键校验。[D1 外键与隐式事务规则](https://developers.cloudflare.com/d1/sql-api/foreign-keys/)。
+此命令先建全部表、再导入数据、最后恢复索引与触发器，避免前向外键引用和重新触发审计/预算计数。大的内联文本会在临时辅助表中无损拼接，单条SQL控制在80KiB以内，再一次插入原记录；辅助表在导入结束前移除。原JSON、行和原备份不截断、不覆盖。仅用于可信数据库导出；输出必须是新路径，文件权限600。将准备后的 SQL 用于隔离 D1 导入与媒体备份的 `--db-file`。导入后仍需检查外键、预算计数和业务回读，不能关闭云端外键校验。[D1 外键与隐式事务规则](https://developers.cloudflare.com/d1/sql-api/foreign-keys/)。
 
 
 ## 故障
