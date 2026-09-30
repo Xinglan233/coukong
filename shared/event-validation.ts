@@ -1,4 +1,6 @@
-import schemaValidate from './generated-event-validator.js'
+import schemaValidateV1 from './generated-event-validator.js'
+import schemaValidateV2 from './generated-event-v2-validator.js'
+import { ACTIVITY_LIMITS, type PersonalPlan } from './activity-contract'
 import { LIMITS, type EventPackage, type EventData, type ParticipantResponse, type TimeInterval } from './types'
 
 export class ValidationError extends Error {
@@ -55,7 +57,12 @@ export function parseStrictJSON(raw: string, maxBytes = LIMITS.packageBytes): un
   try { const out = value(0); ws(); if (i !== raw.length) reject('$', 'JSON 后存在多余内容'); return out }
   catch (e) { if (e instanceof ValidationError) throw e; reject('$', 'JSON 格式错误') }
 }
-export function parseEventPackage(raw: string): EventPackage { return validateEventPackage(parseStrictJSON(raw)) }
+export function parseEventPackage(raw: string): EventPackage {
+  const parsed = parseStrictJSON(raw, ACTIVITY_LIMITS.packageBytes)
+  const version = parsed && typeof parsed === 'object' ? (parsed as {schemaVersion?:unknown}).schemaVersion : undefined
+  if (version !== 2 && new TextEncoder().encode(raw).length > LIMITS.packageBytes) reject('$', 'v1文件不能超过512KiB', 'LIMIT_EXCEEDED')
+  return validateEventPackage(parsed)
+}
 const minute = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3))
 export function dateOrdinal(s: string): number {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s) || s < '1900-01-01' || s > '2100-12-31') return NaN
@@ -87,7 +94,10 @@ function checkTimezoneDates(e: EventData) {
   }
 }
 export function validateEventPackage(value: unknown): EventPackage {
-  if (new TextEncoder().encode(JSON.stringify(value)).length > LIMITS.packageBytes) reject('$', '文件不能超过 512 KiB', 'LIMIT_EXCEEDED')
+  const version = value && typeof value === 'object' ? (value as {schemaVersion?:unknown}).schemaVersion : undefined
+  const bytes = version === 2 ? ACTIVITY_LIMITS.packageBytes : LIMITS.packageBytes
+  if (new TextEncoder().encode(JSON.stringify(value)).length > bytes) reject('$', version === 2 ? 'v2文件不能超过1MiB' : 'v1文件不能超过512KiB', 'LIMIT_EXCEEDED')
+  const schemaValidate = version === 2 ? schemaValidateV2 : schemaValidateV1
   if (!schemaValidate(value)) {
     const fields = (schemaValidate.errors || []).slice(0, 20).map(e => ({ path: e.instancePath || '$', message: '字段类型、必填项或格式不符合活动包 Schema' }))
     throw new ValidationError('INVALID_EVENT_PACKAGE', '活动包结构错误，请检查字段与格式', fields)
@@ -125,6 +135,7 @@ export function validateEventPackage(value: unknown): EventPackage {
       if (!dates.get(s.date)?.some(iv => minute(s.start) >= minute(iv.start) && minute(s.end) <= minute(iv.end))) reject(sp, '场次必须完整位于当天开放区间内')
     }
   }
+  if (p.schemaVersion === 2) validateSpatial(p)
   return p
 }
 function object(v: unknown, keys: string[], required: string[], path: string): Record<string, unknown> {
@@ -159,4 +170,32 @@ export function validateResponse(value: unknown, event: EventData): ParticipantR
     } else if (b.sessionId !== undefined) reject(`${path}.sessionId`, '只有场次安排能指定场次 ID')
   })
   return value as ParticipantResponse
+}
+
+function validateSpatial(p: EventPackage): void {
+  const c=p.event.extensions?.convention, path='event.extensions.convention'
+  const manifests=new Map<string,NonNullable<EventPackage['assetManifest']>[number]>()
+  for(const [i,a] of (p.assetManifest||[]).entries()) {
+    if(manifests.has(a.assetKey)) reject(`assetManifest[${i}].assetKey`,'资产键重复')
+    if(a.width*a.height>ACTIVITY_LIMITS.pixels) reject(`assetManifest[${i}]`,'图像不能超过2400万像素','LIMIT_EXCEEDED')
+    manifests.set(a.assetKey,a)
+  }
+  if(!c) { if(manifests.size) reject('assetManifest','未绑定地图的资产不能导入'); if(p.event.activities.some(a=>a.sessions.some(s=>s.poiId)))reject('event.activities','场次地点引用不存在'); return }
+  const maps=new Map<string,typeof c.maps[number]>(), graphByMap=new Map<string,typeof c.routingGraphs[number]>()
+  for(const [i,m] of c.maps.entries()) {const mp=`${path}.maps[${i}]`; if(!m.title.trim())reject(`${mp}.title`,'标题不能为空白');if(maps.has(m.id))reject(`${mp}.id`,'地图ID重复');maps.set(m.id,m);if(m.width*m.height>ACTIVITY_LIMITS.pixels)reject(mp,'图像不能超过2400万像素','LIMIT_EXCEEDED');const a=manifests.get(m.assetKey);if(!a)reject(`${mp}.assetKey`,'资产清单缺少地图文件');if(a.width!==m.width||a.height!==m.height)reject(mp,'地图尺寸与资产清单不符') }
+  const referenced=new Set(c.maps.map(m=>m.assetKey));for(const key of manifests.keys())if(!referenced.has(key))reject('assetManifest','存在未绑定地图的资产')
+  const graphIds=new Set<string>(); let nodeCount=0,edgeCount=0
+  for(const [i,g] of c.routingGraphs.entries()) {const gp=`${path}.routingGraphs[${i}]`,map=maps.get(g.mapId);if(graphIds.has(g.id))reject(`${gp}.id`,'图ID重复');graphIds.add(g.id);if(!map||map.revision!==g.mapRevision)reject(`${gp}.mapRevision`,'地图不存在或版本不符');if(graphByMap.has(g.mapId))reject(`${gp}.mapId`,'每张地图仅允许一份当前路网');graphByMap.set(g.mapId,g);nodeCount+=g.nodes.length;edgeCount+=g.edges.length;if(nodeCount>ACTIVITY_LIMITS.nodes||edgeCount>ACTIVITY_LIMITS.edges)reject(gp,'整个活动最多2000节点、4000边','LIMIT_EXCEEDED');const nodes=new Map(g.nodes.map(n=>[n.id,n]));if(nodes.size!==g.nodes.length)reject(`${gp}.nodes`,'节点ID重复');const edges=new Set<string>();for(const [j,e] of g.edges.entries()){const ep=`${gp}.edges[${j}]`;if(edges.has(e.id))reject(`${ep}.id`,'边ID重复');edges.add(e.id);if(e.from===e.to||!nodes.has(e.from)||!nodes.has(e.to))reject(ep,'边必须引用不同且已存在的节点');const from=nodes.get(e.from)!,to=nodes.get(e.to)!;if(e.geometry){const first=e.geometry[0],last=e.geometry[e.geometry.length-1];if(first.x!==from.x||first.y!==from.y||last.x!==to.x||last.y!==to.y)reject(`${ep}.geometry`,'折线必须按from到to方向起止于引用节点')}else if(from.x===to.x&&from.y===to.y&&!e.estimatedTravelSeconds&&!e.distanceMeters)reject(ep,'零长度边必须有可信正权重');for(const d of e.closedDates||[])if(!p.event.days.some(day=>day.date===d))reject(`${ep}.closedDates`,'关闭日期必须在活动日期内') } }
+  const pois=new Set<string>();for(const [i,poi] of c.pois.entries()){const pp=`${path}.pois[${i}]`;if(pois.has(poi.id))reject(`${pp}.id`,'地点ID重复');pois.add(poi.id);if(!poi.name.trim())reject(`${pp}.name`,'名称不能为空白');if(poi.tags?.some(t=>!t.trim())||new Set(poi.tags?.map(t=>t.trim())).size!==(poi.tags?.length||0))reject(`${pp}.tags`,'标签不能为空或重复');if(poi.position){const map=maps.get(poi.position.mapId);if(!map||map.revision!==poi.position.mapRevision)reject(`${pp}.position`,'地图不存在或版本不符');if(poi.routeNodeId&&!graphByMap.get(map.id)?.nodes.some(n=>n.id===poi.routeNodeId))reject(`${pp}.routeNodeId`,'地点入口节点不存在于所在地图路网')}else if(poi.routeNodeId)reject(`${pp}.routeNodeId`,'关联路网节点前须声明地图位置')}
+  for(const [i,a] of p.event.activities.entries())for(const [j,s] of a.sessions.entries())if(s.poiId&&!pois.has(s.poiId))reject(`event.activities[${i}].sessions[${j}].poiId`,'场次地点ID不存在')
+}
+export function validatePersonalPlan(value:unknown,event:EventData,options:{allowMissingReferences?:boolean}={}):PersonalPlan {
+ const plan=object(value,['response','favorites','routes'],['response','favorites','routes'],'plan')
+ validateResponse(plan.response,event)
+ if(!Array.isArray(plan.favorites)||plan.favorites.length>ACTIVITY_LIMITS.favorites||!Array.isArray(plan.routes)||plan.routes.length>31)reject('plan','收藏最多1000条、每日路线最多31条','LIMIT_EXCEEDED')
+ const c=event.extensions?.convention,poiIds=new Set(c?.pois.map(p=>p.id)||[]),mapIds=new Set(c?.maps.map(m=>m.id)||[]),favorites=new Set<string>(),dates=new Set<string>()
+ const id=(v:unknown,path:string)=>{if(typeof v!=='string'||!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(v))reject(path,'ID格式无效');if(!options.allowMissingReferences&&!poiIds.has(v as string))reject(path,'地点不存在于当前活动')}
+ plan.favorites.forEach((raw,i)=>{const f=object(raw,['poiId','visited'],['poiId','visited'],`plan.favorites[${i}]`);id(f.poiId,`plan.favorites[${i}].poiId`);if(favorites.has(f.poiId as string)||typeof f.visited!=='boolean')reject(`plan.favorites[${i}]`,'收藏重复或状态无效');favorites.add(f.poiId as string)})
+ plan.routes.forEach((raw,i)=>{const rp=`plan.routes[${i}]`,r=object(raw,['date','mapId','startPoiId','stops','spatialRevision'],['date','mapId','stops','spatialRevision'],rp);if(typeof r.date!=='string'||!event.days.some(d=>d.date===r.date)||dates.has(r.date))reject(`${rp}.date`,'日期不在活动内或重复');dates.add(r.date as string);if(typeof r.mapId!=='string'||(!options.allowMissingReferences&&!mapIds.has(r.mapId)))reject(`${rp}.mapId`,'地图不存在');if(!Number.isInteger(r.spatialRevision)||Number(r.spatialRevision)<1)reject(`${rp}.spatialRevision`,'空间版本须为正整数');if(r.startPoiId!==undefined)id(r.startPoiId,`${rp}.startPoiId`);if(!Array.isArray(r.stops)||r.stops.length>ACTIVITY_LIMITS.routeStops)reject(`${rp}.stops`,'路线最多100站','LIMIT_EXCEEDED');const stops=new Set<string>();r.stops.forEach((raw,j)=>{const sp=`${rp}.stops[${j}]`,s=object(raw,['poiId','visited','stayMinutes','queueMinutes'],['poiId','visited'],sp);id(s.poiId,`${sp}.poiId`);if(stops.has(s.poiId as string)||typeof s.visited!=='boolean')reject(sp,'站点重复或状态无效');stops.add(s.poiId as string);for(const k of ['stayMinutes','queueMinutes'])if(s[k]!==undefined&&(!Number.isInteger(s[k])||Number(s[k])<0||Number(s[k])>1440))reject(`${sp}.${k}`,'须为0–1440整数分钟');const poi=c?.pois.find(p=>p.id===s.poiId);if(poi?.position&&poi.position.mapId!==r.mapId)reject(`${sp}.poiId`,'首发路线不支持跨图')}) })
+ return value as PersonalPlan
 }
