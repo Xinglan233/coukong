@@ -3,7 +3,7 @@ import { getVercelOidcToken } from '@vercel/oidc'
 import { createHash } from 'node:crypto'
 import type { IncomingMessage,ServerResponse } from 'node:http'
 import { get,put,del,list } from '@vercel/blob'
-import { ACTIVITY_LIMITS } from '../../shared/activity-contract'
+import { ACTIVITY_LIMITS } from '../../shared/activity-contract.js'
 export class MediaError extends Error { constructor(message:string,public status=400,public code='INVALID_MEDIA'){super(message)} }
 export const DISPLAY_LIMIT=3*1024*1024
 export async function boundedBytes(stream:ReadableStream<Uint8Array>,max:number):Promise<Buffer>{const reader=stream.getReader(),parts:Uint8Array[]=[];let size=0;try{for(;;){const {value,done}=await reader.read();if(done)break;size+=value.byteLength;if(size>max){await reader.cancel();throw new MediaError('文件过大',413)}parts.push(value)}return Buffer.concat(parts)}finally{reader.releaseLock()}}

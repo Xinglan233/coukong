@@ -1,6 +1,6 @@
 import type { IncomingMessage,ServerResponse } from 'node:http'
 import { get } from '@vercel/blob'
-import { config,worker,assetPath,boundedBytes,respond,MediaError,DISPLAY_LIMIT } from '../../src/server/media-service'
+import { config,worker,assetPath,boundedBytes,respond,MediaError,DISPLAY_LIMIT } from '../../src/server/media-service.js'
 export default async function read(req:IncomingMessage,res:ServerResponse){try{
  if(req.method!=='GET')throw new MediaError('仅支持GET',405)
  const url=new URL(req.url||'','https://media.invalid'),eventId=url.searchParams.get('eventId'),assetId=url.searchParams.get('assetId')
