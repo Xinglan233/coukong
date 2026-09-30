@@ -24,9 +24,11 @@ const server = createServer(async (incoming, outgoing) => {
       if(!/^ui-activity-[a-z0-9-]{1,40}$/.test(eventId)){outgoing.writeHead(400);outgoing.end('{}');return}
       const event=await db.prepare('SELECT revision FROM events WHERE id=?').bind(eventId).first<{revision:number}>()
       if(!event){outgoing.writeHead(404);outgoing.end('{}');return}
-      const bytes=readFileSync('examples/assets/convention-demo.png'),sha=createHash('sha256').update(bytes).digest('hex')
+      const variant=new URL(incoming.url,'http://localhost').searchParams.get('variant')==='b'?'b':'a'
+      const bytes=readFileSync(variant==='b'?'tests/fixtures/maps/version-b.png':'examples/assets/convention-demo.png'),sha=createHash('sha256').update(bytes).digest('hex')
       if(bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw new Error('Fixed fixture is not PNG')
-      const width=bytes.readUInt32BE(16),height=bytes.readUInt32BE(20),id='fixture-'+eventId,now=new Date().toISOString()
+      const width=bytes.readUInt32BE(16),height=bytes.readUInt32BE(20),id='fixture-'+eventId+(variant==='b'?'-b':''),now=new Date().toISOString()
+      if(variant==='b')await db.prepare("UPDATE media_assets SET state='failed' WHERE event_id=? AND asset_key='convention-demo.png'").bind(eventId).run()
       await db.prepare("INSERT INTO media_assets(id,event_id,asset_key,state,mime_type,width,height,size_bytes,sha256,display_size_bytes,revision,expected_event_revision,ticket_hash,expires_at,operation_id,operation_digest,source_path,display_path,display_mime_type,display_width,display_height,source_size_bytes,source_sha256,created_at,updated_at) VALUES(?,?,?,'ready','image/png',?,?,?,?,?,1,?,?,?,?,?,?,?,'image/png',?,?,?,?,?,?)").bind(id,eventId,'convention-demo.png',width,height,bytes.length,sha,bytes.length,event.revision,createHash('sha256').update(id).digest('hex'),Date.now()+3600000,'fixed-fixture','fixed-fixture',`assets/${eventId}/${id}/source-${sha}`,`assets/${eventId}/${id}/display-${sha}.png`,width,height,bytes.length,sha,now,now).run()
       outgoing.writeHead(200,{'Content-Type':'application/json'});outgoing.end(JSON.stringify({data:{id,width,height,sha256:sha,sizeBytes:bytes.length}}));return
     }
