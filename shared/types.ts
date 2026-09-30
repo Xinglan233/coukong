@@ -2,15 +2,17 @@ export const LIMITS = { packageBytes: 512 * 1024, days: 31, activities: 1000, se
 export type SelectionStep = 5 | 10 | 15 | 30
 export interface TimeInterval { start: string; end: string }
 export interface DatedInterval extends TimeInterval { date: string }
-export interface EventSession extends DatedInterval { id: string; location?: string }
+export interface EventSession extends DatedInterval { id: string; location?: string; poiId?: string }
 export interface EventActivity { id: string; title: string; description?: string; location?: string; tags?: string[]; sessions: EventSession[] }
 export interface EventData {
   id: string; title: string; description?: string; location?: string; timezone: string
   startDate: string; endDate: string; defaultBufferMinutes: number; defaultMinSlotMinutes: number
   defaultSelectionStepMinutes: SelectionStep
   days: { date: string; openIntervals: TimeInterval[] }[]; activities: EventActivity[]
+  eventType?: import('./activity-contract').EventType
+  extensions?: { convention: import('./activity-contract').ConventionData }
 }
-export interface EventPackage { kind: 'coukong.event'; schemaVersion: 1; event: EventData; meta?: { isExample?: boolean; sourceNote?: string } }
+export interface EventPackage { kind: 'coukong.event'; schemaVersion: 1 | 2; event: EventData; meta?: { isExample?: boolean; sourceNote?: string }; assetManifest?: import('./activity-contract').AssetManifestEntry[] }
 export interface BusyItem extends DatedInterval { id: string; title: string; location?: string; note?: string; source: 'manual' | 'session' | 'legacy'; sessionId?: string }
 export interface ParticipantResponse { name: string; presence: { date: string; intervals: TimeInterval[] }[]; busy: BusyItem[]; bufferMinutes: number }
 export type ParticipantStatus = 'unsubmitted' | 'confirmed' | 'needs_review'
