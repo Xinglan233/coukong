@@ -4,18 +4,21 @@
 
 | 环境 | 版本/提交 | 地址 | 状态 |
 | --- | --- | --- | --- |
-| 本地 | 验收源码 2741fc8 | Mac 开发环境 | verify 与浏览器自动化通过 |
-| 隔离预发布 | 同一验收源码 | tongye-meet-api-staging.xinglan233.workers.dev | 独立 D1，云端写入与隔离恢复通过 |
-| 生产 | b80193d8ed30404f181917796919382b5efd890c | [前端](https://coukong.vercel.app)、[API ready](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready) | 实际部署及核验完成 |
+| 本地 | 验收源码 7a9ab0a | Mac 开发环境 | verify 与浏览器自动化通过 |
+| 隔离预发布 | Worker 35fb8fa（本轮 API 源码相同） | tongye-meet-api-staging.xinglan233.workers.dev | 独立 D1，云端写入与隔离恢复通过 |
+| 生产 | 9090be47ed732b5afd5323d20515be1fbb4cb84f | [前端](https://coukong.vercel.app)、[API ready](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready) | 实际部署及核验完成 |
 
-PR #1 已合并；生产前端部署与 Worker ready 均对应完整合并 SHA。该提交源码树与 2741fc8 等价。公开地址使用既有 coukong 别名，Vercel 项目为 tongye-meet。
+PR #2 已合并；生产前端功能代码与 Worker ready 对应上述9090完整功能合并SHA。其源码树与7a9ab0a等价；后续纯文档发布的前端部署提交另行记录，不改变Worker构建标识或已验收功能。公开地址使用既有 coukong 别名，Vercel 项目为 tongye-meet。
 
 ## 已执行门禁
 
-- [x] `npm run verify`：类型、lint、30 个单元测试、8 组真实 D1 集成、文档与构建通过。
-- [x] `npm run test:e2e`：6 个 Playwright 用例通过，含真实 Service Worker 离线、慢 PUT、混合版本和有界旧分享处理。
-- [x] 生产三个隔离浏览器身份实际 UI 操作，7 项检查通过；远端请求 200，13:07–13:52 刷新与个人导出保留原值。
-- [x] Mac Chromium 375/390px 无页面横向溢出；这不是 iPhone 或微信证据。
+- [x] `npm run verify`：类型、lint、30 个单元测试、9 组真实 D1 集成、文档与构建通过。
+- [x] `npm run test:e2e`：11 个 Playwright 用例通过，含真实 Service Worker 离线、慢 PUT、混合版本和有界旧分享处理。
+- [x] 本轮生产三个隔离浏览器身份通过原式 UI 建队、加入、提交、刷新与导出，4 项组合检查通过；远端请求 200，13:07–13:52 刷新与个人导出保留原值。
+- [x] 管理员、队长、队员 Mac Chromium 375/390px 无页面横向溢出；这不是 iPhone 或微信证据。
+- [x] 管理员生产375/390px登录、新建模板直接展开、文件预览、退出撤销通过；模板发布/更新/下架在本地UI和隔离云端验证，不向生产发布测试模板。
+- [x] 公共模板只取每个ID的最新版本；下架不复活旧发布版本，小队快照不变。
+- [x] 父任务公开浏览器实际通过“保存后更新”加载新PWA界面，无清空网站数据。
 - [x] 本地直接 API 权限、CAS 与数据隔离验证通过，不能读写他人私人回复。
 - [x] 云端 998 场次、185548 字节候选包预览、原子导入、导出 deepEqual 与非法包不写入通过。
 - [x] 云端 SQL 导出到隔离环境恢复，API 回读 deepEqual 通过；生产初始与预发布上线前备份已受控保存，文件权限 600。
