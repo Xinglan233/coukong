@@ -574,6 +574,8 @@ textarea {
 /* The online axis keeps the original rows/colors with precise horizontal ticks. */
 .tl-online { margin-left: 0; margin-top: 24px; }
 .tl-online .tl-time { top: -18px; width: 36px; text-align: center; transform: translateX(-50%); }
+.tl-online .tl-grid .tl-time:first-child { transform: translateX(0); text-align: left; }
+.tl-online .tl-grid .tl-time:nth-last-child(2) { transform: translateX(-100%); text-align: right; }
 .tl-online .tl-line { top: 0; bottom: 0; right: auto; width: 1px; height: auto; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
