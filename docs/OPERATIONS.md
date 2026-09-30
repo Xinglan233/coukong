@@ -41,8 +41,10 @@ npx wrangler d1 export tongye-meet-staging --remote --output "$TONGYE_BACKUP_DIR
 本轮实际回滚点（仅需要回滚时执行；这不是数据库降级）：
 
 ```sh
-npx vercel rollback dpl_7be2CRr7gnH8RvtNG367F2oSZ93Y --scope xinglan233s-projects --non-interactive
+# 先在现有项目部署列表确认当前上一个生产部署，再填写其ID
+TONGYE_ROLLBACK_DEPLOYMENT="dpl_请替换为当前上一生产部署ID"
+npx vercel rollback "$TONGYE_ROLLBACK_DEPLOYMENT" --scope xinglan233s-projects --non-interactive
 npx wrangler rollback a01d359b-b1fe-49a7-a1e4-dcb5e57d2e93 --config worker/wrangler.production.jsonc
 ```
 
-纯文档发布后，前端前一个已验收部署是9090功能版本的 `dpl_7be2CRr7gnH8RvtNG367F2oSZ93Y`。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)；每次操作先核对项目部署列表。更早b801前端部署 `dpl_3FT8Y15H4F3ZVnPpT1VZZqnvYXhU` 仍保留，但如果免费计划拒绝直接回滚，则用b801源码经正常恢复分支、PR和CI重新发布，不升级付费。Worker命令回到b801功能版本；两者应按故障范围选择并核验，单独回滚文档无需回滚Worker。CLI需要相应账户登录；不要为失败扩权。回滚之后核对公开站点和 `/api/v1/ready`；旧版本会重新带回其已知界面与模板下架缺陷，数据库及个人草稿不因代码回滚而删除。
+前端直接回滚目标必须从现有项目部署列表确认，不固定某次发布ID。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)；每次操作先核对项目部署列表。更早b801前端部署 `dpl_3FT8Y15H4F3ZVnPpT1VZZqnvYXhU` 仍保留，但如果免费计划拒绝直接回滚，则用b801源码经正常恢复分支、PR和CI重新发布，不升级付费。Worker命令回到b801功能版本；两者应按故障范围选择并核验，单独回滚文档无需回滚Worker。CLI需要相应账户登录；不要为失败扩权。回滚之后核对公开站点和 `/api/v1/ready`；旧版本会重新带回其已知界面与模板下架缺陷，数据库及个人草稿不因代码回滚而删除。
