@@ -1,7 +1,7 @@
 import { describe,it,expect,beforeAll,afterAll } from 'vitest'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import { build } from 'esbuild'
-import { readFileSync } from 'node:fs'
+import { readFileSync,readdirSync } from 'node:fs'
 import { randomBytes,randomUUID,createHash } from 'node:crypto'
 let mf:Miniflare
 const token=()=>randomBytes(32).toString('hex')
@@ -9,7 +9,7 @@ const adminRoot=token();const manager=token(),invite=token(),a=token(),b=token()
 const pkg=JSON.parse(readFileSync('examples/event-demo.json','utf8'));pkg.event.days[0].openIntervals=[{start:'09:00',end:'12:00'}];pkg.event.activities=[]
 async function api(path:string,method='GET',auth='',body?:unknown){const res=await mf.dispatchFetch('http://localhost/api/v1'+path,{method,headers:{...(auth?{Authorization:'Bearer '+auth}:{}),'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});return {status:res.status,...await res.json() as any}}
 const response=(name:string,presenceStart:string,busy:any[],bufferMinutes:number)=>({name,presence:[{date:'2026-10-03',intervals:[{start:presenceStart,end:name==='B'?'11:50':'12:00'}]}],busy,bufferMinutes})
-beforeAll(async()=>{const built=await build({entryPoints:['worker/src/index.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022'});mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:built.outputFiles[0].text,compatibilityDate:'2026-09-01',d1Databases:['DB'],bindings:{CREATION_MODE:'invite',CREATION_CODE:'test-create',ADMIN_ROOT_SECRET:adminRoot,ALLOWED_ORIGINS:'http://localhost:5173',BUILD_VERSION:'integration'}}));const db=await mf.getD1Database('DB');for(const migration of ['0001_initial.sql','0002_audit.sql','0003_operation_ownership.sql','0004_management_idempotency.sql'])await db.exec(readFileSync('worker/migrations/'+migration,'utf8').replace(/\n/g,' '))},30000)
+beforeAll(async()=>{const built=await build({entryPoints:['worker/src/index.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022'});mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:built.outputFiles[0].text,compatibilityDate:'2026-09-01',d1Databases:['DB'],bindings:{CREATION_MODE:'invite',CREATION_CODE:'test-create',ADMIN_ROOT_SECRET:adminRoot,ALLOWED_ORIGINS:'http://localhost:5173',BUILD_VERSION:'integration'}}));const db=await mf.getD1Database('DB');for(const migration of readdirSync('worker/migrations').filter(x=>x.endsWith('.sql')).sort())await db.exec(readFileSync('worker/migrations/'+migration,'utf8').replace(/\n/g,' '))},30000)
 afterAll(async()=>{await mf?.dispose()})
 describe.sequential('真实 workerd / SQLite D1 多人闭环',()=>{
  it('创建保护，创建响应丢失安全重试',async()=>{expect((await api('/groups','POST','',{eventPackage:pkg,managerToken:manager,inviteToken:invite,operationId:randomUUID(),creationCode:'wrong'})).status).toBe(403);const body={eventPackage:pkg,managerToken:manager,inviteToken:invite,operationId:randomUUID(),creationCode:'test-create'};const first=await api('/groups','POST','',body);expect(first.status).toBe(200);group=first.data.id;expect((await api('/groups','POST','',body)).data.id).toBe(group);expect((await api('/groups','POST','',{...body,eventPackage:{...pkg,event:{...pkg.event,title:'不同内容'}}})).status).toBe(409)})
