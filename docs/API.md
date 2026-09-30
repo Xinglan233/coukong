@@ -41,3 +41,18 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 错误码包括 INVALID_EVENT_PACKAGE、INVALID_TIME_RANGE、UNSUPPORTED_TIMEZONE_DATE、VERSION_CONFLICT、RECONFIRM_REQUIRED、INVALID_CAPABILITY、FORBIDDEN、GROUP_CLOSED、LIMIT_EXCEEDED、SERVICE_UNAVAILABLE。校验错误含中文字段路径，不回显 SQL/凭据。创建/无效认证按来源限制，合法成员写操作按主体限制；同 Wi-Fi 必须多身份实测。创建20次/分钟/来源、无效队凭据30次/分钟/来源、管理员登录10次/分钟/来源、成员写60次/分钟/主体。具体实现测试见 [测试](TESTING.md)。
 
 当前列表限制不是完整游标分页；若超过单次返回上限需要补分页，不宣传无限模板列表。API 路由和前端入口均须经 [发布检查](RELEASE_CHECKLIST.md) 验收。
+
+## 个人计划与公开限额（本轮分支，云端待验）
+
+`GET /api/v1/limits` 无需私密凭据，返回共享 `ACTIVITY_LIMITS` 的真实配置。个人创建为 `POST /api/v1/events/:eventId/personal`；本人 Bearer 凭据用于 `GET/PUT/DELETE /api/v1/events/:eventId/personal/:id`。PUT 同时检查 `expectedRevision`、`scheduleRevision`、`spatialRevision`，带预先保存的 `operationId`，不会以活动 ID 授予个人权限。
+
+个人 `plan` 的 JSON UTF-8 上限为1536KiB。全部访客记录共用128MiB应用逻辑预算，按UTF-8数据和每记录1KiB保守元数据计量；这不是D1物理占用或剩余免费容量保证。每人最多64条幂等回执，保留24小时；回执仅保留摘要、版本和时间等紧凑元数据，不保留私人计划历史副本。
+
+| 状态与错误码 | 客户端处理 |
+| --- | --- |
+| 409 OPERATION_SUPERSEDED | 该提交曾成功，但已被后续修改替代；回读当前计划并比较草稿，不重放旧成功内容 |
+| 409 IDEMPOTENCY_EXPIRED | 回执已到期或被清理；回读并核对后创建新操作，不盲目重用旧ID |
+| 413 PERSONAL_PLAN_TOO_LARGE | 减少备注或记录，保留本机草稿后重新保存 |
+| 507 STORAGE_BUDGET_EXCEEDED | 共享预算已满；保留草稿，稍后重试或删除不用的本人记录，不自动付费 |
+
+相同操作ID携带不同请求内容仍返回409 VERSION_CONFLICT。活动空间版本变化也须核对后重新保存。上述合同由本地代码与测试落实；不能据此宣称新模块已通过云端或现场验收。
