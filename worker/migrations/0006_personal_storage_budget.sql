@@ -12,11 +12,32 @@ UPDATE personal_plans SET last_receipt_expires_at=COALESCE((SELECT expires_at FR
 CREATE INDEX personal_tombstone_token ON personal_tombstones(token_hash);
 CREATE TABLE visitor_storage_budget(id INTEGER PRIMARY KEY CHECK(id=1),used_bytes INTEGER NOT NULL CHECK(used_bytes>=0),max_bytes INTEGER NOT NULL CHECK(max_bytes>0));
 INSERT INTO visitor_storage_budget SELECT 1,COALESCE((SELECT SUM(length(CAST(plan_json AS BLOB))+length(CAST(availability_json AS BLOB))+1024) FROM personal_plans),0)+COALESCE((SELECT SUM(length(CAST(result_json AS BLOB))+1024) FROM personal_operations),0)+COALESCE((SELECT COUNT(*)*1024 FROM personal_tombstones),0),134217728;
-CREATE TRIGGER personal_budget_insert BEFORE INSERT ON personal_plans BEGIN SELECT CASE WHEN (SELECT used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))+1024>max_bytes FROM visitor_storage_budget WHERE id=1) THEN RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') END; UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))+1024 WHERE id=1; END;
-CREATE TRIGGER personal_budget_update BEFORE UPDATE OF plan_json,availability_json ON personal_plans BEGIN SELECT CASE WHEN (SELECT used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))-length(CAST(OLD.plan_json AS BLOB))-length(CAST(OLD.availability_json AS BLOB))>max_bytes FROM visitor_storage_budget WHERE id=1) THEN RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') END; UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))-length(CAST(OLD.plan_json AS BLOB))-length(CAST(OLD.availability_json AS BLOB)) WHERE id=1; END;
-CREATE TRIGGER personal_budget_delete AFTER DELETE ON personal_plans BEGIN UPDATE visitor_storage_budget SET used_bytes=used_bytes-length(CAST(OLD.plan_json AS BLOB))-length(CAST(OLD.availability_json AS BLOB))-1024 WHERE id=1; END;
-CREATE TRIGGER receipt_budget_insert BEFORE INSERT ON personal_operations BEGIN DELETE FROM personal_operations WHERE personal_id=NEW.personal_id AND rowid NOT IN(SELECT rowid FROM personal_operations WHERE personal_id=NEW.personal_id ORDER BY committed_revision DESC LIMIT 63); SELECT CASE WHEN (SELECT used_bytes+length(CAST(NEW.result_json AS BLOB))+1024>max_bytes FROM visitor_storage_budget WHERE id=1) THEN RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') END; UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.result_json AS BLOB))+1024 WHERE id=1; END;
-CREATE TRIGGER receipt_budget_update BEFORE UPDATE OF result_json ON personal_operations BEGIN SELECT CASE WHEN (SELECT used_bytes+length(CAST(NEW.result_json AS BLOB))-length(CAST(OLD.result_json AS BLOB))>max_bytes FROM visitor_storage_budget WHERE id=1) THEN RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') END; UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.result_json AS BLOB))-length(CAST(OLD.result_json AS BLOB)) WHERE id=1; END;
-CREATE TRIGGER receipt_budget_delete AFTER DELETE ON personal_operations BEGIN UPDATE visitor_storage_budget SET used_bytes=used_bytes-length(CAST(OLD.result_json AS BLOB))-1024 WHERE id=1; END;
-CREATE TRIGGER tombstone_budget_insert AFTER INSERT ON personal_tombstones BEGIN UPDATE visitor_storage_budget SET used_bytes=used_bytes+1024 WHERE id=1; END;
-CREATE TRIGGER tombstone_budget_delete AFTER DELETE ON personal_tombstones BEGIN UPDATE visitor_storage_budget SET used_bytes=used_bytes-1024 WHERE id=1; END;
+CREATE TRIGGER personal_budget_insert BEFORE INSERT ON personal_plans BEGIN
+  SELECT RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') WHERE (SELECT used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))+1024>max_bytes FROM visitor_storage_budget WHERE id=1);
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))+1024 WHERE id=1;
+END;
+CREATE TRIGGER personal_budget_update BEFORE UPDATE OF plan_json,availability_json ON personal_plans BEGIN
+  SELECT RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') WHERE (SELECT used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))-length(CAST(OLD.plan_json AS BLOB))-length(CAST(OLD.availability_json AS BLOB))>max_bytes FROM visitor_storage_budget WHERE id=1);
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.plan_json AS BLOB))+length(CAST(NEW.availability_json AS BLOB))-length(CAST(OLD.plan_json AS BLOB))-length(CAST(OLD.availability_json AS BLOB)) WHERE id=1;
+END;
+CREATE TRIGGER personal_budget_delete AFTER DELETE ON personal_plans BEGIN
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes-length(CAST(OLD.plan_json AS BLOB))-length(CAST(OLD.availability_json AS BLOB))-1024 WHERE id=1;
+END;
+CREATE TRIGGER receipt_budget_insert BEFORE INSERT ON personal_operations BEGIN
+  DELETE FROM personal_operations WHERE personal_id=NEW.personal_id AND rowid NOT IN(SELECT rowid FROM personal_operations WHERE personal_id=NEW.personal_id ORDER BY committed_revision DESC LIMIT 63);
+  SELECT RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') WHERE (SELECT used_bytes+length(CAST(NEW.result_json AS BLOB))+1024>max_bytes FROM visitor_storage_budget WHERE id=1);
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.result_json AS BLOB))+1024 WHERE id=1;
+END;
+CREATE TRIGGER receipt_budget_update BEFORE UPDATE OF result_json ON personal_operations BEGIN
+  SELECT RAISE(ABORT,'PERSONAL_STORAGE_BUDGET') WHERE (SELECT used_bytes+length(CAST(NEW.result_json AS BLOB))-length(CAST(OLD.result_json AS BLOB))>max_bytes FROM visitor_storage_budget WHERE id=1);
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes+length(CAST(NEW.result_json AS BLOB))-length(CAST(OLD.result_json AS BLOB)) WHERE id=1;
+END;
+CREATE TRIGGER receipt_budget_delete AFTER DELETE ON personal_operations BEGIN
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes-length(CAST(OLD.result_json AS BLOB))-1024 WHERE id=1;
+END;
+CREATE TRIGGER tombstone_budget_insert AFTER INSERT ON personal_tombstones BEGIN
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes+1024 WHERE id=1;
+END;
+CREATE TRIGGER tombstone_budget_delete AFTER DELETE ON personal_tombstones BEGIN
+  UPDATE visitor_storage_budget SET used_bytes=used_bytes-1024 WHERE id=1;
+END;
