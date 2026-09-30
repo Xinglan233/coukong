@@ -27,11 +27,16 @@ for(const file of readdirSync(resolve(root,'examples')).filter(f=>f.endsWith('.j
   const assetPath=resolve(root,'examples/assets',asset.assetKey);assert(existsSync(assetPath),`${file}: 缺资产 ${asset.assetKey}`)
   const bytes=readFileSync(assetPath);assert.equal(bytes.length,asset.sizeBytes,`${file}: 资产大小漂移`);assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sha256,`${file}: 资产哈希漂移`)
   assert.deepEqual(readFileSync(resolve(root,'public/examples/assets',asset.assetKey)),bytes,`${file}: 资产下载漂移`)
+  if(asset.mimeType==='image/png'){assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a',`${file}: PNG 文件签名不符`);assert.equal(bytes.readUInt32BE(16),asset.width,`${file}: PNG 宽度漂移`);assert.equal(bytes.readUInt32BE(20),asset.height,`${file}: PNG 高度漂移`)}
  }
  assert.deepEqual(parseEventPackage(JSON.stringify(data)),data,`${file}: 回导漂移`)
  assert.equal(read('public/examples/'+file),raw,`${file}: 站内下载漂移`)
  assert(!/"(?:token|managerToken|memberToken|inviteToken|note|participant)"\s*:/.test(raw),`${file}: 示例含私人字段`)
  examples++
+}
+const exampleV2=readdirSync(resolve(root,'examples')).filter(f=>f.endsWith('.json')).map(f=>parseEventPackage(read('examples/'+f))).find(p=>p.schemaVersion===2&&p.event.extensions?.convention?.maps.length)
+if(exampleV2){
+ for(const modify of [(p:typeof exampleV2)=>{p.event.extensions!.convention!.pois[0].position!.x=1.01},(p:typeof exampleV2)=>{p.event.extensions!.convention!.maps[0].assetKey='missing.png'},(p:typeof exampleV2)=>{p.event.extensions!.convention!.routingGraphs[0].mapRevision=999},(p:typeof exampleV2)=>{p.event.extensions!.convention!.routingGraphs[0].edges[0].estimatedTravelSeconds=-1}]){const invalid=structuredClone(exampleV2);modify(invalid);assert.throws(()=>parseEventPackage(JSON.stringify(invalid)),'v2 错误关联或坐标必须拒绝')}
 }
 const expected=JSON.parse(read('tests/fixtures/expected-results.json')) as Record<string,{stage:string}>
 assert.equal(Object.keys(expected).length,9)
