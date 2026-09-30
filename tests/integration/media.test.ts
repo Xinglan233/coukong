@@ -59,6 +59,26 @@ describe.sequential('地图资产真实D1权限与CAS',()=>{
   expect((await api(path+'/fail','POST',t,{},true)).data.state).toBe('failed')
   expect((await api(path+'/activate','POST',t,metadata(id),true)).status).toBe(401)
  })
+ it('过期仍占预算；cleanup限5、保护所有引用版本/ready与跨活动、不可信commit拒绝',async()=>{
+  const db=await mf.getD1Database('DB'),expiry=Date.now()-31*60*1000,path=`/admin/events/${eventId}/assets`,ids:string[]=[]
+  for(let i=0;i<7;i++){const body=reserve(token()),r=await api(path,'POST',auth,body);ids.push(r.data.asset.id);await db.prepare('UPDATE media_assets SET expires_at=? WHERE id=?').bind(expiry,r.data.asset.id).run()}
+  const before=(await api(path+'/usage','GET',auth)).data;expect(before.chargedBytes).toBeGreaterThan(100*7)
+  const protectedRow=(await db.prepare('SELECT * FROM media_assets WHERE id=?').bind(ids[0]).first<any>())!,history=structuredClone(pkg);history.event.extensions={convention:{maps:[{assetKey:protectedRow.asset_key}],pois:[],routingGraphs:[]}}
+  await db.prepare("INSERT INTO event_versions VALUES(?,99,0,0,'draft',?,?)").bind(eventId,JSON.stringify(history),new Date().toISOString()).run()
+  expect((await api(path+'/cleanup-plan','POST',auth,{})).status).toBe(403)
+  const plan=(await api(path+'/cleanup-plan','POST',auth,{},true)).data.candidates;expect(plan).toHaveLength(5);expect(plan.map((x:any)=>x.id)).not.toContain(ids[0])
+  const ready=(await db.prepare("SELECT id FROM media_assets WHERE state='ready' LIMIT 1").first<any>())!.id
+  expect((await api(path+'/cleanup-commit','POST',auth,{assetId:ready},true)).status).toBe(409)
+  expect((await api(path+'/cleanup-commit','POST',auth,{assetId:ids[0]},true)).status).toBe(409)
+  const eligible=plan[0].id;expect((await api('/admin/events/other/assets/cleanup-commit','POST',auth,{assetId:eligible},true)).status).toBe(409)
+  expect((await api(path+'/cleanup-commit','POST',auth,{assetId:eligible})).status).toBe(403)
+  expect((await api(path+'/cleanup-commit','POST',auth,{assetId:eligible},true)).status).toBe(200)
+  const after=(await api(path+'/usage','GET',auth)).data;expect(after.chargedBytes).toBeLessThan(before.chargedBytes)
+  // Fill the budget with conservative failed charges, never auto-grant a new upload.
+  await db.prepare("UPDATE media_assets SET declared_size_bytes=12582912 WHERE state='failed'").run()
+  for(let i=0;i<20;i++){const r=await api(path,'POST',auth,{...reserve(token()),sizeBytes:12582912});if(r.status!==200){expect(r.status).toBe(413);break}await db.prepare("UPDATE media_assets SET state='failed',expires_at=? WHERE id=?").bind(expiry,r.data.asset.id).run()}
+  expect((await api(path,'POST',auth,{...reserve(token()),sizeBytes:12582912})).status).toBe(413)
+ })
  it('已发布并引用资产可公开读取；取消与撤销拒绝读取',async()=>{
   const db=await mf.getD1Database('DB'),r=(await db.prepare("SELECT * FROM media_assets WHERE state='ready' LIMIT 1").first<any>())!,p=structuredClone(pkg)
   p.event.extensions={convention:{maps:[{id:'map',assetKey:r.asset_key,width:64,height:32}],pois:[],routingGraphs:[]}};p.assetManifest=[{assetKey:r.asset_key,sha256:r.sha256,sizeBytes:r.size_bytes}]

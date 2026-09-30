@@ -2,6 +2,10 @@ import type { ActivityContext } from './activity'
 import type { MediaAssetDTO } from '../../shared/activity-contract'
 import { ACTIVITY_LIMITS } from '../../shared/activity-contract'
 type Row=Record<string,any>
+export const MEDIA_BUDGET_BYTES=256*1024*1024
+const chargedWhere="NOT(state='revoked' AND blob_path IS NULL AND source_path IS NULL AND display_path IS NULL)"
+const chargeSQL="COALESCE(SUM(CASE WHEN source_path IS NOT NULL THEN COALESCE(size_bytes,12582912)+COALESCE(display_size_bytes,3145728)+COALESCE(declared_size_bytes,12582912) ELSE COALESCE(declared_size_bytes,12582912)+12582912+3145728 END),0)"
+const unreferencedSQL="NOT EXISTS(SELECT 1 FROM event_versions v, json_each(v.event_json,'$.event.extensions.convention.maps') m WHERE v.event_id=media_assets.event_id AND json_extract(m.value,'$.assetKey')=media_assets.asset_key) AND NOT EXISTS(SELECT 1 FROM events e,json_each(e.event_json,'$.event.extensions.convention.maps') m WHERE e.id=media_assets.event_id AND json_extract(m.value,'$.assetKey')=media_assets.asset_key)"
 export interface MediaContext extends ActivityContext { verifyNode:()=>Promise<void> }
 export interface VercelOIDCConfig { VERCEL_OIDC_ISSUER?:string; VERCEL_OIDC_AUDIENCE?:string; VERCEL_OIDC_SUBJECT?:string }
 const decoded=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0))
@@ -9,9 +13,10 @@ export async function verifyVercelOIDC(req:Request,env:VercelOIDCConfig,fetcher:
  const deny=()=>{throw new Error('Vercel运行时证明无效')}
  const issuer=env.VERCEL_OIDC_ISSUER,audience=env.VERCEL_OIDC_AUDIENCE,subject=env.VERCEL_OIDC_SUBJECT,jwt=req.headers.get('X-Vercel-OIDC-Token')
  if(!issuer||!/^https:\/\/oidc\.vercel\.com(?:\/[-\w]+)?$/.test(issuer)||!audience||!subject||!jwt||jwt.length>16000)deny()
+ const subjects=subject!.split(',').map(s=>s.trim()).filter(Boolean)
  const pieces=jwt!.split('.');if(pieces.length!==3)deny()
  const header=JSON.parse(new TextDecoder().decode(decoded(pieces[0]))),claim=JSON.parse(new TextDecoder().decode(decoded(pieces[1]))),now=Math.floor(Date.now()/1000)
- if(header.alg!=='RS256'||typeof header.kid!=='string'||claim.iss!==issuer||claim.aud!==audience||claim.sub!==subject||!Number.isInteger(claim.exp)||claim.exp<=now||!Number.isInteger(claim.iat)||claim.iat>now+30||claim.exp-claim.iat>7200||(claim.nbf!==undefined&&claim.nbf>now+30))deny()
+ if(header.alg!=='RS256'||typeof header.kid!=='string'||claim.iss!==issuer||claim.aud!==audience||!subjects.includes(claim.sub)||!Number.isInteger(claim.exp)||claim.exp<=now||!Number.isInteger(claim.iat)||claim.iat>now+30||claim.exp-claim.iat>(String(claim.sub).endsWith(':environment:development')?43200:7200)||(claim.nbf!==undefined&&claim.nbf>now+30))deny()
  const result=await fetcher('https://oidc.vercel.com/.well-known/jwks',{signal:AbortSignal.timeout(5000),redirect:'error'})
  if(!result.ok)deny()
  const text=await result.text();if(text.length>65536)deny();const keys=JSON.parse(text).keys as (JsonWebKey&{kid?:string;use?:string})[]
@@ -22,6 +27,22 @@ export async function verifyVercelOIDC(req:Request,env:VercelOIDCConfig,fetcher:
 export function mediaDTO(r:Row):MediaAssetDTO{return {id:r.id,eventId:r.event_id,assetKey:r.asset_key,state:r.state,...(r.mime_type?{mimeType:r.mime_type,width:r.width,height:r.height,sizeBytes:r.size_bytes,sha256:r.sha256,displaySizeBytes:r.display_size_bytes}:{}),revision:r.revision}}
 export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;data?:unknown}>{
  const {DB,path,method,authHash,now}=ctx,first=(sql:string,...args:any[])=>DB.prepare(sql).bind(...args).first<Row>()
+ const maintenance=path.match(/^\/admin\/events\/([-\w]+)\/assets\/(usage|cleanup-plan|cleanup-commit)$/)
+ if(maintenance){await ctx.admin();const eventId=maintenance[1],action=maintenance[2]
+  if(action==='usage'&&method==='GET'){const usage=await first(`SELECT ${chargeSQL} AS charged FROM media_assets WHERE ${chargedWhere}`);return {handled:true,data:{budgetBytes:MEDIA_BUDGET_BYTES,chargedBytes:usage!.charged,remainingBytes:Math.max(0,MEDIA_BUDGET_BYTES-usage!.charged),basis:'conservative-application-budget'}}}
+  if(method!=='POST')return {handled:false}
+  await ctx.verifyNode();const cutoff=Date.now()-15*60*1000
+  if(action==='cleanup-plan'){
+   const rows=await DB.prepare(`SELECT id,event_id FROM media_assets WHERE event_id=? AND state IN ('pending','processing','failed') AND expires_at<? AND ${unreferencedSQL} ORDER BY expires_at,id LIMIT 5`).bind(eventId,cutoff).all<Row>(),candidates=[]
+   for(const r of rows.results){const claimed=await DB.prepare(`UPDATE media_assets SET state='failed',updated_at=? WHERE id=? AND event_id=? AND state IN ('pending','processing','failed') AND expires_at<? AND ${unreferencedSQL} AND EXISTS(SELECT 1 FROM admin_sessions WHERE hash=? AND expires_at>?)`).bind(now,r.id,eventId,cutoff,authHash,Date.now()).run();if(claimed.meta.changes)candidates.push({id:r.id,eventId,prefix:`assets/${eventId}/${r.id}/`})}
+   return {handled:true,data:{candidates}}
+  }
+  if(action==='cleanup-commit'){const b=await ctx.body();if(typeof b.assetId!=='string'||!/^[-\w]{1,100}$/.test(b.assetId))ctx.fail('INVALID_REQUEST','资产ID无效')
+   const done=await DB.prepare(`UPDATE media_assets SET state='revoked',blob_path=NULL,updated_at=? WHERE id=? AND event_id=? AND state='failed' AND expires_at<? AND ${unreferencedSQL} AND EXISTS(SELECT 1 FROM admin_sessions WHERE hash=? AND expires_at>?)`).bind(now,b.assetId,eventId,cutoff,authHash,Date.now()).run()
+   if(!done.meta.changes)ctx.fail('VERSION_CONFLICT','资产状态或引用已变化，未释放预算',409)
+   return {handled:true,data:{cleaned:true}}
+  }
+ }
  const reserve=path.match(/^\/admin\/events\/([-\w]+)\/assets$/)
  if(reserve){await ctx.admin();const eventId=reserve[1],event=await first('SELECT * FROM events WHERE id=?',eventId);if(!event)ctx.fail('NOT_FOUND','请先保存活动',404)
   if(method==='GET'){const rows=await DB.prepare('SELECT * FROM media_assets WHERE event_id=? ORDER BY created_at DESC LIMIT 50').bind(eventId).all<Row>();return {handled:true,data:rows.results.map(mediaDTO)}}
@@ -34,13 +55,14 @@ export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;dat
   const prior=await first('SELECT * FROM media_assets WHERE event_id=? AND operation_id=?',eventId,operation)
   const answer=(r:Row)=>({asset:mediaDTO(r),pathname:r.blob_path,expiresAt:r.expires_at})
   if(prior){if(prior.operation_digest!==digest||prior.ticket_hash!==ticketHash)ctx.fail('VERSION_CONFLICT','上传操作已被修改',409);return {handled:true,data:answer(prior)}}
-  const total=await first('SELECT count(*) AS n FROM media_assets WHERE event_id=?',eventId);if(total!.n>=50)ctx.fail('LIMIT_EXCEEDED','此活动媒体历史已满，请整理旧资产',409)
+  const total=await first(`SELECT count(*) AS n FROM media_assets WHERE event_id=? AND ${chargedWhere}`,eventId);if(total!.n>=50)ctx.fail('LIMIT_EXCEEDED','此活动媒体历史已满，请整理旧资产',409)
   const count=await first("SELECT count(DISTINCT asset_key) AS n FROM media_assets WHERE event_id=? AND (state='ready' OR (state IN ('pending','processing') AND expires_at>?))",eventId,Date.now())
   const keys=new Set((JSON.parse(event!.event_json).event.extensions?.convention.maps||[]).map((m:Row)=>m.assetKey))
   // Five bound maps plus one replacement ticket are allowed; old unbound ready assets remain recoverable.
   if(keys.size>=ACTIVITY_LIMITS.maps&&!keys.has(b.assetKey)&&count!.n>=ACTIVITY_LIMITS.maps+1)ctx.fail('LIMIT_EXCEEDED','每活动最多5张地图，一次替换一张',409)
+  const charge=await first(`SELECT ${chargeSQL} AS charged FROM media_assets WHERE ${chargedWhere}`),reservation=b.sizeBytes+ACTIVITY_LIMITS.sourceBytes+3*1024*1024;if(charge!.charged+reservation>MEDIA_BUDGET_BYTES)ctx.fail('LIMIT_EXCEEDED','媒体应用预算不足，请清理失败和过期上传后重试',413)
   const revision=(await first('SELECT COALESCE(MAX(revision),0)+1 AS n FROM media_assets WHERE event_id=? AND asset_key=?',eventId,b.assetKey))!.n,id=crypto.randomUUID(),pathname=`assets/${eventId}/${id}/pending`,expires=Date.now()+15*60*1000
-  const inserted=await DB.prepare("INSERT INTO media_assets(id,event_id,asset_key,expected_event_revision,ticket_hash,expires_at,operation_id,operation_digest,blob_path,declared_size_bytes,declared_mime_type,revision,created_at,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM events WHERE id=? AND revision=?) AND EXISTS(SELECT 1 FROM admin_sessions WHERE hash=? AND expires_at>?) AND NOT EXISTS(SELECT 1 FROM media_assets WHERE event_id=? AND operation_id=?) AND (SELECT count(*) FROM media_assets WHERE event_id=? AND state IN ('pending','processing') AND expires_at>?)<6 ON CONFLICT(id) DO NOTHING").bind(id,eventId,b.assetKey,event!.revision,ticketHash,expires,operation,digest,pathname,b.sizeBytes,b.mimeType,revision,now,now,eventId,event!.revision,authHash,Date.now(),eventId,operation,eventId,Date.now()).run()
+  const inserted=await DB.prepare(`INSERT INTO media_assets(id,event_id,asset_key,expected_event_revision,ticket_hash,expires_at,operation_id,operation_digest,blob_path,declared_size_bytes,declared_mime_type,revision,created_at,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM events WHERE id=? AND revision=?) AND EXISTS(SELECT 1 FROM admin_sessions WHERE hash=? AND expires_at>?) AND NOT EXISTS(SELECT 1 FROM media_assets WHERE event_id=? AND operation_id=?) AND (SELECT count(*) FROM media_assets WHERE event_id=? AND state IN ('pending','processing') AND expires_at>?)<6 AND (SELECT ${chargeSQL} FROM media_assets WHERE ${chargedWhere})+?<=? ON CONFLICT(id) DO NOTHING`).bind(id,eventId,b.assetKey,event!.revision,ticketHash,expires,operation,digest,pathname,b.sizeBytes,b.mimeType,revision,now,now,eventId,event!.revision,authHash,Date.now(),eventId,operation,eventId,Date.now(),reservation,MEDIA_BUDGET_BYTES).run()
   if(!inserted.meta.changes)ctx.fail('VERSION_CONFLICT','上传资料或活动版本已变化',409)
   return {handled:true,data:answer((await first('SELECT * FROM media_assets WHERE id=?',id))!)}
  }

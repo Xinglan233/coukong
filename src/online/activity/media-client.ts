@@ -30,3 +30,6 @@ export async function uploadMap(eventId:string,adminToken:string,file:File,asset
  localStorage.setItem(key,JSON.stringify(pending))
  try{return await transferMap(pending,adminToken,file)}catch(e){if(e instanceof ApiFailure&&['INVALID_MEDIA','INVALID_CAPABILITY'].includes(e.code))localStorage.removeItem(key);throw e}
 }
+export interface MediaUsage {budgetBytes:number;chargedBytes:number;remainingBytes:number;basis:string}
+export const mediaUsage=(eventId:string,adminToken:string)=>api<MediaUsage>(`/admin/events/${encodeURIComponent(eventId)}/assets/usage`,adminToken)
+export async function cleanupMapUploads(eventId:string,adminToken:string,confirmDelete:boolean):Promise<{results:{assetId:string;cleaned:boolean;deletedObjects?:number}[];usage:MediaUsage}>{if(!confirmDelete)throw new ApiFailure('INVALID_REQUEST','清理失败和过期上传不可恢复，请先确认',400);const response=await fetch('/api/media/cleanup',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+adminToken},body:JSON.stringify({eventId,confirmDelete:true}),signal:AbortSignal.timeout(60000)}),payload=await response.json();if(!response.ok)throw new ApiFailure(payload.error?.code||'MEDIA_UNAVAILABLE',payload.error?.message||'清理失败，请重试',response.status);return payload.data}

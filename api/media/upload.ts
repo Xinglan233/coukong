@@ -1,9 +1,10 @@
 import type { IncomingMessage,ServerResponse } from 'node:http'
 import { issueSignedToken } from '@vercel/blob'
 import { handleUploadPresigned,type HandleUploadPresignedBody } from '@vercel/blob/client'
-import { config,scope,worker,assetPath,jsonBody,respond,MediaError,type Ticket } from '../../src/server/media-service'
+import { config,scope,worker,assetPath,jsonBody,respond,checkOrigin,MediaError,type Ticket } from '../../src/server/media-service'
 export default async function upload(req:IncomingMessage,res:ServerResponse){try{
  if(req.method!=='POST')throw new MediaError('仅支持POST',405)
+ checkOrigin(req)
  const body=await jsonBody(req) as HandleUploadPresignedBody
  const result=await handleUploadPresigned({body,request:req,getSignedToken:async(pathname,clientPayload,multipart)=>{
   if(multipart)throw new MediaError('不支持分片上传')

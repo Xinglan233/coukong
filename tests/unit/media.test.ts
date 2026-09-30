@@ -48,5 +48,43 @@ it('Vercel运行时证明验签且绑定issuer/audience/project/environment/expi
  const request=(token:string)=>new Request('https://api.invalid',{headers:{'X-Vercel-OIDC-Token':token}})
  await expect(verifyVercelOIDC(request(jwt(claims)),settings,fetcher as typeof fetch)).resolves.toBeUndefined()
  for(const change of [{sub:'owner:test:project:other:environment:production'},{sub:'owner:test:project:maps:environment:preview'},{iss:'https://evil.invalid'},{aud:'another'},{exp:now-1}])await expect(verifyVercelOIDC(request(jwt({...claims,...change})),settings,fetcher as typeof fetch)).rejects.toThrow()
+ const staging={...settings,VERCEL_OIDC_SUBJECT:'owner:test:project:maps:environment:preview,owner:test:project:maps:environment:development'}
+ for(const environment of ['preview','development'])await expect(verifyVercelOIDC(request(jwt({...claims,sub:'owner:test:project:maps:environment:'+environment,exp:now+(environment==='development'?43200:7200)})),staging,fetcher as typeof fetch)).resolves.toBeUndefined()
+ await expect(verifyVercelOIDC(request(jwt(claims)),staging,fetcher as typeof fetch)).rejects.toThrow()
+ await expect(verifyVercelOIDC(request(jwt({...claims,sub:'owner:test:project:other:environment:preview'})),staging,fetcher as typeof fetch)).rejects.toThrow()
  const valid=jwt(claims);await expect(verifyVercelOIDC(request(valid.slice(0,-10)+'aaaaaaaaaa'),settings,fetcher as typeof fetch)).rejects.toThrow()
+})
+
+import { cleanCandidate,jsonBody,checkOrigin } from '../../src/server/media-service'
+import { Readable } from 'node:stream'
+import type { IncomingMessage } from 'node:http'
+const nodeReq=(body:unknown,preset=false,headers:Record<string,string>={})=>{const request=Readable.from(preset?[]:[Buffer.isBuffer(body)?body:Buffer.from(typeof body==='string'?body:JSON.stringify(body))]) as unknown as IncomingMessage&{body?:unknown};request.headers={'content-type':'application/json',host:'app.vercel.app',...headers};if(preset)request.body=body;return request}
+it('Node流与Vercel预解析object/string/Buffer兼容，方法体边界独立',async()=>{
+ for(const preset of [false,true])for(const data of [{id:'real'},'{"id":"real"}',Buffer.from('{"id":"real"}')])expect(await jsonBody(nodeReq(data,preset))).toEqual({id:'real'})
+ await expect(jsonBody(nodeReq({huge:'x'.repeat(17000)},true))).rejects.toMatchObject({status:413})
+ await expect(jsonBody(nodeReq('x'.repeat(17000)))).rejects.toMatchObject({status:413})
+ await expect(jsonBody(nodeReq(Buffer.from([0xff])))).rejects.toMatchObject({status:400})
+ await expect(jsonBody(nodeReq('{}',false,{'content-type':'text/plain'}))).rejects.toMatchObject({status:415})
+ expect(()=>checkOrigin(nodeReq({},true,{origin:'https://app.vercel.app'}))).not.toThrow()
+ expect(()=>checkOrigin(nodeReq({},true,{origin:'https://evil.invalid'}))).toThrow()
+ expect(()=>checkOrigin(nodeReq({},true,{'sec-fetch-site':'cross-site'}))).toThrow()
+})
+it('清理实际删除隔离目录对象，未知路径/分页拒绝且删除失败不确认完成',async()=>{
+ const candidate={id:'test-id',eventId:'test-event',prefix:'assets/test-event/test-id/'},source=candidate.prefix+'source-'+'a'.repeat(64),pending=candidate.prefix+'pending',other='assets/other/id/source-'+'b'.repeat(64),objects=new Set([source,pending,other])
+ const storage={scan:async(prefix:string)=>({pathnames:[...objects].filter(p=>p.startsWith(prefix)),hasMore:false}),remove:async(path:string)=>{objects.delete(path)}}
+ expect(await cleanCandidate(candidate,storage)).toBe(2);expect(objects).toEqual(new Set([other]))
+ await expect(cleanCandidate(candidate,{...storage,scan:async()=>({pathnames:[other],hasMore:false})})).rejects.toThrow()
+ await expect(cleanCandidate(candidate,{...storage,scan:async()=>({pathnames:[],hasMore:true})})).rejects.toThrow()
+ objects.add(pending);await expect(cleanCandidate(candidate,{...storage,remove:async()=>{throw new Error('storage offline')}})).rejects.toThrow();expect(objects.has(pending)).toBe(true)
+})
+import uploadHandler from '../../api/media/upload'
+import finishHandler from '../../api/media/finish'
+import cleanupHandler from '../../api/media/cleanup'
+import type { ServerResponse } from 'node:http'
+it('三个Node写入口直接请求方法/跨来源/预解析超限均4xx且不访问存储',async()=>{
+ for(const handler of [uploadHandler,finishHandler,cleanupHandler])for(const scenario of [{method:'GET',headers:{},status:405},{method:'POST',headers:{origin:'https://evil.invalid'},status:403},{method:'POST',headers:{},status:413}]){
+  const request=nodeReq({huge:'x'.repeat(17000)},true,scenario.headers);request.method=scenario.method
+  let responseBody='';const response={statusCode:200,setHeader(){},end(value:string){responseBody=value}} as unknown as ServerResponse
+  await handler(request,response);expect(response.statusCode).toBe(scenario.status);expect(JSON.parse(responseBody).error).toBeDefined()
+ }
 })

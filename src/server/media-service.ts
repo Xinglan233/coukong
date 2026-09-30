@@ -2,7 +2,7 @@ import sharp from 'sharp'
 import { getVercelOidcToken } from '@vercel/oidc'
 import { createHash } from 'node:crypto'
 import type { IncomingMessage,ServerResponse } from 'node:http'
-import { get,put,del } from '@vercel/blob'
+import { get,put,del,list } from '@vercel/blob'
 import { ACTIVITY_LIMITS } from '../../shared/activity-contract'
 export class MediaError extends Error { constructor(message:string,public status=400,public code='INVALID_MEDIA'){super(message)} }
 export const DISPLAY_LIMIT=3*1024*1024
@@ -53,5 +53,41 @@ export async function finishImage(data:unknown){const s=scope(data),path=assetPa
  await del(ticket.pathname,{storeId:c.storeId,oidcToken:c.oidcToken}).catch(()=>undefined)
  return {...result as object,displayEncoding:clean.displayEncoding}
 }
-export async function jsonBody(req:IncomingMessage,max=16*1024){let length=0;const chunks:Buffer[]=[];if(Number(req.headers['content-length'])>max)throw new MediaError('请求过大',413);for await(const part of req){const bytes=Buffer.isBuffer(part)?part:Buffer.from(part);length+=bytes.length;if(length>max)throw new MediaError('请求过大',413);chunks.push(bytes)}try{return JSON.parse(Buffer.concat(chunks).toString('utf8'))}catch{throw new MediaError('JSON无效')}}
+export function checkOrigin(req:IncomingMessage){
+ const origin=req.headers.origin,host=req.headers.host
+ if(req.headers['sec-fetch-site']==='cross-site')throw new MediaError('来源未获允许',403,'FORBIDDEN')
+ if(origin){let url:URL;try{url=new URL(origin)}catch{throw new MediaError('来源无效',403,'FORBIDDEN')}
+  if(url.origin!==origin||!host||url.host!==host||!['https:','http:'].includes(url.protocol))throw new MediaError('来源未获允许',403,'FORBIDDEN')
+ }
+}
+export async function jsonBody(req:IncomingMessage,max=16*1024){
+ if(Number(req.headers['content-length'])>max)throw new MediaError('请求过大',413)
+ if(!/^application\/json(?:;|$)/i.test(String(req.headers['content-type']||'')))throw new MediaError('需要JSON请求',415)
+ const parse=(bytes:Buffer)=>{if(bytes.length>max)throw new MediaError('请求过大',413);try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes))}catch{throw new MediaError('JSON无效')}}
+ // /api Node handlers may receive Vercel's already parsed body, while local Node has a stream.
+ const preset=(req as IncomingMessage&{body?:unknown}).body
+ if(preset!==undefined){if(Buffer.isBuffer(preset))return parse(preset);if(typeof preset==='string')return parse(Buffer.from(preset));try{const encoded=JSON.stringify(preset);if(typeof encoded!=='string')throw new Error();return parse(Buffer.from(encoded))}catch(e){if(e instanceof MediaError)throw e;throw new MediaError('JSON无效')}}
+ let length=0;const chunks:Buffer[]=[];for await(const part of req){const bytes=Buffer.isBuffer(part)?part:Buffer.from(part);length+=bytes.length;if(length>max)throw new MediaError('请求过大',413);chunks.push(bytes)}return parse(Buffer.concat(chunks))
+}
+export interface CleanupCandidate {id:string;eventId:string;prefix:string}
+interface CleanupStorage {scan:(prefix:string)=>Promise<{pathnames:string[];hasMore:boolean}>;remove:(path:string)=>Promise<void>}
+export async function cleanCandidate(candidate:CleanupCandidate,storage:CleanupStorage){
+ const prefix=`assets/${candidate.eventId}/${candidate.id}/`
+ if(candidate.prefix!==prefix||!/^[-\w]{1,100}$/.test(candidate.eventId)||!/^[-\w]{1,100}$/.test(candidate.id))throw new MediaError('清理作用域无效')
+ const allowed=(pathname:string)=>pathname.startsWith(prefix)&&/^(pending|source-[a-f0-9]{64}|display-[a-f0-9]{64}\.webp)$/.test(pathname.slice(prefix.length))
+ const items=await storage.scan(prefix)
+ if(items.hasMore||items.pathnames.length>20||items.pathnames.some(p=>!allowed(p)))throw new MediaError('资产目录异常，未进行删除',409)
+ let deletedObjects=0
+ for(const pathname of items.pathnames){await storage.remove(pathname);deletedObjects++}
+ const remaining=await storage.scan(prefix)
+ if(remaining.hasMore||remaining.pathnames.length)throw new MediaError('清理尚未完成，请重试',409)
+ return deletedObjects
+}
+export async function cleanupMedia(eventId:string,adminToken:string){
+ if(!/^[-\w]{1,100}$/.test(eventId)||!/^([a-f0-9]{64})$/.test(adminToken))throw new MediaError('管理员清理凭据无效',401)
+ const path=`/admin/events/${eventId}/assets`,plan=await worker<{candidates:CleanupCandidate[]}>(path+'/cleanup-plan',adminToken,{}),c=await config(),storage:CleanupStorage={scan:async(prefix)=>{const result=await list({prefix,limit:20,storeId:c.storeId,oidcToken:c.oidcToken});return {pathnames:result.blobs.map(b=>b.pathname),hasMore:result.hasMore}},remove:pathname=>del(pathname,{storeId:c.storeId,oidcToken:c.oidcToken})}
+ const results:{assetId:string;cleaned:boolean;deletedObjects?:number}[]=[]
+ for(const candidate of plan.candidates){try{const deletedObjects=await cleanCandidate(candidate,storage);await worker(path+'/cleanup-commit',adminToken,{assetId:candidate.id});results.push({assetId:candidate.id,cleaned:true,deletedObjects})}catch{results.push({assetId:candidate.id,cleaned:false})}}
+ return {results,usage:await worker(path+'/usage',adminToken)}
+}
 export function respond(res:ServerResponse,error?:unknown,data?:unknown){res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Content-Type','application/json; charset=utf-8');if(error){const e=error instanceof MediaError?error:new MediaError('媒体服务暂不可用，请保留图片后重试',503,'SERVICE_UNAVAILABLE');res.statusCode=e.status;res.end(JSON.stringify({error:{code:e.code,message:e.message}}))}else res.end(JSON.stringify({data}))}
