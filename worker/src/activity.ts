@@ -51,6 +51,10 @@ export async function handleActivity(ctx:ActivityContext):Promise<{handled:boole
  if(tail===''&&method==='GET'){const event=await loadPublicActivity(DB,eventId);if(!event)ctx.fail('NOT_FOUND','活动未发布或不存在',404);return {handled:true,data:event}}
  if(tail==='/personal'&&method==='POST'){
   const b=await ctx.body(),hash=await ctx.hash(ctx.token(b.personalToken)),operation=ctx.op(b.operationId),digest=await ctx.hash(JSON.stringify(b));await ctx.limited('personal-create:'+hash,20)
+  const source=ctx.req.headers.get('CF-Connecting-IP')||'local';await ctx.limited('personal-create-source:'+source,120)
+  const day=Math.floor(Date.now()/86400000),dailyKey='personal-create-day:'+source
+  await DB.prepare('INSERT INTO rate_limits(key,window,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window=excluded.window THEN count+1 ELSE 1 END,window=excluded.window').bind(dailyKey,day).run()
+  const daily=await first('SELECT count FROM rate_limits WHERE key=?',dailyKey);if(daily!.count>1000)ctx.fail('LIMIT_EXCEEDED','此来源今日创建次数过多，请保留本机记录后稍后重试',429)
   const old=await first('SELECT * FROM personal_plans WHERE event_id=? AND token_hash=?',eventId,hash);if(old){if(old.create_op!==operation||old.create_digest!==digest)ctx.fail('VERSION_CONFLICT','个人创建操作内容变化',409);return {handled:true,data:personalDTO(old)}}
   const event=await loadPublicActivity(DB,eventId);if(!event||event.status!=='published')ctx.fail('EVENT_UNAVAILABLE','活动尚未发布、取消或已归档',409)
   if(typeof b.name!=='string'||!b.name.trim()||b.name.trim().length>50)ctx.fail('INVALID_REQUEST','名字须为1–50字')
