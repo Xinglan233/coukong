@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回同野·游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>媒体备份与隔离恢复</h1>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>媒体备份与隔离恢复</h1>
 <p>地图媒体需要与同一版本的数据库一起备份。数据库 SQL 保存活动、全部历史原包/引用、个人计划和小队数据；媒体备份保存每个已就绪历史资产的净化源图、显示图、大小及 SHA-256。撤回但仍保留私有文件的历史资产也纳入。临时上传、失败资产不是可恢复正式地图；历史版本若引用缺失文件，备份明确失败。</p>
 <p>本轮已验证本机分块、SQL/引用/哈希一致性、权限和 Node 启动；真实云端媒体导出及隔离恢复仍待演练，不能沿用旧 SQL 恢复证据。</p>
 <h2>先保存私密数据库</h2>
@@ -32,4 +32,4 @@ node --import tsx scripts/media-backup.ts \
 <p>4. 从 SQL 的 <code>event_versions.event_json</code> 按 revision 升序准备原历史包，将 event.id 改为隔离活动 ID；各地图/assetManifest改为对应新上传资产的真实结果。按现有 JSON 导入/活动保存流程逐版导入，空间变化仍遵守地图版本复核。版本号可从新活动重新计数，另保存原 revision→新 revision 和原 assetId→新 assetId 对照，不能称复制了原版本号或原用户凭据。</p>
 <p>5. 先按管理员身份打开新草稿地图，再发布这一命名的演练活动，用独立普通身份真正读取显示图、地点坐标及路线/分钟安排。另一次备份验证新历史引用与新文件一致。备份中的原 <code>.display.webp</code> 必须保留并校哈希；正常上传会重新生成显示图，这种演练验证业务恢复，不声称重建原 Blob 路径或显示图编码完全相同。</p>
 <p>6. 记录原备份哈希、SQL恢复结果、ID/版本对照、新图读取/权限与历史引用结果。若当前256 MiB应用预算不足以并存新旧媒体，停止；不自动删除旧 ready 图、不启用付费、不新建 store。清理只按 <a href="/help/operations/">失败上传流程</a> 处理允许的孤立临时资产。</p>
-<p>上述普通上传/导入恢复使用同一 staging store 的全新活动及资产路径。全库 SQL 可用于受控隔离数据库的完整恢复；个人记录凭据、旧小队等不能靠修改公开活动 JSON 自动迁给新活动。两种验证的范围分别记录，不用重建一个地图活动替代全库私人数据恢复证明。</p></main></body></html>
+<p>上述普通上传/导入恢复使用同一 staging store 的全新活动及资产路径。全库 SQL 可用于受控隔离数据库的完整恢复；个人记录凭据、旧小队等不能靠修改公开活动 JSON 自动迁给新活动。两种验证的范围分别记录，不用重建一个地图活动替代全库私人数据恢复证明。</p></main></div></body></html>

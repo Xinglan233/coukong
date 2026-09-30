@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回同野·游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>实施计划</h1>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>实施计划</h1>
 <h2>已验证基线（2026-09-30）</h2>
 <p>生产前端文档提交 b29c14a，运行时 API/业务代码 9090be47。已执行 30 项单元、9 项真实 D1 集成、11 项浏览器测试，以及三个独立身份生产隔离演练。原 TabBar、Sheet、460px app-shell、日期条与 TimeAxis 已复用。真机/微信/中国大陆现场网络仍待验证。</p>
 <h2>本轮增量依据</h2>
@@ -27,9 +27,14 @@
 <h2>视觉专项（用户消息 Sentinel_d0908478d7bc8191a80c1c7658e98e73）</h2>
 <p>完整阅读用户专项要求，与业务增量分别记录依据：视觉本身不改业务合同。先实际查看六类页面，原 tokens 为唯一来源；系统字体、24–28px 标题、15–16px 正文/输入、4/8/12/16/24/32 间距、统一按钮/行列表/Sheet。无营销首屏、统计墙、卡片套卡片、装饰英文、渐变/玻璃/大阴影。活动适量卡片，地点/场次/成员/设置用行。主题在我的；地图不反色。仅用必要短反馈，44px 点击目标，焦点/键盘/减少动态可达。实测浅深对比度、375/390/430/桌面，长标题、多标签、无图、空收藏、加载/离线/失败、冲突/多人状态，保留同尺寸真实前后截图。最终将已采用规则写 docs/DESIGN.md，不另建庞大设计系统。</p>
 <h2>真实外部资料与待验证</h2>
-<p>项目与 Hobby 团队 Storage 实查无已连接/现有 Blob Store，未创建资源或凭据、未开 R2。REDLAND 998 场仍为第三方候选，缺 A02/C04；缺获授权完整地图/可信路网。A02 公告示意图只作来源参考，不当全园导航。先用明确虚构小地图/路网测试；真实图授权、入口/重点位置、确认通道待资料。P1 定位/自托管不阻塞 P0，不扩库存或预约业务。</p>
+<p>已按用户批准创建并连接生产与预览/开发各自的私有 Blob Store，仅后端环境使用，不开启 R2 或超额付费。REDLAND 998 场仍为第三方候选，缺 A02/C04；用户已提供真实全场地图并确认12:30入场。尚无核对完成的可发布地点坐标和可通行路网，闭馆时间未知。先用明确虚构小地图/路网测试，不从图中箭头猜测通道。P1 定位/自托管不阻塞 P0，不扩库存或预约业务。</p>
 <h2>当前实际检查点（2026-09-30）</h2>
 <p>- 本地类型、lint、单元 70 项、真实 Worker/D1 集成 22 项及构建通过；后续个人浮层修复另有 3 项真实浏览器回归通过，不以此代替全部发布验收。</p>
 <p>- 管理员表单、地图编辑与手势已在隔离数据实走；375/390/430 与桌面浅深基准截图实际查看，列表标题与日期已按共用样式分行。</p>
 <p>- 预发布 D1 迁移 0005 已应用，迁移前 SQL 备份已保留私密目录；staging Worker 版本 044bf620-a9a2-42b6-bd10-8b3ce120f4d4（源码 52af171）ready 实际回读通过。</p>
-<p>- 真实私有 Blob 上传、预览界面端到端、数据加媒体隔离恢复及新功能生产发布尚待完成；生产前端/API 仍使用已验证旧版。</p></main></body></html>
+<p>- 真实私有 Blob 上传、预览界面端到端、数据加媒体隔离恢复及新功能生产发布尚待完成；生产前端/API 仍使用已验证旧版。</p>
+<h2>原作参考与全站视觉复核（当前增量）</h2>
+<p>已逐张查看用户提供的我的、凑空空态、日程空态原图，完整读取 design-taste-frontend 和 review-ui-design 及其视觉、交互、系统一致性检查。原图优先于技能的通用风格建议：灰白青绿、左对齐短标题、白色分组行、细分隔、原底部导航和Sheet；不恢复旧名称、每日5场限制或旧分享业务。</p>
+<p>本次实际偏差与修正：我的/首页入口原先铺在灰底上，恢复原白色分组；每个Tab重复长活动标题占据首屏，计划/同行/我的改为短页标题并保留活动上下文和可展开日期；同行空态的说明与动作分散，聚合为一句事实和一个主要动作；管理员重复标题改为单标题和同行退出入口；帮助原先单独定义配色，改为由 src/styles.css 生成，主题沿用本机偏好，正文宽度独立适配阅读。</p>
+<p>七类页面按390×900输出真实构建截图并检查尺寸与全页溢出；截图测试尚需运行和逐张查看，不以类型检查替代视觉通过。375/430、桌面、深色及失败/离线/多人状态仍按发布矩阵逐项验收。生产继续保持旧稳定版，新版视觉未确认前不合并发布。</p>
+<p>0006预算迁移已在隔离云D1实际应用并回读确认；在线选图内容身份修复、兼容SQL与其回归尚待最新可达提交的定点复核。真实云媒体上传、数据库加媒体隔离恢复仍未验收，不把本地固定图片测试当云上传通过。</p></main></div></body></html>

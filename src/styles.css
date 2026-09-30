@@ -136,6 +136,7 @@ textarea {
 }
 
 .btn {
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -584,3 +585,7 @@ textarea {
     animation: none !important;
   }
 }
+
+/* Shared heading keeps page actions aligned without a second title. */
+.page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.page-heading .page-title{margin:0}

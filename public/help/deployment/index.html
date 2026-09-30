@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回同野·游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>免费部署指南</h1>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>免费部署指南</h1>
 <p>使用现有 Vercel 前端与 Cloudflare Workers Free / D1 Free。不要创建付费计划、购买域名或自动升级。Vercel Hobby 只限个人非商业使用；部署者先核验账户计划和实际用途。浏览器已登录不等于 CLI 已获授权，OAuth 持久授权由账号持有人完成。</p>
 <h2>本地</h2>
 <pre><code>
@@ -42,4 +42,4 @@ npx wrangler deploy --config worker/wrangler.staging.jsonc
 <tr><td>VERCEL_OIDC_ISSUER</td><td>https://oidc.vercel.com/xinglan233s-projects</td></tr>
 <tr><td>VERCEL_OIDC_AUDIENCE</td><td>https://vercel.com/xinglan233s-projects</td></tr>
 </table></div>
-<p>生产 VERCEL_OIDC_SUBJECT 仅 <code>owner:xinglan233s-projects:project:tongye-meet:environment:production</code>。预发布只允许 <code>owner:xinglan233s-projects:project:tongye-meet:environment:preview</code> 和 <code>owner:xinglan233s-projects:project:tongye-meet:environment:development</code> 两个精确值，以逗号配置。已写入环境配置不等于四媒体入口真实云端验收通过，仍需按前述门禁验证。</p></main></body></html>
+<p>生产 VERCEL_OIDC_SUBJECT 仅 <code>owner:xinglan233s-projects:project:tongye-meet:environment:production</code>。预发布只允许 <code>owner:xinglan233s-projects:project:tongye-meet:environment:preview</code> 和 <code>owner:xinglan233s-projects:project:tongye-meet:environment:development</code> 两个精确值，以逗号配置。已写入环境配置不等于四媒体入口真实云端验收通过，仍需按前述门禁验证。</p></main></div></body></html>

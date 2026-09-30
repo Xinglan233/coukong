@@ -57,7 +57,7 @@ for(const def of ['event','activity','session','day','interval','meta'])for(cons
 const red=parseEventPackage(read('examples/redland-2026-template.json'))
 assert.match(red.meta?.sourceNote||'',/待确认/);assert.equal(red.event.activities.length,0)
 for(const file of readdirSync(resolve(root,'public/help'),{recursive:true}).filter(x=>String(x).endsWith('.html'))){
- const html=read('public/help/'+file);assert(!/<script\b|\son\w+=/i.test(html),'帮助不能含可执行内联内容')
+ const html=read('public/help/'+file);assert(!/<script\b|\son\w+=/i.test(html.replaceAll('<script src="/help/theme.js"></script>','')),'帮助不能含可执行内联内容')
  for(const m of html.matchAll(/href="([^"#]+)"/g)){
   const url=m[1];if(url==='/'||/^https:/.test(url))continue
   if(url.startsWith('/'))assert(existsSync(resolve(root,'public','.'+url))||existsSync(resolve(root,'public','.'+url,'index.html')),`${file}: 帮助目标缺失 ${url}`)

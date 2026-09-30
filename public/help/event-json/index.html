@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回同野·游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>活动 JSON 格式</h1>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>活动 JSON 格式</h1>
 <p>下表说明兼容v1（UTF-8，最大512KiB）；v2见文末。不接受注释、尾逗号、重复对象键、未知字段或远程 Schema。活动包只含活动资料，不能授予权限，也不能混入成员回复。结构与业务由前后端共享校验器再次验证。</p>
 <h2>root</h2>
 <div class="table-scroll"><table>
@@ -140,4 +140,4 @@
 <h2>v2与地图替换（本轮分支，云端待验）</h2>
 <p>v2采用 <a href="/examples/event-package.v2.schema.json">v2 Schema</a>，包上限1MiB。通用示例为 <a href="/examples/event-generic.v2.json">event-generic.v2.json</a>，带地图和通道的 <a href="/examples/convention-demo.v2.json">convention-demo.v2.json</a> 及其PNG均为自绘虚构测试资料，不能当作REDLAND官方资料。v1仍按原格式验证，不接受v2字段混入v1。</p>
 <p>地图内容身份包含assetKey、SHA-256、字节数、MIME、地图与资源宽高。任何一项改变，地图 <code>revision</code> 必须递增，不能以相同文件名掩盖替换。已有点位或通道时，替换首轮必须设置 <code>needsReview:true</code>，保留旧引用并重新校对；缺少版本递增或复核标记分别拒绝为MAP_REVISION_REQUIRED或MAP_REVIEW_REQUIRED。</p>
-<p>先保存新底图，再在校对流程确认点位与通道，完成复核后才能启用。等比例重采样可以保留归一化坐标，但仍必须经过明确保存与重新核对；不得因为比例不变就绕过复核。只有已确认、版本相符的通道用于路线，资料不全时保留站点清单，不把直线当可走路线。</p></main></body></html>
+<p>先保存新底图，再在校对流程确认点位与通道，完成复核后才能启用。等比例重采样可以保留归一化坐标，但仍必须经过明确保存与重新核对；不得因为比例不变就绕过复核。只有已确认、版本相符的通道用于路线，资料不全时保留站点清单，不把直线当可走路线。</p></main></div></body></html>
