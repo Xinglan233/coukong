@@ -49,3 +49,12 @@ npx wrangler deploy --config worker/wrangler.staging.jsonc
 Vercel 后端分别配置 ACTIVITY_API_URL（对应 Worker 根地址，不含/api/v1）和 BLOB_STORE_ID（对应独立私有 store），不带 VITE_ 前缀，不暴露 OIDC token。Production 只连 production；Preview/Development 只连 staging。Node 使用运行时 OIDC，Worker 配置 VERCEL_OIDC_ISSUER、VERCEL_OIDC_AUDIENCE、VERCEL_OIDC_SUBJECT，并验证 RS256/JWKS、有效期与精确 iss/aud/sub。实际值从当前组织/项目官方配置核对，不凭猜测填写或记录 JWT。生产只允许当前项目 production 的单一 subject，staging 仅允许该项目明确 preview 与 development 两个 subject，不使用环境通配符。
 
 每环境256MiB应用预算保守计入未完成预留和残留临时图，独立于账户1GB平台额度。首次部署必须测试媒体授权、非法/伪MIME/动画拒绝、另一浏览器公开回读、草稿拒读、OIDC跨环境拒绝、失效清理和数据＋图片隔离恢复；当前仍待云端实际验证。无需开通R2或付费资源。
+
+已核对当前项目的公开 OIDC 配置（这些是匹配规则，不是JWT或密钥）：
+
+| 字段 | 生产与预发布共用值 |
+| --- | --- |
+| VERCEL_OIDC_ISSUER | https://oidc.vercel.com/xinglan233s-projects |
+| VERCEL_OIDC_AUDIENCE | https://vercel.com/xinglan233s-projects |
+
+生产 VERCEL_OIDC_SUBJECT 仅 `owner:xinglan233s-projects:project:tongye-meet:environment:production`。预发布只允许 `owner:xinglan233s-projects:project:tongye-meet:environment:preview` 和 `owner:xinglan233s-projects:project:tongye-meet:environment:development` 两个精确值，以逗号配置。已写入环境配置不等于四媒体入口真实云端验收通过，仍需按前述门禁验证。
