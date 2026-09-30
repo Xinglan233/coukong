@@ -13,7 +13,7 @@ export function validateIndex(index:BackupIndex,eventId:string){if(index.format!
 export function verifyDatabase(sql:Buffer,index:BackupIndex){
  if(sql.length>128*max)throw new Error('数据库备份超过128 MiB本机校验限制')
  const db=new DatabaseSync(':memory:')
- try{db.exec(sql.toString('utf8'));const event=db.prepare('SELECT revision,public_revision FROM events WHERE id=?').get(index.eventId);if(!event||event.revision!==index.revision||event.public_revision!==index.publicRevision)throw new Error('数据库和媒体索引版本不一致')
+ try{db.exec('BEGIN');db.exec(sql.toString('utf8'));db.exec('COMMIT');if(db.prepare('PRAGMA foreign_key_check').all().length)throw new Error('数据库外键不完整');const event=db.prepare('SELECT revision,public_revision FROM events WHERE id=?').get(index.eventId);if(!event||event.revision!==index.revision||event.public_revision!==index.publicRevision)throw new Error('数据库和媒体索引版本不一致')
   const refs=db.prepare("SELECT v.revision,json_extract(m.value,'$.assetKey') AS assetKey,json_extract(a.value,'$.sha256') AS sha256 FROM event_versions v JOIN json_each(v.event_json,'$.event.extensions.convention.maps') m LEFT JOIN json_each(v.event_json,'$.assetManifest') a ON json_extract(a.value,'$.assetKey')=json_extract(m.value,'$.assetKey') WHERE v.event_id=? ORDER BY v.revision").all(index.eventId)
   if(JSON.stringify(refs)!==JSON.stringify(index.refs))throw new Error('数据库历史引用和媒体索引不一致')
   const rows=db.prepare("SELECT id,asset_key,source_sha256,sha256,source_size_bytes,size_bytes,source_path,display_path,display_size_bytes FROM media_assets WHERE event_id=? AND state IN ('ready','revoked') AND source_path IS NOT NULL AND display_path IS NOT NULL ORDER BY revision,id").all(index.eventId)

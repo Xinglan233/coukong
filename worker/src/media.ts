@@ -17,7 +17,7 @@ export async function verifyVercelOIDC(req:Request,env:VercelOIDCConfig,fetcher:
  const pieces=jwt!.split('.');if(pieces.length!==3)deny()
  const header=JSON.parse(new TextDecoder().decode(decoded(pieces[0]))),claim=JSON.parse(new TextDecoder().decode(decoded(pieces[1]))),now=Math.floor(Date.now()/1000)
  if(header.alg!=='RS256'||typeof header.kid!=='string'||claim.iss!==issuer||claim.aud!==audience||!subjects.includes(claim.sub)||!Number.isInteger(claim.exp)||claim.exp<=now||!Number.isInteger(claim.iat)||claim.iat>now+30||claim.exp-claim.iat>(String(claim.sub).endsWith(':environment:development')?43200:7200)||(claim.nbf!==undefined&&claim.nbf>now+30))deny()
- const result=await fetcher('https://oidc.vercel.com/.well-known/jwks',{signal:AbortSignal.timeout(5000),redirect:'error'})
+ const result=await fetcher.call(globalThis,issuer+'/.well-known/jwks',{signal:AbortSignal.timeout(5000),redirect:'manual'})
  if(!result.ok)deny()
  const text=await result.text();if(text.length>65536)deny();const keys=JSON.parse(text).keys as (JsonWebKey&{kid?:string;use?:string})[]
  const jwk=keys.find(k=>k.kid===header.kid&&k.kty==='RSA'&&(k.use===undefined||k.use==='sig')&&(k.alg===undefined||k.alg==='RS256'));if(!jwk)deny()

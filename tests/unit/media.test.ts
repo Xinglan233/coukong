@@ -44,7 +44,7 @@ it('Vercel运行时证明验签且绑定issuer/audience/project/environment/expi
  const settings={VERCEL_OIDC_ISSUER:'https://oidc.vercel.com/test',VERCEL_OIDC_AUDIENCE:'https://vercel.com/test',VERCEL_OIDC_SUBJECT:'owner:test:project:maps:environment:production'}
  const claims={iss:settings.VERCEL_OIDC_ISSUER,aud:settings.VERCEL_OIDC_AUDIENCE,sub:settings.VERCEL_OIDC_SUBJECT,iat:now,exp:now+7200}
  const encode=(value:unknown)=>Buffer.from(JSON.stringify(value)).toString('base64url'),jwt=(claim:unknown)=>{const input=encode({alg:'RS256',kid:'test-key'})+'.'+encode(claim);return input+'.'+sign('RSA-SHA256',Buffer.from(input),privateKey).toString('base64url')}
- const fetcher=async()=>new Response(JSON.stringify({keys:[{...publicKey.export({format:'jwk'}),kid:'test-key',alg:'RS256',use:'sig'}]}))
+ const fetcher=async function(this:unknown,input:RequestInfo|URL,options?:RequestInit){expect(options?.redirect).toBe('manual');expect(this).toBe(globalThis);expect(String(input)).toBe(settings.VERCEL_OIDC_ISSUER+'/.well-known/jwks');return new Response(JSON.stringify({keys:[{...publicKey.export({format:'jwk'}),kid:'test-key',alg:'RS256',use:'sig'}]}))}
  const request=(token:string)=>new Request('https://api.invalid',{headers:{'X-Vercel-OIDC-Token':token}})
  await expect(verifyVercelOIDC(request(jwt(claims)),settings,fetcher as typeof fetch)).resolves.toBeUndefined()
  for(const change of [{sub:'owner:test:project:other:environment:production'},{sub:'owner:test:project:maps:environment:preview'},{iss:'https://evil.invalid'},{aud:'another'},{exp:now-1}])await expect(verifyVercelOIDC(request(jwt({...claims,...change})),settings,fetcher as typeof fetch)).rejects.toThrow()
@@ -52,6 +52,7 @@ it('Vercel运行时证明验签且绑定issuer/audience/project/environment/expi
  for(const environment of ['preview','development'])await expect(verifyVercelOIDC(request(jwt({...claims,sub:'owner:test:project:maps:environment:'+environment,exp:now+(environment==='development'?43200:7200)})),staging,fetcher as typeof fetch)).resolves.toBeUndefined()
  await expect(verifyVercelOIDC(request(jwt(claims)),staging,fetcher as typeof fetch)).rejects.toThrow()
  await expect(verifyVercelOIDC(request(jwt({...claims,sub:'owner:test:project:other:environment:preview'})),staging,fetcher as typeof fetch)).rejects.toThrow()
+ await expect(verifyVercelOIDC(request(jwt(claims)),settings,(async()=>new Response(null,{status:302,headers:{Location:'https://evil.invalid'}})) as typeof fetch)).rejects.toThrow()
  const valid=jwt(claims);await expect(verifyVercelOIDC(request(valid.slice(0,-10)+'aaaaaaaaaa'),settings,fetcher as typeof fetch)).rejects.toThrow()
 })
 

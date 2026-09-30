@@ -26,6 +26,15 @@ npx wrangler d1 export tongye-meet-staging --remote --output "$TONGYE_BACKUP_DIR
 
 恢复最短步骤：创建全新隔离 D1 → 复制 staging 配置为临时恢复配置并填写新 database_id/name → `wrangler d1 execute <新隔离库名> --remote --file <受控SQL文件> --config <恢复配置>` → 绑定独立 Worker → 检查 ready、三身份回读及活动导出 deepEqual。禁止把恢复 SQL 直接导入当前生产库。保留结束码与脱敏证据；只生成文件不算恢复通过。演练资源后续清理由持有人确认，免费 Time Travel 仅补充。
 
+使用 Python 3 准备受控的 Wrangler SQL 导出，保留原文件：
+
+```sh
+python3 scripts/prepare-d1-restore.py "$PRIVATE_EXPORT_SQL" "$PRIVATE_RESTORE_SQL"
+```
+
+此命令先建全部表、再导入数据、最后恢复索引与触发器，避免前向外键引用和重新触发审计/预算计数。仅用于可信数据库导出；输出必须是新路径，文件权限600。将准备后的 SQL 用于隔离 D1 导入与媒体备份的 `--db-file`。导入后仍需检查外键、预算计数和业务回读，不能关闭云端外键校验。[D1 外键与隐式事务规则](https://developers.cloudflare.com/d1/sql-api/foreign-keys/)。
+
+
 ## 故障
 
 线上配额/Worker/超时或 HTML 错页时停止密集重试，显示暂不可用、最后获取时间，保留本机草稿。联网后主动重试，版本变化先复核。前端 origin 变更会使原 IndexedDB 与凭据不自动跟随，新入口启用前提示保存恢复链接/导出。
