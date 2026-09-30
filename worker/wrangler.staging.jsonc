@@ -6,7 +6,7 @@
   "workers_dev": true,
   "vars": {
     "CREATION_MODE": "invite",
-    "ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173",
+    "ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173,https://tongye-meet-git-feat-general-coordination-xinglan233s-projects.vercel.app",
     "BUILD_VERSION": "0.2.0"
   },
   "d1_databases": [

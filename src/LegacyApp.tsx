@@ -50,10 +50,10 @@ export default function App() {
   }, [themeMode])
 
   useEffect(() => {
-    function handleHash() {
+    async function handleHash() {
       const encoded = readHashPayload()
       if (!encoded) return
-      const payload = decodePayload(encoded)
+      const payload = await decodePayload(encoded)
       clearHash()
       if (payload) {
         setTimeout(() => openModal({ type: 'importPreview', payload }), 400)

@@ -1,3 +1,2 @@
-import { decodePayload } from '../lib/codec'
-const validDays=['10-02','10-03','10-04','10-05','10-06']
-self.onmessage=(e:MessageEvent<string>)=>{try{if(typeof e.data!=='string'||e.data.length>65536)throw new Error();const value=decodePayload(e.data);if(!value||JSON.stringify(value).length>524288||value.v!==1||value.name.length>100||value.bookings.length>500||value.days.some(d=>!validDays.includes(d)))throw new Error();for(const b of value.bookings){if(!b||typeof b.id!=='string'||!validDays.includes(b.day)||typeof b.title!=='string'||b.title.length>100||typeof b.start!=='string'||typeof b.end!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(b.start)||!/^(([01]\d|2[0-3]):[0-5]\d|24:00)$/.test(b.end)||b.start>=b.end||b.note&&typeof b.note!=='string')throw new Error()}self.postMessage(value)}catch{self.postMessage(null)}}
+import {decodeLegacyBounded} from '../lib/legacy-bounded'
+self.onmessage=(e:MessageEvent<string>)=>{try{self.postMessage(decodeLegacyBounded(e.data))}catch{self.postMessage(null)}}
