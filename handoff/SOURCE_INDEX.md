@@ -35,7 +35,7 @@
 
 | 相对路径 | 字节数 | SHA-256 |
 | --- | ---: | --- |
-| `FIGMA_REFERENCE.md` | 3308 | `715d36824f5af2a6c87546370fa5d36ed630802e1ad21cb103a712a72f895e11` |
+| `FIGMA_REFERENCE.md` | 3767 | `4bb468960169b24a5c285994cb1b5df03ecec5401790cc1de3cc6aba836943eb` |
 | `README.md` | 1118 | `d21a9c0fe9a26e4694aabca2c5f846b79a539831e136132639f609df0cc2a31e` |
 | `references/figma-make/package.json` | 584 | `d0e8d76cc6ff9884bd88bdbbd530e164e0c0bcf47a4948075be8a4786a4f97fd` |
 | `references/figma-make/provenance.json` | 1176 | `c3b83f9cd166cd5cf558fcbd4eb5a493cba5b2e0533eda628e1905f1b8061721` |

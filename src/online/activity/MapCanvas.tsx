@@ -47,8 +47,8 @@ export function MapCanvas({convention,mapId,assetUrl,selectedPoiId,favoriteIds=[
   <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}><span style={{flex:1,color:'var(--ink-2)',fontSize:13}}>{map.title}</span><div role="group" aria-label="地图缩放" style={{display:'flex',gap:4}}><button className="btn" aria-label="缩小地图" onClick={()=>zoomBy(1/1.5)} disabled={transform.zoom<=1}><Minus size={16}/></button><button className="btn" aria-label="放大地图" onClick={()=>zoomBy(1.5)} disabled={transform.zoom>=8}><Plus size={16}/></button><button className="btn" aria-label="回到全图" onClick={()=>setTransform(initial)}><Maximize2 size={16}/></button></div></div>
   {failed&&<p role="alert">地图图片暂不可用，请重试或使用地点列表。</p>}
   {map.needsReview&&<p role="status">地图已更新，点位与通道需要重新校对。</p>}
-  <svg ref={svg} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" aria-label="活动地图，可平移与缩放" role="group" tabIndex={0}
-   style={{display:'block',width:'100%',height:'min(60vh, 440px)',minHeight:260,background:'var(--surface-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',touchAction:'none',overflow:'hidden'}}
+  <svg ref={svg} className="map-canvas-viewport" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" aria-label="活动地图，可平移与缩放" role="group" tabIndex={0}
+   style={{display:'block',width:'100%',background:'var(--surface-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',touchAction:'none',overflow:'hidden'}}
    onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={e=>{pointers.current.delete(e.pointerId);gesture.current=null}} 
    onKeyDown={e=>{if(e.target!==e.currentTarget)return;const step=50/scale;if(e.key==='+'||e.key==='=')zoomBy(1.5);else if(e.key==='-')zoomBy(1/1.5);else if(e.key==='Home')setTransform(initial);else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();setTransform(t=>({...t,x:t.x+(e.key==='ArrowRight'?-step:e.key==='ArrowLeft'?step:0),y:t.y+(e.key==='ArrowDown'?-step:e.key==='ArrowUp'?step:0)}))}}}>
    <g transform={`translate(${transform.x} ${transform.y}) scale(${transform.zoom})`}>
