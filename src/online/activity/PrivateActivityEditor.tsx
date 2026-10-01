@@ -44,7 +44,7 @@ export function PrivateActivityEditor({activity,ownerToken,open,onClose,onSaved}
   }).catch(e=>{if(!cancelled){setError((e as Error).message);setLoading(false)}})
   return ()=>{cancelled=true}
  },[open,activity.id])
- function persist(value:PrivateEditDraft){const task=queue.current.catch(()=>{}).then(()=>writeLocal('activity-owner-edit:'+value.eventId,value));queue.current=task;return task}
+ function persist(value:PrivateEditDraft){const task=writeLocal('activity-owner-edit:'+value.eventId,value,queue.current.catch(()=>{}));queue.current=task;return task}
  function change(next:PrivateEditDraft){current.current=next;setDraft(next);setPreview(null);setSaved('');setLatest(null);persist(next).catch(e=>{if(mounted.current&&active.current===next.eventId)setError('本机保存失败：'+(e as Error).message)})}
  function edit(pack:EventPackage){if(!current.current)return;change({...current.current,pack,mode:'form',pending:undefined})}
  function dates(start:string,end:string){if(!draft)return;try{edit(privateDateRange(draft.pack,start,end));setError('')}catch(e){edit({...draft.pack,event:{...draft.pack.event,startDate:start,endDate:end}});setError((e as Error).message)}}

@@ -15,7 +15,7 @@ export function activityUpdatedAt(a:ActivityDTO):string {
  return `${p('year')}-${p('month')}-${p('day')} ${p('hour')}:${p('minute')}`
 }
 export function activityLocalKey(key:string,eventId:string):boolean {
- return ['activity-owner:','activity-cap:','activity-personal:','activity-snapshot:','activity-personal-create:','activity-create-group:','activity-preferences:','activity-recent:'].some(prefix=>key===prefix+eventId)||['activity-submit:','activity-delete:','personal-busy-editor:'].some(prefix=>key.startsWith(prefix+eventId+':'))||key.startsWith(`activity-prepared:v1:${encodeURIComponent(eventId)}:`)
+ return ['activity-owner:','activity-owner-edit:','activity-cap:','activity-personal:','activity-snapshot:','activity-personal-create:','activity-create-group:','activity-preferences:','activity-recent:'].some(prefix=>key===prefix+eventId)||['activity-submit:','activity-delete:','personal-busy-editor:'].some(prefix=>key.startsWith(prefix+eventId+':'))||key.startsWith(`activity-prepared:v1:${encodeURIComponent(eventId)}:`)
 }
 export function personalBackup(activity:ActivityDTO,plan:PersonalPlan,personId?:string,versions?:{scheduleRevision:number;spatialRevision:number}){return {kind:'tongye.personal-plan',schemaVersion:1,eventId:activity.id,...(personId?{personId}:{}),scheduleRevision:versions?.scheduleRevision??activity.scheduleRevision,spatialRevision:versions?.spatialRevision??activity.spatialRevision,plan}}
 export function readPersonalBackup(raw:string,activity:ActivityDTO,personId:string|undefined,current?:PersonalPlan):PersonalPlan {
