@@ -96,6 +96,7 @@
 .figma-shell .day-strip{margin-bottom:16px}
 .figma-shell .day-strip .chip{border:0;background:var(--surface);border-radius:12px;font-weight:600;color:var(--ink-2);flex:1}
 .figma-shell .day-strip .on{background:var(--ink);color:var(--bg)}
+[data-theme='dark'] .figma-shell .day-strip .on{background:var(--accent-soft);color:var(--accent-ink);box-shadow:inset 0 0 0 1px var(--accent-ink)}
 @media(min-width:900px){.figma-shell.activity-personal{max-width:960px}.figma-shell.activity-personal>.tabbar{max-width:402px}.figma-shell .activity-browse{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}.figma-shell .activity-place-pane{margin-top:0}}
 @media(prefers-reduced-motion:reduce){.figma-shell *{transition:none!important;animation:none!important}}
 

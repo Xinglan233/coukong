@@ -34,6 +34,19 @@ test('普通入口不展示管理或帮助，底栏与我的文字遵守Figma对
      return (Math.max(text,background)+.05)/(Math.min(text,background)+.05)
     })
     expect.soft(contrast,`${width}/${scheme}手动添加文字可读`).toBeGreaterThanOrEqual(4.5)
+    if(scheme==='dark'){
+     const selected=await page.locator('.day-strip .on').evaluate(button=>{
+      const luminance=(value:string)=>{
+       const rgb=value.match(/[\d.]+/g)!.slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+       return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722
+      }
+      const style=getComputedStyle(button),text=luminance(style.color),background=luminance(style.backgroundColor)
+      return {background,contrast:(Math.max(text,background)+.05)/(Math.min(text,background)+.05),pressed:button.getAttribute('aria-pressed')}
+     })
+     expect.soft(selected.background,`${width}深色日期不形成整条亮白底`).toBeLessThan(.1)
+     expect.soft(selected.contrast,`${width}选中日期文字可读`).toBeGreaterThanOrEqual(4.5)
+     expect.soft(selected.pressed).toBe('true')
+    }
     await page.screenshot({animations:'disabled',path:`${evidence}/plan-${width}-${scheme}.png`})
    }
    const geometry=await page.locator('.tabbar').evaluate(nav=>{
