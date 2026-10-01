@@ -1,8 +1,13 @@
 {
-  "generatedAtUTC": "2026-10-01T12:09:34.603902+00:00",
+  "generatedAtUTC": "2026-10-01T13:49:16.261486+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
   "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
+    {
+      "path": "CURRENT_STATE.md",
+      "bytes": 5571,
+      "sha256": "c0c76df7a23cc47204e44872f1e8622a1a0ad97b6f21265865ff561fd3d02ff4"
+    },
     {
       "path": "FIGMA_REFERENCE.md",
       "bytes": 4742,
@@ -10,8 +15,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 1118,
-      "sha256": "d21a9c0fe9a26e4694aabca2c5f846b79a539831e136132639f609df0cc2a31e"
+      "bytes": 1166,
+      "sha256": "260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b"
+    },
+    {
+      "path": "references/figma-layout-feedback.png",
+      "bytes": 851777,
+      "sha256": "f0a491a0df5f7e2f44204873a98bf6e86758a1284b837a65204d4e8acf0b5bf2"
     },
     {
       "path": "references/figma-make/package.json",
@@ -80,8 +90,8 @@
     },
     {
       "path": "requirements/latest-decisions.md",
-      "bytes": 12031,
-      "sha256": "077977e69086b8c2022eed35360ba5cc59d891c27b69fb9163dc6b12558357c7"
+      "bytes": 13152,
+      "sha256": "8abf2d27085b7f906cdcdd49793654ff3a7fbb93d8a7c193acf151f199f05a0f"
     },
     {
       "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",

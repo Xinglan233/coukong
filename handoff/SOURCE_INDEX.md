@@ -31,12 +31,18 @@
 
 用户2026-10-01 16:52指定Figma Make `HVEkdtjmMHYBIUQ5LT5ynW`。官方导出及逐文件哈希在 `references/figma-make/`，真实读取范围和业务接线限制见 [Figma参考](FIGMA_REFERENCE.md)。旧三图保留历史来源；最新指定界面优先，业务和安全合同不回退。
 
+## 最新补充
+
+当前版本/实证与剩余见 [当前检查点](CURRENT_STATE.md)。最新用户Figma局部反馈图见 [截图](references/figma-layout-feedback.png)，Library `libfile_6d5c93b432a481918b04ba9442155888`，1372×1944，含Mac浏览器窗口；已实际查看，不按图片尺寸假设CSS视口。新官方Ditto具体来源尚未传入此包，不能编造。
+
 ## 文件清单
 
 | 相对路径 | 字节数 | SHA-256 |
 | --- | ---: | --- |
-| `FIGMA_REFERENCE.md` | 4405 | `ec749b845056368fc0c47c943a5ed9edaae0d199f061b8972e269f22a0844589` |
-| `README.md` | 1118 | `d21a9c0fe9a26e4694aabca2c5f846b79a539831e136132639f609df0cc2a31e` |
+| `CURRENT_STATE.md` | 5571 | `c0c76df7a23cc47204e44872f1e8622a1a0ad97b6f21265865ff561fd3d02ff4` |
+| `FIGMA_REFERENCE.md` | 4742 | `7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c` |
+| `README.md` | 1166 | `260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b` |
+| `references/figma-layout-feedback.png` | 851777 | `f0a491a0df5f7e2f44204873a98bf6e86758a1284b837a65204d4e8acf0b5bf2` |
 | `references/figma-make/package.json` | 584 | `d0e8d76cc6ff9884bd88bdbbd530e164e0c0bcf47a4948075be8a4786a4f97fd` |
 | `references/figma-make/provenance.json` | 1176 | `c3b83f9cd166cd5cf558fcbd4eb5a493cba5b2e0533eda628e1905f1b8061721` |
 | `references/figma-make/src/App.tsx` | 63268 | `3f92ca267724cf5bab3c9ba4335db53d8f51f1d7fe13cfa4990fbdd424cbcb07` |
@@ -50,7 +56,7 @@
 | `references/微信图片_20260930142714_12435_10.jpg` | 153567 | `731b39dad95f7598f16b62cf796085d0e21790aba61e8485ed1a1468fad173d7` |
 | `requirements/activity-and-visual/activity-update.md` | 50163 | `df58ac0e7f7987759cd4ea237b012e1584fcae58eb860ad60da4a429dd2b71af` |
 | `requirements/activity-and-visual/visual-style-update.md` | 16486 | `a18f83855e6dad190b47c6fe7b6a42e24acc4dd25069ded07c264eecb12e02e8` |
-| `requirements/latest-decisions.md` | 12031 | `077977e69086b8c2022eed35360ba5cc59d891c27b69fb9163dc6b12558357c7` |
+| `requirements/latest-decisions.md` | 13152 | `8abf2d27085b7f906cdcdd49793654ff3a7fbb93d8a7c193acf151f199f05a0f` |
 | `requirements/original-execution-package/HANDOFF_CHECKS.md` | 1102 | `37875b2f2879f8642010d10db605feb4c33d880a340367aae02fd773d7840ebb` |
 | `requirements/original-execution-package/MANIFEST.sha256.json` | 1943 | `8eac846264ecd56bb115021fe9570ec884f8139c200043351f356a730a37f75c` |
 | `requirements/original-execution-package/PROMPT.md` | 60312 | `5f3b8bf2897a7ecf049cf1bb21b0664c7a9b2629cd95d28778e49e6dcc36dfdf` |
