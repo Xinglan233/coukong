@@ -10,6 +10,20 @@ export async function publishFixture(browser:Browser,suffix:string,base=process.
 export async function enter(page:Page,pack:EventPackage,base=process.env.TONGYE_E2E_BASE_URL||'http://localhost:5173'){await imageFixture(page);await page.goto(base+'/');await page.locator('.activity-list-group').getByRole('button',{name:new RegExp(pack.event.title)}).click();await expect(page.locator('.tabbar').getByRole('button',{name:'逛展',exact:true})).toBeVisible();if((page.viewportSize()?.width||0)<900)await page.getByRole('button',{name:'列表',exact:true}).click()}
 export async function save(page:Page){const accepted=page.waitForResponse(r=>r.request().method()==='PUT'&&/\/personal\//.test(r.url()));await page.getByRole('button',{name:'保存个人计划',exact:true}).click();expect((await accepted).status()).toBe(200);await expect(page.locator('p[role=status]')).toContainText('已保存到云端')}
 
+export async function loginAdmin(page:Page){
+ await page.getByLabel('管理员密码').fill('a'.repeat(64))
+ const login=()=>page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/admin/session'))
+ let pending=login();await page.getByRole('button',{name:'进入管理'}).click();let response=await pending
+ if(response.status()===429){
+  test.setTimeout(test.info().timeout+65_000)
+  const wait=Math.min(60_000,60_000-Date.now()%60_000+150)
+  console.log('隔离管理员登录达到真实限流，等待当前分钟窗口结束后重试一次')
+  await new Promise(resolve=>setTimeout(resolve,wait))
+  pending=login();await page.getByRole('button',{name:'进入管理'}).click();response=await pending
+ }
+ expect(response.status()).toBe(200)
+}
+
 // Respect the production authentication limiter; do not weaken it for the test run.
 export async function adminSession(request:APIRequestContext,sessionToken:string){
  const body={rootToken:'a'.repeat(64),sessionToken};let reply=await request.post(`${API_BASE}/api/v1/admin/session`,{data:body});

@@ -1,0 +1,66 @@
+/* Presentation adapted from the user's Figma Make HVEkdtjmMHYBIUQ5LT5ynW.
+   Uses the existing semantic tokens; no production or data behavior is defined here. */
+.figma-shell{max-width:402px}
+.figma-shell .page{padding:16px 16px calc(112px + env(safe-area-inset-bottom))}
+.figma-shell .page-title{font-size:28px;font-weight:700;letter-spacing:-.025em}
+.figma-shell .figma-event-select{padding-top:56px}
+.figma-brand{font-size:13px;font-weight:500;color:var(--accent-ink);margin-bottom:8px}
+.figma-event-select .page-title{font-size:32px;margin:0 0 20px}
+.figma-search{height:40px;display:flex;align-items:center;gap:8px;background:var(--surface-3);border-radius:12px;padding:0 12px;color:var(--ink-3);margin-bottom:12px}
+.figma-search input,.figma-inline-entry input{min-width:0;flex:1;background:transparent;border:0;font:inherit;font-size:16px;color:var(--ink);outline:0}
+.figma-search:focus-within,.figma-inline-entry:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.figma-shell .segmented{background:var(--surface-3);border-radius:10px;padding:2px;border:0;gap:0}
+.figma-shell .segmented button{min-height:36px;font-size:13px;color:var(--ink-2);border-radius:8px;background:transparent;box-shadow:none}
+.figma-shell .segmented .on{color:var(--ink);background:var(--surface);box-shadow:0 1px 3px rgb(0 0 0 / .12)}
+.figma-type-segment{margin-bottom:12px}
+.figma-date-filter{margin-bottom:20px;min-height:40px}
+.figma-event-list{display:grid;gap:12px}
+.figma-shell .figma-event-card{padding:16px;gap:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgb(0 0 0 / .08);align-items:center;overflow:visible}
+.figma-event-card .sched-title{font-size:16px;line-height:22px;white-space:normal;overflow:visible}
+.figma-event-card .sched-meta{font-size:13px;line-height:19px}
+.figma-event-card .event-updated{font-size:12px}
+.figma-date-tile{width:56px;flex:none;background:var(--surface-2);border-radius:12px;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--ink-3);padding:8px 0}
+.figma-date-tile strong{font-size:22px;line-height:24px;color:var(--ink);font-weight:600}
+.figma-badges{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.figma-badge{display:inline-flex;align-items:center;gap:4px;border-radius:99px;background:var(--surface-2);color:var(--ink-2);padding:2px 8px;font-size:11px;font-weight:500;line-height:17px}
+.figma-badge.is-accent{color:var(--accent-ink);background:var(--accent-soft)}
+.figma-badge.is-warning{color:var(--warning);background:var(--warning-soft)}
+.figma-example{border:1px solid var(--line);border-radius:3px;font-size:10px;line-height:14px;padding:0 4px;color:var(--ink-3)}
+.figma-place{display:flex;gap:4px;align-items:center}
+.figma-private-entry{margin-top:32px}
+.figma-shell .section-label{padding-left:16px;font-size:13px;font-weight:500;color:var(--ink-2);margin-top:24px;margin-bottom:8px}
+.figma-shell .card.me-card{background:var(--surface);border-radius:20px;border:1px solid var(--line);box-shadow:0 1px 2px rgb(0 0 0 / .06);overflow:hidden}
+.figma-shell .me-row{padding:14px 16px;font-size:15.5px;min-height:52px}
+.figma-inline-entry{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:44px;border-radius:20px;border:1px solid var(--line);background:var(--surface);box-shadow:0 1px 2px rgb(0 0 0 / .06);color:var(--ink-3)}
+.figma-inline-entry button{border:0;background:transparent;color:var(--accent-ink);font-size:15px;font-weight:600;min-height:44px;padding:0 4px;flex:none}
+.figma-inline-entry button:disabled{color:var(--ink-3);opacity:.65}
+.figma-shell>.tabbar{width:calc(100% - 24px);max-width:378px;bottom:calc(24px + env(safe-area-inset-bottom));height:64px;padding:6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface);box-shadow:0 8px 24px rgb(0 0 0 / .08)}
+.figma-shell>.tabbar button{border-radius:999px;min-height:52px;gap:4px;font-size:10px;font-weight:600;transition:background-color .15s,color .15s}
+.figma-shell>.tabbar .on{background:var(--accent);color:var(--surface);box-shadow:0 1px 2px rgb(0 0 0 / .06)}
+.figma-shell .sheet{max-width:402px;border-radius:32px 32px 0 0;background:var(--surface-2)}
+.figma-shell .sheet-body{padding:16px 20px calc(20px + env(safe-area-inset-bottom))}
+.figma-shell .sheet-backdrop{background:rgb(0 0 0 / .4)}
+.figma-shell .btn{border-radius:12px;min-height:44px;font-size:15px}
+.figma-shell .input,.figma-shell .select{border-radius:12px;font-size:16px}
+.figma-activity-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 1px 2px rgb(0 0 0 / .05)}
+.figma-activity-header .icon-btn{color:var(--accent-ink);flex:none}
+.figma-activity-switch{border:0;background:transparent;min-width:0;flex:1;text-align:left;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;color:var(--ink);font:inherit}
+.figma-activity-switch .page-sub{font-size:11px;margin:0;color:var(--ink-3)}
+.figma-activity-switch .page-title{font-size:16px;font-weight:600;line-height:22px;margin:0;display:flex;align-items:center;gap:4px;max-width:100%}
+.figma-activity-switch .page-title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.figma-plan-timeline{margin-top:16px;padding-left:64px;position:relative;display:grid;gap:8px}
+.figma-plan-timeline:before{content:'';position:absolute;left:54px;top:8px;bottom:8px;width:1px;background:var(--line)}
+.figma-shell .figma-plan-card{position:relative;display:block;border:0;background:var(--surface);border-radius:16px;padding:14px;text-align:left;overflow:visible}
+.figma-plan-time{position:absolute;left:-64px;top:12px;width:48px;text-align:right;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.figma-plan-dot{position:absolute;left:-13px;top:17px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--bg)}
+.figma-plan-dot.is-warning{background:var(--warning)}
+.figma-plan-card-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.figma-plan-card .sched-title{font-size:15px;font-weight:600;white-space:normal}
+.figma-plan-card .sched-meta{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:13px;margin-top:4px}
+.figma-plan-card .figma-conflict{margin-top:8px}
+.figma-shell .plan-add{background:transparent;border:1px dashed var(--line-strong);color:var(--accent-ink)}
+.figma-shell .day-strip{margin-bottom:16px}
+.figma-shell .day-strip .chip{border:0;background:var(--surface);border-radius:12px;font-weight:600;color:var(--ink-2);flex:1}
+.figma-shell .day-strip .on{background:var(--ink);color:var(--bg)}
+@media(min-width:900px){.figma-shell.activity-personal{max-width:960px}.figma-shell.activity-personal>.tabbar{max-width:402px}.figma-shell .activity-browse{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.figma-shell *{transition:none!important;animation:none!important}}
