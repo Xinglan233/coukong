@@ -620,6 +620,9 @@ textarea {
 .sched-meta>span:first-child{color:var(--ink)}
 .sched-day{margin-bottom:6px}
 .chip-sm{height:32px;padding:0 12px;font-size:12.5px}
+.sheet-save{margin-top:16px}
+.sheet-done{margin-top:12px}
+.sheet-danger{margin-top:10px}
 .chip-wrap-sm{gap:6px}
 .row-tag{display:inline-block;margin-left:7px;padding:1.5px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:600;vertical-align:1px}
 

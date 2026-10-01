@@ -69,3 +69,7 @@ src/styles.css 的 segmented 按钮已统一 min-height:44px、15px，状态转�
 - 根因处理：pages.css 尾部遗留的第二套 activity-page-header 规则在打包顺序上覆盖 online.css，已删除；页面级规则只存在于 online.css 一个来源。
 - 样式体系归一：组件行为（section-title、sched-day-head、event-updated、row-tag、match-meta、plan-sync、chip-sm 尺寸档、按压/禁用/焦点态）统一收敛在 styles.css；online.css 只写页面布局（91 行，与 styles.css 选择器零交集）；pages.css 仅保留旧版页面。
 - 2dg.ai 仅参考其"名称→日期→地点分层、低密度索引"的组织原则，未复制布局素材。
+
+## 2026-10-01 第四轮：内联间距清零
+
+在线活动三文件（ActivityApp / PersonalPlanView / App.tsx 组内）不再使用内联 style 表达间距；组内筛选（crew-chips / crew-slots）、组内操作（crew-action / crew-sync）、计划保存区（plan-tabs / plan-save）与 Sheet 操作按钮（sheet-save / sheet-done / sheet-danger）全部走语义类，数值与改前逐像素一致。规则：页面布局类进 online.css，跨页组件档进 styles.css，JSX 不写 style。

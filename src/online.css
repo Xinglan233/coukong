@@ -31,13 +31,19 @@
 
 /* ============ 场次按天分组 ============ */
 /* ============ 计划页 ============ */
+.plan-tabs{margin-bottom:16px}
 .plan-add{margin:16px 0 6px}
+.plan-save{margin-top:20px}
 .personal-list-row{padding:10px 0;border-bottom:1px solid var(--line)}
 .personal-list-row:last-child{border-bottom:0}
 .personal-list-row .personal-row-main{border-bottom:0;padding:2px 0 10px}
 .personal-list-row .btn-row{gap:8px;flex-wrap:wrap}
 /* ============ 组内（同行）嵌入 ============ */
 .crew-back{margin-bottom:10px}
+.crew-chips{margin:2px 0 10px}
+.crew-slots{margin:2px 0 14px}
+.crew-action{margin-bottom:10px}
+.crew-sync{margin-bottom:12px}
 .embedded-group{padding-top:0;margin-top:0;border-top:0}
 .embedded-group>.page-title{font-size:22px}
 .embedded-group>.page-sub{margin-bottom:12px}
