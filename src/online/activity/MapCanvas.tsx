@@ -4,7 +4,7 @@ import type { ConventionData, Point } from '../../../shared/activity-contract'
 import type { PathResult } from '../../../shared/routing'
 export interface MapTransform {zoom:number;x:number;y:number}
 export interface MapCanvasProps {
- convention:ConventionData;mapId:string;assetUrl:string;selectedPoiId?:string;favoriteIds?:string[];route?:PathResult
+ convention:ConventionData;mapId:string;assetUrl:string;selectedPoiId?:string;favoriteIds?:string[];visiblePoiIds?:string[];route?:PathResult
  onSelectPoi:(id:string)=>void;onPoint?:(point:Point)=>void;editable?:boolean;showGraph?:boolean
  onSelectNode?:(id:string)=>void;onSelectEdge?:(id:string)=>void;onMovePoi?:(id:string,point:Point)=>void
 }
@@ -17,7 +17,7 @@ export function pointerToNormalized(point:Point,rect:Rect,width:number,height:nu
  return Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1&&y>=0&&y<=1?{x,y}:null
 }
 const initial:MapTransform={zoom:1,x:0,y:0}
-export function MapCanvas({convention,mapId,assetUrl,selectedPoiId,favoriteIds=[],route,onSelectPoi,onPoint,editable=false,showGraph=false,onSelectNode,onSelectEdge,onMovePoi}:MapCanvasProps) {
+export function MapCanvas({convention,mapId,assetUrl,selectedPoiId,favoriteIds=[],visiblePoiIds,route,onSelectPoi,onPoint,editable=false,showGraph=false,onSelectNode,onSelectEdge,onMovePoi}:MapCanvasProps) {
  const map=convention.maps.find(m=>m.id===mapId),svg=useRef<SVGSVGElement>(null),pointers=useRef(new Map<number,Point>())
  const gesture=useRef<{origin:Point;transform:MapTransform;distance:number;center:Point;poiId?:string;nodeId?:string;edgeId?:string;dragged:boolean}|null>(null)
  const [transform,setTransform]=useState<MapTransform>(initial),[failed,setFailed]=useState(false),[viewport,setViewport]=useState({width:400,height:320})
@@ -27,7 +27,7 @@ export function MapCanvas({convention,mapId,assetUrl,selectedPoiId,favoriteIds=[
  useEffect(()=>{const element=svg.current;if(!element||!map)return;const handle=(event:WheelEvent)=>{event.preventDefault();setTransform(t=>{const zoom=Math.min(8,Math.max(1,t.zoom*(event.deltaY<0?1.1:1/1.1))),ratio=zoom/t.zoom;return{zoom,x:map.width/2-(map.width/2-t.x)*ratio,y:map.height/2-(map.height/2-t.y)*ratio}})};element.addEventListener('wheel',handle,{passive:false});return()=>element.removeEventListener('wheel',handle)},[map])
  if(!map)return <p role="status">尚未提供这张地图，可在地点列表继续查看。</p>
  const width=map.width,height=map.height,scale=Math.min(viewport.width/width,viewport.height/height),marker=11/(scale*transform.zoom),font=12/(scale*transform.zoom)
- const pois=convention.pois.filter(p=>p.position?.mapId===mapId&&p.position.mapRevision===map.revision)
+ const pois=convention.pois.filter(p=>(visiblePoiIds===undefined||visiblePoiIds.includes(p.id))&&p.position?.mapId===mapId&&p.position.mapRevision===map.revision)
  const graph=showGraph?convention.routingGraphs.find(g=>g.mapId===mapId&&g.mapRevision===map.revision):undefined
  const pointFor=(e:ReactPointerEvent<SVGSVGElement>)=>pointerToNormalized({x:e.clientX,y:e.clientY},svg.current!.getBoundingClientRect(),width,height,transformRef.current)
  function setGesture(poiId?:string,nodeId?:string,edgeId?:string){const points=[...pointers.current.values()],center=points.length>1?{x:(points[0].x+points[1].x)/2,y:(points[0].y+points[1].y)/2}:points[0];gesture.current={origin:points[0],transform:transformRef.current,distance:points.length>1?Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y):0,center,poiId,nodeId,edgeId,dragged:false}}
