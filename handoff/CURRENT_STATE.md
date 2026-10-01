@@ -5,9 +5,9 @@
 ## 版本、环境与发布边界
 
 - 功能分支 `feat/activity-maps-personal`，draft PR https://github.com/Xinglan233/tongye_meet/pull/5 。本页所在提交用 `git rev-parse HEAD` 确認。
-- 最新完整验收参考提交 `5d598b38d096f50334efe76010592344ca23a24d`，前端运行时代码 `dcda413a86bfb878f9bffe52d94de9da3601b941`。本次只修普通入口、Figma底栏及设置对齐，最新检查见CI和第3节，不以旧绿灯替代。
+- 最新完整验收参考提交 `5d598b38d096f50334efe76010592344ca23a24d`，前端运行时代码 `dcda413a86bfb878f9bffe52d94de9da3601b941`。当前继续修普通入口、Figma局部反馈及身份恢复闸门；最新检查见CI和第3节，不以旧绿灯替代。
 - 5d598受保护预览：https://tongye-meet-jpe6xr46w-xinglan233s-projects.vercel.app 。默认正常Vercel登录保护，不将临时访问链接放交接包。后续新预览不继承该部署访问授权。
-- staging API：https://tongye-meet-api-staging.xinglan233.workers.dev ，构建标识 `ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1`；其Worker/shared/迁移源码与5d598一致。实际Worker部署版本 `828b346f-0d59-4344-8b52-b5017a32850e`，staging迁移0001–0007已回读。测试预览精确origin由部署参数加入CORS，后续部署必须保留/核对它，不加任意vercel通配。
+- staging API：https://tongye-meet-api-staging.xinglan233.workers.dev ，构建标识 `ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1`；其Worker/shared/迁移源码与5d598一致。当前staging精确CORS部署版本 `5146b363-c24d-4da4-bfa8-6bb762e6f52c`（与原完整云验收828b版本源码一致），staging迁移0001–0007已回读。测试预览精确origin由部署参数加入CORS，后续部署必须保留/核对它，不加任意vercel通配。
 - 生产 https://coukong.vercel.app 保持旧业务9090、文档前端b29c14a；新版未合并、未发布。不能因功能测试绿跳过用户视觉确认。域名由用户之后自己配置。
 - 重置卡使用0张，授权已撤销，不存在可继续执行的兑换许可。
 
@@ -37,3 +37,11 @@
 6. 新官方Ditto来源待明确提供，不能自行猜。
 
 配置只由用户经正常安全渠道提供到对应后端环境。不要索取聊天密钥、复制会话或登录token、打开付费资源、对真实生产数据做破坏性测试。备份和回滚按 [运维说明](../docs/OPERATIONS.md)，私密数据库/图片备份及临时访问不入本包。
+
+## 本次候选修复与证据边界
+
+eac9e4f远端聚合verify、CodeQL、Vercel成功，但完整浏览器为51通过、1失败：加入后首次邀请Sheet关闭时元素从DOM移除，不能称整套绿。控制流中本人身份切换会先恢复公共小队再取得私有回复，其间界面曾提前可操作；身份effect重置Sheet。新增真实D1延迟本人回复回归在修复前失败，修复后通过：恢复完成前不暴露邀请操作，之后正常鼠标开关3次；保留原三身份回归，不换force点击或键盘来掩盖。原CI没有该竞态内部记录，故不将时序推断写成穷尽平台原因。
+
+当前定向6项浏览器全部通过，包括新身份闸门、原三角色、底栏/文字对齐、真实SW离线恢复、慢PUT新修改和混合版本拒绝、未保存Sheet无幽灵安排。聚合校验110单元、39真实本地D1、类型/lint/文档/构建通过。最新完整浏览器和远端CI仍以实际提交结果为准。
+
+已移除个人计划多余兜底说明，邀请框页脚使用8px上间距与24px下间距；深色日期条问题尚未修正，Figma局部沟通受当前Mac AppleEvents连接错误阻断。不能把前两项完成当三图全修。正常已登录Vercel预览可查看；没有自动增加临时访问。

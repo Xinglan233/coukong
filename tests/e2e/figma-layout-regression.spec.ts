@@ -12,11 +12,18 @@ test('普通入口不展示管理或帮助，底栏与我的文字遵守Figma对
  await page.goto('/')
  expect.soft(await page.getByRole('button',{name:'管理员入口',exact:true}).count()).toBe(0)
  expect.soft(await page.getByRole('button',{name:'帮助',exact:true}).count()).toBe(0)
+ const invitationSpacing=await page.locator('.figma-private-entry>.page-sub').evaluate(note=>{
+  const form=note.parentElement!.querySelector('form')!,style=getComputedStyle(note)
+  return {gap:note.getBoundingClientRect().top-form.getBoundingClientRect().bottom,bottom:style.marginBottom}
+ })
+ expect(invitationSpacing.gap).toBeGreaterThanOrEqual(8)
+ expect(invitationSpacing.bottom).toBe('24px')
  await page.goto(`/events/${pack.event.id}`)
  for(const width of [375,390,430,1440])for(const scheme of ['light','dark'] as const){
   await page.setViewportSize({width,height:900});await settleTheme(page,scheme)
   for(const name of ['探索','计划','同行','我的']){
    await tab(page,name)
+   if(name==='计划')await expect(page.getByText('个人计划不要求先加入小队',{exact:true})).toHaveCount(0)
    const geometry=await page.locator('.tabbar').evaluate(nav=>{
     const n=nav.getBoundingClientRect(),b=nav.querySelector('.on')!.getBoundingClientRect()
     return {top:b.top-n.top,bottom:n.bottom-b.bottom,height:b.height}

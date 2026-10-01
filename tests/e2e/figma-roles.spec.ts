@@ -3,6 +3,17 @@ import {test,expect,type Page} from '@playwright/test'
 import {mkdirSync} from 'node:fs'
 import {publishFixture,tab,close} from './activity-fixture'
 
+test('加入后的本人资料尚未恢复时不暴露会被重置的邀请面板',async({browser})=>{
+ const pack=await publishFixture(browser,'identity-hydration'),context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage()
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve});let observed!:()=>void;const started=new Promise<void>(resolve=>{observed=resolve})
+ await page.route('**/members/*/response',async route=>{if(route.request().method()!=='GET')return route.continue();const response=await route.fetch();observed();await gate;await route.fulfill({response})})
+ await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('身份恢复验收');await page.getByLabel('站点创建码').fill('test-create');await page.getByRole('button',{name:'确认创建',exact:true}).click();await page.getByLabel('怎么称呼').fill('队长');await page.getByRole('button',{name:'加入小队',exact:true}).click();await started
+ try{expect(await page.getByRole('button',{name:'邀请队员',exact:true}).count()).toBe(0)}finally{release()}
+ await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toBeVisible()
+ for(let i=0;i<3;i++){await page.getByRole('button',{name:'邀请队员',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await close(page)}
+ await context.close()
+})
+
 test('Figma同行接三独立身份：未提交不显示全员空闲，邀请和成员权限分开',async({browser})=>{
  test.setTimeout(120_000)
  const pack=await publishFixture(browser,'figma-roles')

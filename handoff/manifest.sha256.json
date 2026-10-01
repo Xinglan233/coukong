@@ -1,12 +1,12 @@
 {
-  "generatedAtUTC": "2026-10-01T13:49:16.261486+00:00",
+  "generatedAtUTC": "2026-10-01T14:37:48.664476+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
   "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
     {
       "path": "CURRENT_STATE.md",
-      "bytes": 5571,
-      "sha256": "c0c76df7a23cc47204e44872f1e8622a1a0ad97b6f21265865ff561fd3d02ff4"
+      "bytes": 6936,
+      "sha256": "81458c62e2c970df8f70dd1f1208ea34fa58f89d8e57b90c5b93a25e3363b61c"
     },
     {
       "path": "FIGMA_REFERENCE.md",
@@ -14,9 +14,29 @@
       "sha256": "7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c"
     },
     {
+      "path": "LOCAL_CHANGES_DECISION.md",
+      "bytes": 1103,
+      "sha256": "77f4128ba1be3884d06e3ea738eb3a9024b185d190d6aa80588d6399068fcc25"
+    },
+    {
       "path": "README.md",
       "bytes": 1166,
       "sha256": "260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b"
+    },
+    {
+      "path": "references/figma-feedback-dark-plan.png",
+      "bytes": 1017455,
+      "sha256": "a74d61baf1d677a5c16db36589e3f01be95e9482ae7b55e47da34fad61ba69ee"
+    },
+    {
+      "path": "references/figma-feedback-invite-spacing.png",
+      "bytes": 15136,
+      "sha256": "9e99d3eb6674e7159a25a862f292f86733a6050288f8bb57545f7c261f5845de"
+    },
+    {
+      "path": "references/figma-feedback-redundant-note.png",
+      "bytes": 10776,
+      "sha256": "283d3b7eaa58ce962e10f7b884443b9fbf9cfc0c66e42711139969a155b7adb0"
     },
     {
       "path": "references/figma-layout-feedback.png",
@@ -90,18 +110,13 @@
     },
     {
       "path": "requirements/latest-decisions.md",
-      "bytes": 13152,
-      "sha256": "8abf2d27085b7f906cdcdd49793654ff3a7fbb93d8a7c193acf151f199f05a0f"
+      "bytes": 15215,
+      "sha256": "e90e0f3ab0394f5cf6049a79b15881bca82bffaf59eeaec96c6dafa284f68956"
     },
     {
       "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",
       "bytes": 1102,
       "sha256": "37875b2f2879f8642010d10db605feb4c33d880a340367aae02fd773d7840ebb"
-    },
-    {
-      "path": "requirements/original-execution-package/MANIFEST.sha256.json",
-      "bytes": 1943,
-      "sha256": "8eac846264ecd56bb115021fe9570ec884f8139c200043351f356a730a37f75c"
     },
     {
       "path": "requirements/original-execution-package/PROMPT.md",
@@ -192,6 +207,11 @@
       "path": "source-manifest-check.json",
       "bytes": 4773,
       "sha256": "d7958c14ce3159695ecf8f9e8e4a39eb0188763d44edf85e2637545a113394c7"
+    },
+    {
+      "path": "SOURCE_INDEX.md",
+      "bytes": 9723,
+      "sha256": "1cfd49d85d3a9794033c4c42899e0597e0947e3eb243ba57aec1bbee0bb511dc"
     }
   ]
 }
