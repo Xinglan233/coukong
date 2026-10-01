@@ -24,3 +24,5 @@
 
 
 收藏、路线、时间编辑、同行、我的及管理员编辑分区已继续接入真实字段/既有处理器，组件分别在src/online/activity/FigmaFavorites.tsx、FigmaRouteStops.tsx、FigmaTimeFields.tsx、FigmaCompanionsEntry.tsx、FigmaCrewHeader.tsx、FigmaCrewMembers.tsx、FigmaMe.tsx及FigmaAdminTabs.tsx。未使用原型示例成员/固定空闲/短码、手机号、ICS、模拟离线或假备份时间；管理员保留现有严格预览确认流程，不将原型即点即成功接上线。数据边界及待验项见docs/HANDOFF.md和docs/ACTIVITY_P0_STATUS.md，尚未生产发布或完成全站视觉确认。
+
+共享小队编辑复用已接线的FigmaTimeFields；管理员四分区增加真实只读资料模式和草稿/发布动作，仍保留差异确认和身份/版本边界。地图资料预览不是参与者全图预览；未复制原型模拟发布、假用户或假离线状态。全站视觉及受保护云链路仍待最终核验。

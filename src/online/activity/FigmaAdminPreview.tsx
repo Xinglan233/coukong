@@ -1,0 +1,13 @@
+import type {EventPackage} from '../../../shared/types'
+import type {AdminSection} from './FigmaAdminTabs'
+
+// Preview reads only the current edit package; it never mutates or publishes it.
+export function FigmaAdminPreview({pack,section}:{pack:EventPackage;section:AdminSection}){
+ const event=pack.event,convention=event.extensions?.convention
+ return <section className="figma-admin-readonly" aria-label="活动资料预览"><p className="notice">资料预览 · 仅查看</p><h2>{event.title||'未填写活动名称'}</h2><p className="page-sub">{event.startDate} 至 {event.endDate} · {event.timezone}</p>
+ {section==='info'&&<><div className="figma-settings-group">{event.location&&<p className="me-row">{event.location}</p>}{event.description&&<p className="me-row figma-preview-text">{event.description}</p>}{event.days.map(day=><div className="me-row" key={day.date}><span className="me-row-label">{day.date}</span><strong className="figma-preview-time">{day.openIntervals.map(range=>`${range.start}–${range.end}`).join('、')||'当天不开放'}</strong></div>)}</div>{pack.meta?.sourceNote&&<p className="page-sub figma-preview-text">{pack.meta.sourceNote}</p>}{pack.meta?.isExample&&<p className="notice">示例资料，不是官方安排。</p>}</>}
+ {section==='session'&&<div className="figma-settings-group">{event.activities.flatMap(activity=>activity.sessions.map(session=><div className="me-row" key={session.id}><span className="me-row-label"><span className="sched-title">{activity.title}</span><span className="sched-meta figma-preview-time">{session.date} {session.start}–{session.end}</span>{(session.location||activity.location)&&<span className="sched-meta">{session.location||activity.location}</span>}</span></div>))}{!event.activities.length&&<p className="me-row">暂无场次</p>}</div>}
+ {section==='booth'&&<div className="figma-settings-group">{convention?.pois.map(poi=><div className="me-row" key={poi.id}><span className="me-row-label"><span className="sched-title">{poi.name}</span><span className="sched-meta">{[poi.boothCode,!poi.position?'未标位置':undefined,poi.closed?'暂时关闭':undefined].filter(Boolean).join(' · ')}</span></span></div>)}{!convention?.pois.length&&<p className="me-row">暂无地点</p>}</div>}
+ {section==='map'&&<><p className="page-sub">此处核对地图资料。图片与位置请在地图编辑页查看；发布后可从活动页查看公开地图。</p><div className="figma-settings-group">{convention?.maps.map(map=><div className="me-row" key={map.id}><span className="me-row-label"><span className="sched-title">{map.title}</span><span className="sched-meta">{map.width} × {map.height}{map.needsReview?' · 需要校对':''}</span></span></div>)}{!convention?.maps.length&&<p className="me-row">地图尚未提供</p>}</div></>}
+ </section>
+}

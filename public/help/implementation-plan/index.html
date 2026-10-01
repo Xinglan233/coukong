@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>实施计划</h1>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>实施计划</h1>
 <h2>已验证基线（2026-09-30）</h2>
 <p>生产前端文档提交 b29c14a，运行时 API/业务代码 9090be47。已执行 30 项单元、9 项真实 D1 集成、11 项浏览器测试，以及三个独立身份生产隔离演练。原 TabBar、Sheet、460px app-shell、日期条与 TimeAxis 已复用。真机/微信/中国大陆现场网络仍待验证。</p>
 <h2>本轮增量依据</h2>
@@ -82,4 +82,8 @@
 <p>- 同行呈现实际小队角色、成员状态与既有安全共同空闲。队长邀请仍使用高熵完整链接；不采用原型六位码、假成员或假全员结果。加入不自动分享个人计划，显式同步后还须提交。</p>
 <p>- 管理员按活动信息/地图/摊位/场次切换既有编辑表单。通用活动禁用地图/摊位编辑；原差异预览、确认保存、来源提示、草稿/发布/取消/归档、CAS与地图核对保持真实。原型示意的直接保存按钮未取代现有确认流程。</p>
 <p>本轮聚合验证已通过110单元、39真实本地D1集成、类型/lint/文档/构建；个人/私人入口7项定向浏览器（1.6分钟）、管理员/私人/地图11项（54.7秒）、新增三独立身份同行1项（19.1秒）通过。一次最新47项浏览器整套全部通过（6.8分钟）。此前41通过/6旧入口断言失败的记录保留；只补真实分区导航及新入口验证，未删除身份/分钟/版本/换图断言。实际截图含两份用户未提交文件，未将它们编辑或收入本轮提交；受保护远端预览不等同这些本机截图。</p>
-<p>真实截图已核对分钟编辑浅深色、三身份成员浅深色及管理员长标题/分区。发现主题切换动画中间帧不适合验收，截图测试等待主题及按钮背景完成切换；不借测试修改业务。新版全站忠实度仍须同尺寸复核及用户确认，最新受保护前端与staging完整云链路、真机/国内网络和最大云输入仍待验。生产保持，重置卡使用0、兑换禁止，无第三预览访问授权。</p></main></div></body></html>
+<p>真实截图已核对分钟编辑浅深色、三身份成员浅深色及管理员长标题/分区。发现主题切换动画中间帧不适合验收，截图测试等待主题及按钮背景完成切换；不借测试修改业务。新版全站忠实度仍须同尺寸复核及用户确认，最新受保护前端与staging完整云链路、真机/国内网络和最大云输入仍待验。生产保持，重置卡使用0、兑换禁止，无第三预览访问授权。</p>
+<h3>Figma共享编辑、工作台与帮助接线（执行中）</h3>
+<p>基线076d8c3的verify（含完整浏览器）、CodeQL与Vercel已全部通过。继续复用个人FigmaTimeFields接共享BusyEditor，仅替换呈现，草稿/保存/本人私密数据不变；管理员增加只读资料预览和原型双保存动作，仍须服务端再次校验、差异预览及明确确认。帮助复用styles.css唯一token及figma.css控件规则，同行帮助行不再使用浏览器默认蓝色。</p>
+<p>新增2项浏览器先分别因缺少时长控件和预览模式失败，再实施；当前定向回归运行中，不先写通过。实际管理员长标题截图发现固定头/底占据内容，后续须在共享布局规则内校正并重验。两份用户文件仍原样未提交；重置卡0且禁止兑换，无新预览grant，生产保持。</p>
+<p>最新聚合verify再次通过（110单元、39真实本地D1及类型/lint/文档/构建）。首次49整套47通过/2失败：离线重连测试使用旧管理员按钮名，地图编辑测试未处理真实登录429。轨迹与错误页已确认原因；仅改测试导航和复用既有有界登录等待，未放宽服务端限流，也未删409/草稿/地图断言。更正后的新一次49整套正在运行，离线刷新重连项已通过，完整终态待收取。</p></main></div></body></html>

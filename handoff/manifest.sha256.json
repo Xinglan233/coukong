@@ -1,12 +1,12 @@
 {
-  "generatedAtUTC": "2026-10-01T11:28:55.331858+00:00",
+  "generatedAtUTC": "2026-10-01T12:09:34.603902+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
   "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
     {
       "path": "FIGMA_REFERENCE.md",
-      "bytes": 4405,
-      "sha256": "ec749b845056368fc0c47c943a5ed9edaae0d199f061b8972e269f22a0844589"
+      "bytes": 4742,
+      "sha256": "7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c"
     },
     {
       "path": "README.md",
