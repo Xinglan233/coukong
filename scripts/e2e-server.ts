@@ -1,3 +1,4 @@
+import {API_BASE,API_PORT} from '../tests/e2e/api-base'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import { build } from 'esbuild'
 import { readFileSync, readdirSync, mkdtempSync } from 'node:fs'
@@ -34,12 +35,12 @@ const server = createServer(async (incoming, outgoing) => {
     }
     const chunks: Buffer[] = []
     for await (const chunk of incoming) chunks.push(Buffer.from(chunk))
-    const response = await mf.dispatchFetch(`http://localhost:8787${incoming.url}`, { method: incoming.method, headers: incoming.headers as Record<string, string>, ...(chunks.length ? { body: Buffer.concat(chunks) } : {}) })
+    const response = await mf.dispatchFetch(`${API_BASE}${incoming.url}`, { method: incoming.method, headers: incoming.headers as Record<string, string>, ...(chunks.length ? { body: Buffer.concat(chunks) } : {}) })
     outgoing.writeHead(response.status, Object.fromEntries(response.headers.entries()))
     outgoing.end(Buffer.from(await response.arrayBuffer()))
   } catch { outgoing.writeHead(500); outgoing.end('{"error":{"code":"SERVICE_UNAVAILABLE","message":"测试服务失败"}}') }
 })
-server.listen(8787, '127.0.0.1', () => console.log(`Isolated real Worker/D1 ready on 8787; SQLite at ${directory}`))
+server.listen(API_PORT, '127.0.0.1', () => console.log(`Isolated real Worker/D1 ready on ${API_PORT}; SQLite at ${directory}`))
 async function close() { server.close(); await mf.dispose(); console.log(`Isolated test database retained at ${directory}`); process.exit(0) }
 process.on('SIGINT', close)
 process.on('SIGTERM', close)

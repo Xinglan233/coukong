@@ -1,4 +1,4 @@
-import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
@@ -60,7 +60,10 @@ for(const file of readdirSync(resolve(root,'public/help'),{recursive:true}).filt
  const html=read('public/help/'+file);assert(!/<script\b|\son\w+=/i.test(html.replaceAll('<script src="/help/theme.js"></script>','')),'帮助不能含可执行内联内容')
  for(const m of html.matchAll(/href="([^"#]+)"/g)){
   const url=m[1];if(url==='/'||/^https:/.test(url))continue
-  if(url.startsWith('/'))assert(existsSync(resolve(root,'public','.'+url))||existsSync(resolve(root,'public','.'+url,'index.html')),`${file}: 帮助目标缺失 ${url}`)
+  if(url.startsWith('/')){
+   const targets=[resolve(root,'public','.'+url),resolve(root,'public','.'+url,'index.html')]
+   assert(targets.some(target=>existsSync(target)&&statSync(target).isFile()),`${file}: 帮助目标缺失 ${url}`)
+  }
  }
 }
 const pkg=JSON.parse(read('package.json'))

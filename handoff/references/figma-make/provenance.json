@@ -1,0 +1,43 @@
+{
+  "fileKey": "HVEkdtjmMHYBIUQ5LT5ynW",
+  "retrievedAtUTC": "2026-10-01T09:21:23.780859+00:00",
+  "source": "Official Figma Make Download code in authorized Mac Safari session",
+  "readComplete": [
+    "src/App.tsx",
+    "src/ui.tsx",
+    "src/index.css",
+    "src/data.ts"
+  ],
+  "files": [
+    {
+      "path": "src/App.tsx",
+      "bytes": 63268,
+      "sha256": "3f92ca267724cf5bab3c9ba4335db53d8f51f1d7fe13cfa4990fbdd424cbcb07"
+    },
+    {
+      "path": "src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
+    },
+    {
+      "path": "src/index.css",
+      "bytes": 2238,
+      "sha256": "40cf007570671d40fe843e1711eca28eb382069dad719182a3755dac8867e614"
+    },
+    {
+      "path": "src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "src/main.tsx",
+      "bytes": 232,
+      "sha256": "6c2ddad066d2a90b04cf766465b454de0a9f031965311a3609c87f0e495c3383"
+    },
+    {
+      "path": "package.json",
+      "bytes": 584,
+      "sha256": "d0e8d76cc6ff9884bd88bdbbd530e164e0c0bcf47a4948075be8a4786a4f97fd"
+    }
+  ]
+}

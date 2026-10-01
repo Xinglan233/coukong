@@ -1,12 +1,52 @@
 {
-  "generatedAtUTC": "2026-10-01T00:41:07.315147+00:00",
-  "scope": "需求原文和三张用户参考图；无密码、token、签名链接、数据库导出或私密日志。",
-  "baselineCommit": "8599bd190529d3ac7e952bf32f6a444aaa9cdf28",
+  "generatedAtUTC": "2026-10-01T09:30:19.343577+00:00",
+  "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
+  "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
+    {
+      "path": "FIGMA_REFERENCE.md",
+      "bytes": 2560,
+      "sha256": "c00f0588cba923e8e5038dc7191c5bfc65907a5fffdfa63af05cbdc32b17dcc1"
+    },
     {
       "path": "README.md",
       "bytes": 1118,
       "sha256": "d21a9c0fe9a26e4694aabca2c5f846b79a539831e136132639f609df0cc2a31e"
+    },
+    {
+      "path": "references/figma-make/package.json",
+      "bytes": 584,
+      "sha256": "d0e8d76cc6ff9884bd88bdbbd530e164e0c0bcf47a4948075be8a4786a4f97fd"
+    },
+    {
+      "path": "references/figma-make/provenance.json",
+      "bytes": 1176,
+      "sha256": "c3b83f9cd166cd5cf558fcbd4eb5a493cba5b2e0533eda628e1905f1b8061721"
+    },
+    {
+      "path": "references/figma-make/src/App.tsx",
+      "bytes": 63268,
+      "sha256": "3f92ca267724cf5bab3c9ba4335db53d8f51f1d7fe13cfa4990fbdd424cbcb07"
+    },
+    {
+      "path": "references/figma-make/src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "references/figma-make/src/index.css",
+      "bytes": 2238,
+      "sha256": "40cf007570671d40fe843e1711eca28eb382069dad719182a3755dac8867e614"
+    },
+    {
+      "path": "references/figma-make/src/main.tsx",
+      "bytes": 232,
+      "sha256": "6c2ddad066d2a90b04cf766465b454de0a9f031965311a3609c87f0e495c3383"
+    },
+    {
+      "path": "references/figma-make/src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
     },
     {
       "path": "references/provenance.json",
@@ -40,8 +80,8 @@
     },
     {
       "path": "requirements/latest-decisions.md",
-      "bytes": 10759,
-      "sha256": "21bbb8881526ef36154a8f60766d7f9db1350b0170b396cf1248a84744c52659"
+      "bytes": 12031,
+      "sha256": "077977e69086b8c2022eed35360ba5cc59d891c27b69fb9163dc6b12558357c7"
     },
     {
       "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",
