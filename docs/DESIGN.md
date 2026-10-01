@@ -62,3 +62,10 @@ src/styles.css 的 segmented 按钮已统一 min-height:44px、15px，状态转�
 - 组内凑空「更新时间 + 刷新」合并为一行两端对齐（match-meta），刷新降为次级按钮；「返回我的小队」同为次级（btn-subtle）。
 - 计划保存状态行固定最小高度（plan-sync），避免状态文案变化引起跳动。
 - 活动列表在没有任何公开活动时不渲染筛选排（空态只剩一句事实）。
+
+## 2026-10-01 排版对齐与样式归一（第三轮）
+
+- 对齐几何实测修正：页头返回钮与标题块垂直居中（header cy == back cy）；逛展工具栏 segmented 轨道压到 36px 与「仅收藏」chip 同高同轴（两者中心相等）；组内「返回我的小队」与 segmented 之间恢复 10px 间距（原为 0px 粘连）。
+- 根因处理：pages.css 尾部遗留的第二套 activity-page-header 规则在打包顺序上覆盖 online.css，已删除；页面级规则只存在于 online.css 一个来源。
+- 样式体系归一：组件行为（section-title、sched-day-head、event-updated、row-tag、match-meta、plan-sync、chip-sm 尺寸档、按压/禁用/焦点态）统一收敛在 styles.css；online.css 只写页面布局（91 行，与 styles.css 选择器零交集）；pages.css 仅保留旧版页面。
+- 2dg.ai 仅参考其"名称→日期→地点分层、低密度索引"的组织原则，未复制布局素材。
