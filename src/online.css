@@ -27,7 +27,11 @@
 .activity-map-pane .field{margin-bottom:10px}
 .activity-desc{margin:0 0 4px;font-size:14px;color:var(--ink-2)}
 @media(max-width:899px){.activity-view-map .activity-place-pane{display:none}.activity-view-list .activity-map-pane{display:none}.activity-view-map:has(.activity-map-pane>.notice) .activity-place-pane{display:block}}
-@media(min-width:900px){.activity-personal:has(.activity-browse){max-width:900px}.activity-personal:has(.activity-browse)>.page>.activity-page-header,.activity-personal:has(.activity-browse)>.page>.activity-desc,.activity-personal:has(.activity-browse)>.page>.activity-browse-toolbar,.activity-personal:has(.activity-browse)>.page>.section-title{max-width:460px}.activity-browse{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}.activity-view-switch{display:none}}
+@media(min-width:900px){.activity-personal:has(.activity-browse){max-width:900px}.activity-personal:has(.activity-browse)>.page>.activity-page-header,.activity-personal:has(.activity-browse)>.page>.activity-desc,.activity-personal:has(.activity-browse)>.page>.activity-browse-toolbar,.activity-personal:has(.activity-browse)>.page>.section-title{max-width:460px}.activity-browse{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}.activity-view-switch{display:none}
+/* 地图缺席时退化为单列，列表占满，不留空洞栏位 */
+.activity-view-map:has(.activity-map-pane>.notice){display:block}
+.activity-view-map:has(.activity-map-pane>.notice) .activity-map-pane{display:none}
+.activity-personal:has(.activity-browse) .tabbar{max-width:900px}}
 
 /* ============ 场次按天分组 ============ */
 /* ============ 计划页 ============ */
