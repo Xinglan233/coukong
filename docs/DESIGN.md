@@ -73,3 +73,7 @@ src/styles.css 的 segmented 按钮已统一 min-height:44px、15px，状态转�
 ## 2026-10-01 第四轮：内联间距清零
 
 在线活动三文件（ActivityApp / PersonalPlanView / App.tsx 组内）不再使用内联 style 表达间距；组内筛选（crew-chips / crew-slots）、组内操作（crew-action / crew-sync）、计划保存区（plan-tabs / plan-save）与 Sheet 操作按钮（sheet-save / sheet-done / sheet-danger）全部走语义类，数值与改前逐像素一致。规则：页面布局类进 online.css，跨页组件档进 styles.css，JSX 不写 style。
+
+## 2026-10-01 第五轮：375/430 视口专项
+
+375 与 430 视口实测首页、逛展（列表/地图态）、计划安排、个人安排 Sheet、组内日程、组内凑空：全部无横向溢出（scrollWidth−innerWidth=0，含逐元素越界排查），两列时间字段与 chip 流式布局在窄屏下不挤压。组内凑空「自定义时长」折叠条上下节奏统一为 12px。视觉对照 spec 单测通过。
