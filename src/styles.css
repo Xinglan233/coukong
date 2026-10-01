@@ -589,3 +589,12 @@ textarea {
 /* Shared heading keeps page actions aligned without a second title. */
 .page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 .page-heading .page-title{margin:0}
+
+/* ============ 组件层补充（同野·游在线页共用） ============ */
+.page-title{font-weight:700}
+.section-title{font-size:16.5px;font-weight:700;margin:22px 0 8px}
+.section-title:first-child{margin-top:8px}
+.sched-day-head{display:flex;align-items:baseline;gap:8px;margin:18px 0 2px;font-size:13.5px;font-weight:700}
+.sched-day:first-of-type .sched-day-head{margin-top:6px}
+.event-updated{display:block;font-size:11.5px;color:var(--ink-3)}
+.row-tag{display:inline-block;margin-left:7px;padding:1.5px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:600;vertical-align:1px}
