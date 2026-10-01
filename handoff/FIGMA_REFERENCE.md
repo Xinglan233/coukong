@@ -21,3 +21,6 @@
 活动选择页已接现有公开ActivityDTO，保留真实日期/状态筛选、资料更新时间、最近活动/小队和私人创建入口。原型加入输入使用完整本站邀请链接，拒绝六位示例码、异站链接及管理/个人恢复链接。数据适配单元保留完整日期与13:07–13:52的45分钟，收藏和路线不会生成安排。其余页面仍待接入；当前七页产品截图不得被描述为全站Figma适配已完成。
 
 活动栏、地图/列表和地点详情正在按原型接真实资料；分钟日程默认入口及时间线已接现有个人状态，不使用原型内存数据或假同步。当前不把所有页面标为已完成。详情到日程/场次等Sheet切换等待实际退出结束，避免叠层；此时序修复的4项本地浏览器已通过。地图/详情375、390、430浅深截图为真实本地隔离夹具，不能冒称云上传或REDLAND现场。
+
+
+收藏、路线、时间编辑、同行、我的及管理员编辑分区已继续接入真实字段/既有处理器，组件分别在src/online/activity/FigmaFavorites.tsx、FigmaRouteStops.tsx、FigmaTimeFields.tsx、FigmaCompanionsEntry.tsx、FigmaCrewHeader.tsx、FigmaCrewMembers.tsx、FigmaMe.tsx及FigmaAdminTabs.tsx。未使用原型示例成员/固定空闲/短码、手机号、ICS、模拟离线或假备份时间；管理员保留现有严格预览确认流程，不将原型即点即成功接上线。数据边界及待验项见docs/HANDOFF.md和docs/ACTIVITY_P0_STATUS.md，尚未生产发布或完成全站视觉确认。

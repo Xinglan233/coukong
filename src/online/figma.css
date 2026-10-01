@@ -97,3 +97,67 @@
 .figma-shell .day-strip .on{background:var(--ink);color:var(--bg)}
 @media(min-width:900px){.figma-shell.activity-personal{max-width:960px}.figma-shell.activity-personal>.tabbar{max-width:402px}.figma-shell .activity-browse{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}.figma-shell .activity-place-pane{margin-top:0}}
 @media(prefers-reduced-motion:reduce){.figma-shell *{transition:none!important;animation:none!important}}
+
+.figma-time-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.figma-time-field{background:var(--surface-3);padding:12px;border-radius:16px;min-width:0}
+.figma-clock-input{display:block;width:100%;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:30px;font-weight:600;letter-spacing:-.025em;font-variant-numeric:tabular-nums;line-height:1.4;outline:0}
+.figma-clock-input[aria-invalid=true]{color:var(--danger)}
+.figma-time-field:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.figma-time-nudges{display:flex;gap:6px;margin-top:4px}
+.figma-time-nudges button{flex:1;border:0;border-radius:8px;min-height:44px;background:var(--surface);color:var(--ink);font:inherit;font-size:12px;display:flex;align-items:center;justify-content:center}
+.figma-duration-options{display:flex;gap:6px;margin:8px 0}
+.figma-duration-options button{flex:1;min-height:44px;border:0;border-radius:999px;background:var(--surface-3);color:var(--ink-2);font:inherit;font-size:13px;white-space:nowrap}
+.figma-duration-options .on{background:var(--accent);color:var(--surface)}
+.figma-time-conflict{margin:12px 0}
+.figma-favorite-list,.figma-route-list{background:var(--surface);border-radius:20px;overflow:hidden}
+.figma-favorite-entry+.figma-favorite-entry,.figma-route-entry+.figma-route-entry{border-top:1px solid var(--line)}
+.figma-favorite-entry .me-row{gap:12px;border:0;align-items:center}
+.figma-favorite-entry .me-row-label{display:block;min-width:0}
+.figma-favorite-entry .sched-title{white-space:normal}
+.figma-favorite-star{flex:none;color:var(--accent-ink)}
+.figma-favorite-tools,.figma-route-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 16px 12px}
+.figma-favorite-tools .icon-btn,.figma-route-tools .icon-btn{margin-left:auto}
+.figma-route-next{padding:16px;border-radius:16px;background:var(--accent);color:var(--surface);margin:16px 0}
+.figma-route-next p{font-size:12px;margin:0}
+.figma-route-next h2{font-size:20px;margin:4px 0 12px;font-weight:700}
+.figma-route-next .btn{flex:1;font-size:14px}
+.figma-route-main{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.figma-route-main .personal-row-main{border:0;background:transparent;color:var(--ink);text-align:left;font:inherit;min-width:0;flex:1;padding:4px 0}
+.figma-route-main .sched-title{white-space:normal;font-size:15px;font-weight:500}
+.figma-route-main .sched-title.is-visited{color:var(--ink-2);text-decoration:line-through}
+.figma-route-number{width:44px;height:44px;flex:none;border:0;border-radius:50%;display:grid;place-items:center;background:var(--surface-3);color:var(--ink-2);font:inherit;font-weight:600}
+.figma-route-number.is-next{border:2px solid var(--accent);color:var(--accent-ink);background:transparent}
+.figma-route-number.is-visited{background:var(--accent);color:var(--surface)}
+
+.figma-profile{display:flex;gap:12px;align-items:center;background:var(--surface);border-radius:16px;padding:16px;margin:16px 0 24px}
+.figma-profile-avatar{display:grid;place-items:center;width:56px;height:56px;flex:none;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:20px;font-weight:600}
+.figma-profile label{flex:1;min-width:0}
+.figma-profile-name{width:100%;border:0;outline:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;font-weight:600;min-height:36px}
+.figma-profile-name:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.figma-settings-group{background:var(--surface);border-radius:20px;border:1px solid var(--line);overflow:hidden}
+.figma-settings-row{gap:12px;align-items:center}
+.figma-settings-row .me-row-label{min-width:0;display:block}
+.figma-settings-row .sched-title{font-size:15px;font-weight:500;white-space:normal}
+.figma-settings-row .sched-meta{font-size:12px}
+.figma-settings-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:8px;background:var(--surface-2);color:var(--ink-2)}
+.figma-settings-row .select{width:auto;max-width:45%;margin:0}
+.figma-shell .figma-crew-heading { display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:16px }
+.figma-shell .figma-crew-heading h2 { font-size:28px;line-height:1.2;margin:4px 0 0;overflow-wrap:anywhere }
+.figma-shell .figma-crew-heading .page-sub { margin:0 }
+.figma-shell .figma-crew-tabs { margin-bottom:20px }
+.figma-shell .figma-member-avatar { display:grid;place-items:center;width:32px;height:32px;flex-shrink:0;border-radius:50%;background:var(--surface-2);font-size:13px;font-weight:600 }
+.figma-shell .figma-crew-member { gap:12px }
+.figma-shell .figma-crew-member .me-row-label { min-width:0;overflow-wrap:anywhere }
+.figma-shell .figma-companions-entry>.page-sub { margin-bottom:20px }
+.figma-shell .figma-admin-context { display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px }
+.figma-shell .figma-admin-context strong { flex-basis:100%;font-size:18px;overflow-wrap:anywhere }
+.figma-shell .figma-admin-tabs { display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px }
+.figma-shell .figma-admin-tabs button { flex-shrink:0;min-height:44px;border:0;border-radius:22px;padding:0 14px;background:var(--surface);color:var(--ink-2);font-size:13px;font-weight:500 }
+.figma-shell .figma-admin-tabs button.on { background:var(--ink);color:var(--surface) }
+.figma-shell .figma-admin-tabs button:disabled { opacity:.45 }
+.figma-shell .figma-admin-panel { min-height:140px }
+.figma-shell .figma-admin-save { border-top:1px solid var(--line);margin-top:20px;padding-top:16px }
+
+.figma-shell .figma-crew-section { margin:20px 0 }
+.figma-shell .figma-crew-section>h2 { color:var(--ink-2);font-size:13px;font-weight:500;margin:0 0 8px;padding-left:16px }
+.figma-shell .figma-crew-section>.page-sub { margin:8px 16px 0 }

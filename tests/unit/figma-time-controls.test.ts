@@ -1,0 +1,4 @@
+import {it,expect} from 'vitest'
+import {editableMinute,shiftedClock,durationClock} from '../../src/online/activity/figma-time-controls'
+it('精确分钟快捷操作只作用于明确点击，不按网格取整',()=>{expect(editableMinute('13:07')).toBe(787);for(const step of [5,10,15,30])expect(shiftedClock('13:07',step)).toBe(`13:${String(7+step).padStart(2,'0')}`);expect(shiftedClock('13:52',-5,true)).toBe('13:47');expect(durationClock('13:07',45)).toBe('13:52')})
+it('午夜边界仅结束允许24:00，越界和非法编辑不被静默裁剪',()=>{expect(editableMinute('24:00')).toBeNull();expect(editableMinute('24:00',true)).toBe(1440);expect(shiftedClock('23:55',5,true)).toBe('24:00');expect(shiftedClock('23:55',5)).toBeNull();expect(durationClock('23:55',5)).toBe('24:00');expect(durationClock('23:55',15)).toBeNull();expect(shiftedClock('00:00',-5)).toBeNull();for(const value of ['13:99','abc','13:','13:07:01'])expect(shiftedClock(value,5)).toBeNull()})
