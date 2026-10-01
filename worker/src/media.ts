@@ -63,7 +63,7 @@ export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;dat
   }
  }
  const reserve=path.match(/^\/admin\/events\/([-\w]+)\/assets$/)
- if(reserve){await ctx.admin();const eventId=reserve[1],event=await first('SELECT * FROM events WHERE id=?',eventId);if(!event)ctx.fail('NOT_FOUND','请先保存活动',404)
+ if(reserve){await ctx.admin();const eventId=reserve[1],event=await first('SELECT * FROM events WHERE id=?',eventId);if(!event||event.visibility==='private')ctx.fail('NOT_FOUND','请先保存公共活动',404)
   if(method==='GET'){const rows=await DB.prepare('SELECT * FROM media_assets WHERE event_id=? ORDER BY created_at DESC LIMIT 50').bind(eventId).all<Row>();return {handled:true,data:rows.results.map(mediaDTO)}}
   if(method!=='POST')return {handled:false}
   await ctx.limited('media-reserve:'+authHash,15)
@@ -87,7 +87,7 @@ export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;dat
  }
  const match=path.match(/^\/events\/([-\w]+)\/assets(?:\/([-\w]+)\/(ticket|activate|read-ticket|process|fail))?$/);if(!match)return {handled:false}
  const eventId=match[1],id=match[2],action=match[3]
- const visible=async(r:Row)=>{const publicEvent=await first("SELECT v.* FROM events e JOIN event_versions v ON v.event_id=e.id AND v.revision=e.public_revision WHERE e.id=? AND v.status='published' AND e.status!='cancelled'",eventId);if(!publicEvent)return false;const p=JSON.parse(publicEvent.event_json),map=p.event.extensions?.convention.maps.find((m:Row)=>m.assetKey===r.asset_key&&m.width===r.width&&m.height===r.height);const manifest=p.assetManifest?.find((m:Row)=>m.assetKey===r.asset_key);if(!map)return false;if(manifest)return manifest.sha256===r.sha256&&manifest.sizeBytes===r.size_bytes;const latest=await first("SELECT id FROM media_assets WHERE event_id=? AND asset_key=? AND state='ready' ORDER BY revision DESC LIMIT 1",eventId,r.asset_key);return latest?.id===r.id}
+ const visible=async(r:Row)=>{const publicEvent=await first("SELECT v.* FROM events e JOIN event_versions v ON v.event_id=e.id AND v.revision=e.public_revision WHERE e.id=? AND e.visibility='public' AND v.status='published' AND e.status!='cancelled'",eventId);if(!publicEvent)return false;const p=JSON.parse(publicEvent.event_json),map=p.event.extensions?.convention.maps.find((m:Row)=>m.assetKey===r.asset_key&&m.width===r.width&&m.height===r.height);const manifest=p.assetManifest?.find((m:Row)=>m.assetKey===r.asset_key);if(!map)return false;if(manifest)return manifest.sha256===r.sha256&&manifest.sizeBytes===r.size_bytes;const latest=await first("SELECT id FROM media_assets WHERE event_id=? AND asset_key=? AND state='ready' ORDER BY revision DESC LIMIT 1",eventId,r.asset_key);return latest?.id===r.id}
  if(!id&&method==='GET'){const rows=(await DB.prepare("SELECT * FROM media_assets WHERE event_id=? AND state='ready' ORDER BY created_at LIMIT 50").bind(eventId).all<Row>()).results,result=[];for(const r of rows)if(await visible(r))result.push(mediaDTO(r));return {handled:true,data:result}}
  const r=await first('SELECT * FROM media_assets WHERE id=? AND event_id=?',id,eventId);if(!r)ctx.fail('NOT_FOUND','地图不存在',404)
  if(action==='read-ticket'&&method==='GET'){

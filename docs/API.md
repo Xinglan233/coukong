@@ -56,3 +56,15 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 | 507 STORAGE_BUDGET_EXCEEDED | 共享预算已满；保留草稿，稍后重试或删除不用的本人记录，不自动付费 |
 
 相同操作ID携带不同请求内容仍返回409 VERSION_CONFLICT。活动空间版本变化也须核对后重新保存。上述合同由本地代码与测试落实；不能据此宣称新模块已通过云端或现场验收。
+
+## 私人日常活动与个人关联（0007迁移，本地分支）
+
+`POST /private-events` 需创建码、operationId、客户端预先保存的独立ownerToken和personalToken、name、eventPackage/raw；原子建立未公开的通用活动及本人个人记录。返回`{activity,personal}`，两种权限分离，不凭名字认领。私人活动不进入公开列表或管理员公共活动列表，public_revision始终NULL，旧Worker回滚后也不能公开它。
+
+私人`GET /events/:id`及`GET /events/:id/event-export`只允许该活动owner、个人或有效来源小队能力。`PATCH /events/:id`仅owner，带expectedRevision、operationId和完整活动包，时间变化保留个人旧计划并要求复核；旧小队快照不变。私人活动仍受创建保护、限流及共享128MiB预算，不能公开地图扩展。
+
+从私人活动建队时，`POST /groups`另带sourceEventId、sourceEventRevision与sourceEventToken；服务端验证真实来源权限。来源能力只用于该请求，不写URL，返回GroupDTO含sourceVisibility。公开来源活动仍由管理员维护；私人队长编辑本队快照不会改原私人活动。
+
+`POST /events/:eventId/personal/:id/link`需本人Bearer及memberId/memberToken；同时证明个人和本队员身份，且小队必须同活动。GET `.../links`只列本人关系；DELETE `.../links`带memberId取消本人关系。关联不共享收藏或路线，不提交任何回复。UI“同步本人计划到此小队”只在用户确认后替换本队本机草稿；仍需另点“提交”，可以逐队操作。
+
+0007目前仅隔离本地D1应用，新云端迁移和最新前后端完整链路尚未执行，不把本节当上线声明。

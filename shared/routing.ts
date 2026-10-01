@@ -1,4 +1,4 @@
-import type {ConventionData,Point,RoutingGraph,RouteEdge} from './activity-contract'
+import type {ConventionData,Point,RoutingGraph,RouteEdge,PersonalRoute} from './activity-contract'
 export interface PathResult {status:'ok'|'unreachable'|'stale'|'missing_location';nodeIds:string[];edgeIds:string[];geometry:Point[];distanceMeters:number|null;estimatedTravelSeconds:number|null;weightUnit:'seconds'|'relative'}
 const empty=(status:PathResult['status']):PathResult=>({status,nodeIds:[],edgeIds:[],geometry:[],distanceMeters:null,estimatedTravelSeconds:null,weightUnit:'relative'})
 function dimensions(width:number,height:number){if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)throw new RangeError('图像尺寸须为正数')}
@@ -36,4 +36,25 @@ export function requiredTravelMinutes(travelSeconds:number|null,afterBuffer:numb
  if(travelSeconds===null)return null
  for(const value of [travelSeconds,afterBuffer,beforeBuffer,stayMinutes,queueMinutes])if(!Number.isFinite(value)||value<0)throw new RangeError('时间须为非负数')
  return Math.max(travelSeconds/60,afterBuffer+beforeBuffer)+stayMinutes+queueMinutes
+}
+
+export interface RouteWindowResult {status:'fits'|'too_short'|'unknown'|'stale';requiredMinutes:number|null;start?:string;end?:string}
+// Windows already exclude personal buffers; this check never deducts them again.
+// Unspecified dwell/queue is unknown, so users must explicitly enter zero.
+export function routeWindowFit(convention:ConventionData,route:PersonalRoute,currentSpatialRevision:number,window:{date:string;start:string;end:string}):RouteWindowResult{
+ const result=(status:RouteWindowResult['status'],requiredMinutes:number|null=null):RouteWindowResult=>({status,requiredMinutes})
+ if(route.spatialRevision!==currentSpatialRevision)return result('stale')
+ const stops=route.stops.filter(s=>!s.visited)
+ if(!route.startPoiId||!route.mapId||!stops.length||window.date!==route.date)return result('unknown')
+ if(stops.some(s=>[s.stayMinutes,s.queueMinutes].some(v=>v===undefined||!Number.isInteger(v)||v<0||v>1440)))return result('unknown')
+ const path=routeFixedOrder(convention,route.mapId,[route.startPoiId,...stops.map(s=>s.poiId)],route.date)
+ if(path.segments.some(s=>s.status==='stale'))return result('stale')
+ if(path.estimatedTravelSeconds===null)return result('unknown')
+ const minutes=path.estimatedTravelSeconds/60+stops.reduce((sum,s)=>sum+s.stayMinutes!+s.queueMinutes!,0)
+ const parse=(t:string)=>{if(!/^(?:(?:[01]\d|2[0-3]):[0-5]\d|24:00)$/.test(t))return NaN;const [h,m]=t.split(':').map(Number);return h*60+m}
+ const start=parse(window.start),end=parse(window.end)
+ if(!Number.isFinite(start)||!Number.isFinite(end)||start>=1440||end<=start)return result('unknown')
+ const length=Math.max(1,Math.ceil(minutes)),finish=start+length
+ if(finish>end)return result('too_short',minutes)
+ return{status:'fits',requiredMinutes:minutes,start:window.start,end:`${String(Math.floor(finish/60)).padStart(2,'0')}:${String(finish%60).padStart(2,'0')}`}
 }

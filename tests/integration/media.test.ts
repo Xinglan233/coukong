@@ -15,7 +15,7 @@ beforeAll(async()=>{
  mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:built.outputFiles[0].text,compatibilityDate:'2026-09-01',d1Databases:['DB']}))
  const db=await mf.getD1Database('DB');for(const file of readdirSync('worker/migrations').filter(x=>x.endsWith('.sql')).sort())await db.exec(readFileSync('worker/migrations/'+file,'utf8').replace(/\n/g,' '))
  await db.prepare('INSERT INTO admin_sessions VALUES(?,?)').bind(hash(auth),Date.now()+3600000).run()
- await db.prepare("INSERT INTO events VALUES(?,1,0,0,'draft',?,NULL,'seed','seed',?,?)").bind(eventId,JSON.stringify(pkg),new Date().toISOString(),new Date().toISOString()).run()
+ await db.prepare("INSERT INTO events(id,revision,schedule_revision,spatial_revision,status,event_json,public_revision,last_op,last_digest,created_at,updated_at) VALUES(?,1,0,0,'draft',?,NULL,'seed','seed',?,?)").bind(eventId,JSON.stringify(pkg),new Date().toISOString(),new Date().toISOString()).run()
 },30000)
 afterAll(async()=>{await mf?.dispose()})
 const reserve=(uploadToken:string,assetKey='map-'+randomUUID())=>({uploadToken,assetKey,operationId:randomUUID(),sizeBytes:100,mimeType:'image/png'})

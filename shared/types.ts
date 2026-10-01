@@ -18,7 +18,7 @@ export interface ParticipantResponse { name: string; presence: { date: string; i
 export type ParticipantStatus = 'unsubmitted' | 'confirmed' | 'needs_review'
 export interface MemberSummary { id: string; name: string; status: ParticipantStatus; revision: number; confirmedScheduleRevision: number | null; updatedAt: string; submittedAt: string | null }
 export interface MemberResponseDTO { member: MemberSummary; response: ParticipantResponse | null }
-export interface GroupDTO { id: string; title: string; status: 'open' | 'closed' | 'archived'; revision: number; scheduleRevision: number; eventPackage: EventPackage; createdAt: string; updatedAt: string; sourceEventId?: string; sourceEventRevision?: number; sourceScheduleRevision?: number; sourceSpatialRevision?: number; sourceStatus?: import('./activity-contract').EventStatus; currentSourceRevision?: number }
+export interface GroupDTO { id: string; title: string; status: 'open' | 'closed' | 'archived'; revision: number; scheduleRevision: number; eventPackage: EventPackage; createdAt: string; updatedAt: string; sourceVisibility?:'public'|'private'|null;sourceEventId?: string; sourceEventRevision?: number; sourceScheduleRevision?: number; sourceSpatialRevision?: number; sourceStatus?: import('./activity-contract').EventStatus; currentSourceRevision?: number }
 export interface AvailabilityPerson extends MemberSummary { availability: DatedInterval[] }
 export interface AvailabilityDTO { members: AvailabilityPerson[]; scheduleRevision: number; updatedAt: string }
 export interface EventPreview { eventPackage: EventPackage; changed: boolean; scheduleChanged: boolean; warnings: string[]; added: string[]; removed: string[]; modified: string[]; expectedRevision: number }

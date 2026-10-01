@@ -1,0 +1,59 @@
+{
+  "kind": "coukong.event",
+  "schemaVersion": 1,
+  "event": {
+    "id": "campus-day-demo",
+    "title": "校园活动日示例",
+    "description": "用来演示导入格式；场次均为虚构示例。",
+    "timezone": "Asia/Shanghai",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03",
+    "location": "示例活动场地",
+    "defaultBufferMinutes": 5,
+    "defaultMinSlotMinutes": 15,
+    "defaultSelectionStepMinutes": 5,
+    "days": [
+      {
+        "date": "2026-10-03",
+        "openIntervals": [
+          {
+            "start": "09:00",
+            "end": "12:00"
+          },
+          {
+            "start": "13:00",
+            "end": "18:00"
+          }
+        ]
+      }
+    ],
+    "activities": [
+      {
+        "id": "demo-workshop",
+        "title": "手作体验示例",
+        "location": "示例 A 区",
+        "tags": [
+          "体验"
+        ],
+        "sessions": [
+          {
+            "id": "demo-workshop-1003-01",
+            "date": "2026-10-03",
+            "start": "12:05",
+            "end": "12:30"
+          },
+          {
+            "id": "demo-workshop-1003-02",
+            "date": "2026-10-03",
+            "start": "13:07",
+            "end": "13:52"
+          }
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "isExample": true,
+    "sourceNote": "演示并行结构与非整刻时间；不是学校或展会的真实安排。"
+  }
+}

@@ -11,7 +11,8 @@ export interface RouteEdge { id: string; from: string; to: string; bidirectional
 export interface RoutingGraph { id: string; mapId: string; mapRevision: number; revision: number; nodes: RouteNode[]; edges: RouteEdge[]; sourceNote?: string }
 export interface ConventionData { maps: MapData[]; pois: POI[]; routingGraphs: RoutingGraph[] }
 export interface AssetManifestEntry { assetKey: string; mimeType: 'image/png' | 'image/jpeg' | 'image/webp'; width: number; height: number; sizeBytes: number; sha256: string }
-export interface ActivityDTO { id: string; revision: number; scheduleRevision: number; spatialRevision: number; status: EventStatus; eventPackage: EventPackage; updatedAt: string }
+export interface ActivityDTO { id: string; revision: number; scheduleRevision: number; spatialRevision: number; status: EventStatus; visibility?: 'public' | 'private'; eventPackage: EventPackage; updatedAt: string }
+export interface PrivateActivityCreateResult { activity: ActivityDTO; personal: PersonalDTO }
 export interface Favorite { poiId: string; visited: boolean }
 export interface RouteStop { poiId: string; visited: boolean; stayMinutes?: number; queueMinutes?: number }
 export interface PersonalRoute { date: string; mapId?: string; startPoiId?: string; stops: RouteStop[]; spatialRevision: number }

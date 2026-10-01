@@ -1,0 +1,1155 @@
+{
+  "scope": "Bounded fictional Node-process benchmark; not Cloudflare CPU, database or browser evidence",
+  "createdAt": "2026-10-01T00:42:13.383Z",
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "shape": {
+    "days": 5,
+    "pois": 1000,
+    "activities": 1000,
+    "sessions": 1000,
+    "nodes": 2000,
+    "edges": 4000,
+    "members": 50,
+    "busyPerMember": 500,
+    "totalBusy": 25000,
+    "routeStops": 100,
+    "routeSegments": 99,
+    "maps": 1,
+    "packageBytes": 820320,
+    "packageLimitBytes": 1048576
+  },
+  "coldParseSchemaSemantics": {
+    "wallMs": 61.826291000000005,
+    "processCpuMs": 93.415,
+    "rssBytes": 103366656
+  },
+  "strictParse": {
+    "iterations": 10,
+    "wallMs": {
+      "min": 15.422958999999992,
+      "p50": 19.65425000000002,
+      "p95": 31.26245800000001,
+      "max": 31.26245800000001
+    },
+    "processCpuMs": {
+      "min": 17.428,
+      "p50": 23.66,
+      "p95": 68.643,
+      "max": 68.643
+    },
+    "maxObservedRssBytes": 189153280,
+    "samples": [
+      {
+        "wallMs": 31.26245800000001,
+        "processCpuMs": 68.643,
+        "rssBytes": 110968832
+      },
+      {
+        "wallMs": 23.227791999999994,
+        "processCpuMs": 42.673,
+        "rssBytes": 127074304
+      },
+      {
+        "wallMs": 19.65425000000002,
+        "processCpuMs": 21.353,
+        "rssBytes": 128958464
+      },
+      {
+        "wallMs": 16.473832999999985,
+        "processCpuMs": 17.428,
+        "rssBytes": 143015936
+      },
+      {
+        "wallMs": 24.484375,
+        "processCpuMs": 24.53,
+        "rssBytes": 159629312
+      },
+      {
+        "wallMs": 19.52166699999998,
+        "processCpuMs": 23.66,
+        "rssBytes": 172228608
+      },
+      {
+        "wallMs": 15.422958999999992,
+        "processCpuMs": 20.804,
+        "rssBytes": 176373760
+      },
+      {
+        "wallMs": 16.382124999999974,
+        "processCpuMs": 22.308,
+        "rssBytes": 180633600
+      },
+      {
+        "wallMs": 20.77962500000001,
+        "processCpuMs": 25.38,
+        "rssBytes": 184893440
+      },
+      {
+        "wallMs": 16.63225,
+        "processCpuMs": 20.86,
+        "rssBytes": 189153280
+      }
+    ]
+  },
+  "schemaAndSemantics": {
+    "iterations": 10,
+    "wallMs": {
+      "min": 16.861374999999953,
+      "p50": 23.34491700000001,
+      "p95": 44.54312500000003,
+      "max": 44.54312500000003
+    },
+    "processCpuMs": {
+      "min": 15.793,
+      "p50": 25.651,
+      "p95": 62.734,
+      "max": 62.734
+    },
+    "maxObservedRssBytes": 207044608,
+    "samples": [
+      {
+        "wallMs": 22.823500000000024,
+        "processCpuMs": 27.475,
+        "rssBytes": 191741952
+      },
+      {
+        "wallMs": 23.12729200000001,
+        "processCpuMs": 38.66,
+        "rssBytes": 193658880
+      },
+      {
+        "wallMs": 38.09974999999997,
+        "processCpuMs": 62.734,
+        "rssBytes": 200884224
+      },
+      {
+        "wallMs": 44.54312500000003,
+        "processCpuMs": 53.812,
+        "rssBytes": 202391552
+      },
+      {
+        "wallMs": 23.34491700000001,
+        "processCpuMs": 22.923,
+        "rssBytes": 202424320
+      },
+      {
+        "wallMs": 25.44958399999996,
+        "processCpuMs": 25.651,
+        "rssBytes": 202653696
+      },
+      {
+        "wallMs": 29.088625000000036,
+        "processCpuMs": 24.664,
+        "rssBytes": 206995456
+      },
+      {
+        "wallMs": 16.861374999999953,
+        "processCpuMs": 15.793,
+        "rssBytes": 206995456
+      },
+      {
+        "wallMs": 20.607792000000018,
+        "processCpuMs": 18.681,
+        "rssBytes": 206995456
+      },
+      {
+        "wallMs": 21.88041700000008,
+        "processCpuMs": 25.575,
+        "rssBytes": 207044608
+      }
+    ]
+  },
+  "fullParseSchemaSemantics": {
+    "iterations": 10,
+    "wallMs": {
+      "min": 30.566708000000062,
+      "p50": 35.64820800000007,
+      "p95": 41.83008300000006,
+      "max": 41.83008300000006
+    },
+    "processCpuMs": {
+      "min": 33.32,
+      "p50": 39.137,
+      "p95": 44.293,
+      "max": 44.293
+    },
+    "maxObservedRssBytes": 239190016,
+    "samples": [
+      {
+        "wallMs": 37.50958400000002,
+        "processCpuMs": 37.492,
+        "rssBytes": 207093760
+      },
+      {
+        "wallMs": 39.636082999999985,
+        "processCpuMs": 42.493,
+        "rssBytes": 208502784
+      },
+      {
+        "wallMs": 34.94612500000005,
+        "processCpuMs": 41.271,
+        "rssBytes": 215089152
+      },
+      {
+        "wallMs": 30.808208000000036,
+        "processCpuMs": 38.074,
+        "rssBytes": 218447872
+      },
+      {
+        "wallMs": 33.551874999999995,
+        "processCpuMs": 38.587,
+        "rssBytes": 222298112
+      },
+      {
+        "wallMs": 40.7164580000001,
+        "processCpuMs": 44.293,
+        "rssBytes": 225902592
+      },
+      {
+        "wallMs": 34.28141699999992,
+        "processCpuMs": 36.29,
+        "rssBytes": 229195776
+      },
+      {
+        "wallMs": 35.64820800000007,
+        "processCpuMs": 39.137,
+        "rssBytes": 232538112
+      },
+      {
+        "wallMs": 30.566708000000062,
+        "processCpuMs": 33.32,
+        "rssBytes": 235864064
+      },
+      {
+        "wallMs": 41.83008300000006,
+        "processCpuMs": 43.6,
+        "rssBytes": 239190016
+      }
+    ]
+  },
+  "fixedOrderDijkstra": {
+    "iterations": 3,
+    "wallMs": {
+      "min": 193.33837499999981,
+      "p50": 195.67099999999994,
+      "p95": 280.87924999999996,
+      "max": 280.87924999999996
+    },
+    "processCpuMs": {
+      "min": 221.824,
+      "p50": 302.695,
+      "p95": 306.932,
+      "max": 306.932
+    },
+    "maxObservedRssBytes": 289701888,
+    "samples": [
+      {
+        "wallMs": 195.67099999999994,
+        "processCpuMs": 306.932,
+        "rssBytes": 244498432
+      },
+      {
+        "wallMs": 280.87924999999996,
+        "processCpuMs": 302.695,
+        "rssBytes": 289701888
+      },
+      {
+        "wallMs": 193.33837499999981,
+        "processCpuMs": 221.824,
+        "rssBytes": 285163520
+      }
+    ]
+  },
+  "personalProjectionAnd50MemberIntersection": {
+    "iterations": 10,
+    "wallMs": {
+      "min": 47.01025000000027,
+      "p50": 55.96024999999986,
+      "p95": 81.54879200000005,
+      "max": 81.54879200000005
+    },
+    "processCpuMs": {
+      "min": 48.426,
+      "p50": 63.321,
+      "p95": 134.065,
+      "max": 134.065
+    },
+    "maxObservedRssBytes": 286228480,
+    "samples": [
+      {
+        "wallMs": 71.04279100000008,
+        "processCpuMs": 134.065,
+        "rssBytes": 286212096
+      },
+      {
+        "wallMs": 55.96024999999986,
+        "processCpuMs": 65.546,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 69.68916600000011,
+        "processCpuMs": 67.209,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 81.54879200000005,
+        "processCpuMs": 74.236,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 66.90350000000012,
+        "processCpuMs": 63.321,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 54.99883399999999,
+        "processCpuMs": 56.326,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 53.739250000000084,
+        "processCpuMs": 53.87,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 48.11291700000038,
+        "processCpuMs": 49.478,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 47.01025000000027,
+        "processCpuMs": 48.426,
+        "rssBytes": 286228480
+      },
+      {
+        "wallMs": 47.16416600000002,
+        "processCpuMs": 48.889,
+        "rssBytes": 286228480
+      }
+    ]
+  },
+  "assertions": {
+    "exactMinuteSample": [
+      [
+        "09:15",
+        "09:40"
+      ],
+      [
+        "09:55",
+        "10:02"
+      ],
+      [
+        "10:27",
+        "11:50"
+      ]
+    ],
+    "nonRoundedSession": [
+      "13:07",
+      "13:52"
+    ],
+    "selectedMemberCount": 50,
+    "commonIntervals": 497,
+    "oversizeTextRejected": {
+      "bytes": 1837320,
+      "limit": 1048576
+    },
+    "poi1001Rejected": true,
+    "node2001Rejected": true,
+    "edge4001Rejected": true
+  },
+  "memory": {
+    "initialRssBytes": 69156864,
+    "finalRssBytes": 300875776,
+    "processLifetimeMaxRssBytes": 300875776
+  },
+  "notVerified": [
+    "Cloudflare Workers Free 10ms CPU/request",
+    "Cloudflare wall-clock/CPU or quota at this maximum scale",
+    "Browser 1000-marker rendering or mobile interaction",
+    "Five 12MiB/24MP image processing and Blob capacity"
+  ],
+  "interpretation": "The maximum counters can fit within 1MiB only with bounded concise content; individually valid long descriptions can exceed the independent byte cap and are rejected, never truncated.",
+  "localWorker": {
+    "scope": "Real local Miniflare/workerd/D1 only; ephemeral DB. No remote CPU/quota/browser claims",
+    "workerBundleSha256": "55f370a6ad23a4e72f2be1d5a6cb6303c6d0272739e87250c2d9c542c5a2daa8",
+    "migrations": [
+      "0001_initial.sql",
+      "0002_audit.sql",
+      "0003_operation_ownership.sql",
+      "0004_management_idempotency.sql",
+      "0005_activity_personal.sql",
+      "0006_personal_storage_budget.sql",
+      "0007_private_activity.sql"
+    ],
+    "memberJoins": 50,
+    "memberSubmissions": 50,
+    "confirmedMembers": 50,
+    "commonIntervals": 497,
+    "requestWallMs": {
+      "all": {
+        "count": 105,
+        "min": 5.565750000000207,
+        "p50": 15.233332999999675,
+        "max": 110.73383299999978
+      },
+      "joins": {
+        "count": 50,
+        "min": 7.063249999999698,
+        "p50": 8.546707999999853,
+        "max": 15.128541000000041
+      },
+      "submissions": {
+        "count": 50,
+        "min": 14.542417000000114,
+        "p50": 16.790375000000495,
+        "max": 26.355167000000165
+      }
+    },
+    "measurements": [
+      {
+        "name": "POST /admin/session",
+        "status": 200,
+        "wallMs": 5.565750000000207,
+        "harnessProcessCpuMs": 2.959,
+        "responseBytes": 49
+      },
+      {
+        "name": "POST /admin/events",
+        "status": 200,
+        "wallMs": 110.73383299999978,
+        "harnessProcessCpuMs": 11.002,
+        "responseBytes": 820484
+      },
+      {
+        "name": "POST /groups",
+        "status": 200,
+        "wallMs": 82.88462500000014,
+        "harnessProcessCpuMs": 10.016,
+        "responseBytes": 820559
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 9.342541999999867,
+        "harnessProcessCpuMs": 1.694,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 20.296707999999853,
+        "harnessProcessCpuMs": 1.716,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 9.427749999999833,
+        "harnessProcessCpuMs": 1.265,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 23.854667000000063,
+        "harnessProcessCpuMs": 1.568,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.878041999999823,
+        "harnessProcessCpuMs": 4.102,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 25.40862500000003,
+        "harnessProcessCpuMs": 3.024,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 11.885709000000134,
+        "harnessProcessCpuMs": 2.106,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 19.225708999999824,
+        "harnessProcessCpuMs": 3.138,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 11.24829200000022,
+        "harnessProcessCpuMs": 2.547,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.293333000000075,
+        "harnessProcessCpuMs": 1.689,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.685750000000098,
+        "harnessProcessCpuMs": 1.394,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.637457999999697,
+        "harnessProcessCpuMs": 1.571,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.623041999999714,
+        "harnessProcessCpuMs": 1.395,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.16995799999995,
+        "harnessProcessCpuMs": 2.194,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.483707999999751,
+        "harnessProcessCpuMs": 1.646,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 20.687583999999788,
+        "harnessProcessCpuMs": 2.288,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 9.062416999999641,
+        "harnessProcessCpuMs": 1.135,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.052624999999807,
+        "harnessProcessCpuMs": 1.861,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.908124999999927,
+        "harnessProcessCpuMs": 1.44,
+        "responseBytes": 204
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.650082999999995,
+        "harnessProcessCpuMs": 1.621,
+        "responseBytes": 55598
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.858124999999745,
+        "harnessProcessCpuMs": 1.095,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.875,
+        "harnessProcessCpuMs": 1.568,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.818374999999833,
+        "harnessProcessCpuMs": 1.148,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.798875000000407,
+        "harnessProcessCpuMs": 2.236,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 9.301082999999835,
+        "harnessProcessCpuMs": 1.237,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.00683300000037,
+        "harnessProcessCpuMs": 1.358,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.467249999999694,
+        "harnessProcessCpuMs": 1.048,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.53879199999983,
+        "harnessProcessCpuMs": 1.588,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.817125000000033,
+        "harnessProcessCpuMs": 1.958,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 18.309250000000247,
+        "harnessProcessCpuMs": 1.475,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.845832999999857,
+        "harnessProcessCpuMs": 1.375,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.53829199999973,
+        "harnessProcessCpuMs": 1.77,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.798917000000074,
+        "harnessProcessCpuMs": 1.6,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.418709000000035,
+        "harnessProcessCpuMs": 1.49,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.856624999999894,
+        "harnessProcessCpuMs": 1.175,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 18.42116699999997,
+        "harnessProcessCpuMs": 2.401,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 10.913292000000183,
+        "harnessProcessCpuMs": 2.26,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.43558299999995,
+        "harnessProcessCpuMs": 1.514,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 11.544832999999926,
+        "harnessProcessCpuMs": 1.802,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 26.355167000000165,
+        "harnessProcessCpuMs": 4.015,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 14.060249999999996,
+        "harnessProcessCpuMs": 1.737,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 18.05008399999997,
+        "harnessProcessCpuMs": 8.286,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.083165999999892,
+        "harnessProcessCpuMs": 1.603,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.3315419999999,
+        "harnessProcessCpuMs": 2.141,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.699833000000126,
+        "harnessProcessCpuMs": 1.252,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.836250000000291,
+        "harnessProcessCpuMs": 1.977,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.387459000000035,
+        "harnessProcessCpuMs": 1.403,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.930374999999913,
+        "harnessProcessCpuMs": 2.369,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.310624999999618,
+        "harnessProcessCpuMs": 1.22,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.478874999999789,
+        "harnessProcessCpuMs": 1.22,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.779875000000175,
+        "harnessProcessCpuMs": 2.154,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.237583000000086,
+        "harnessProcessCpuMs": 1.247,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.386457999999948,
+        "harnessProcessCpuMs": 0.972,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.403291000000081,
+        "harnessProcessCpuMs": 1.926,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.907208000000082,
+        "harnessProcessCpuMs": 1.364,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.384667000000263,
+        "harnessProcessCpuMs": 1.961,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.15020800000002,
+        "harnessProcessCpuMs": 1.049,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.411416999999801,
+        "harnessProcessCpuMs": 1.323,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.063249999999698,
+        "harnessProcessCpuMs": 1.153,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.360458999999992,
+        "harnessProcessCpuMs": 1.603,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.149582999999893,
+        "harnessProcessCpuMs": 1.119,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.233332999999675,
+        "harnessProcessCpuMs": 1.231,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.71520799999962,
+        "harnessProcessCpuMs": 0.958,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 14.542417000000114,
+        "harnessProcessCpuMs": 1.416,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.199959000000035,
+        "harnessProcessCpuMs": 1.315,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.609542000000147,
+        "harnessProcessCpuMs": 1.28,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.458458999999948,
+        "harnessProcessCpuMs": 1.344,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.241417000000183,
+        "harnessProcessCpuMs": 1.304,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.838916000000154,
+        "harnessProcessCpuMs": 1.321,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 23.77074999999968,
+        "harnessProcessCpuMs": 1.625,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.958958999999595,
+        "harnessProcessCpuMs": 1.356,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.760541000000103,
+        "harnessProcessCpuMs": 2.104,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.936999999999898,
+        "harnessProcessCpuMs": 1.091,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.35912499999995,
+        "harnessProcessCpuMs": 1.583,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.546707999999853,
+        "harnessProcessCpuMs": 1.299,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.79175000000032,
+        "harnessProcessCpuMs": 2.303,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.325165999999626,
+        "harnessProcessCpuMs": 1.87,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 18.59141600000021,
+        "harnessProcessCpuMs": 2.015,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 11.90350000000035,
+        "harnessProcessCpuMs": 1.995,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 25.273249999999734,
+        "harnessProcessCpuMs": 2.143,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.733499999999367,
+        "harnessProcessCpuMs": 1.528,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 21.891042000000198,
+        "harnessProcessCpuMs": 2.111,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 10.245208000000275,
+        "harnessProcessCpuMs": 1.88,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.643874999999753,
+        "harnessProcessCpuMs": 2.409,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 10.34704099999999,
+        "harnessProcessCpuMs": 2.015,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 15.888458000000355,
+        "harnessProcessCpuMs": 1.469,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 15.128541000000041,
+        "harnessProcessCpuMs": 59.164,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.250750000000153,
+        "harnessProcessCpuMs": 1.741,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.9887079999998605,
+        "harnessProcessCpuMs": 1.403,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.638167000000067,
+        "harnessProcessCpuMs": 1.87,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 9.27770799999962,
+        "harnessProcessCpuMs": 1.386,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.248625000000175,
+        "harnessProcessCpuMs": 1.906,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.897541000000274,
+        "harnessProcessCpuMs": 2.891,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 17.00012499999957,
+        "harnessProcessCpuMs": 2.106,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.38129200000003,
+        "harnessProcessCpuMs": 1.276,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.75129199999992,
+        "harnessProcessCpuMs": 1.931,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 7.960584000000381,
+        "harnessProcessCpuMs": 1.284,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.790375000000495,
+        "harnessProcessCpuMs": 2.008,
+        "responseBytes": 55600
+      },
+      {
+        "name": "POST /groups/:id/join",
+        "status": 200,
+        "wallMs": 8.481582999999773,
+        "harnessProcessCpuMs": 1.449,
+        "responseBytes": 205
+      },
+      {
+        "name": "PUT /groups/:id/members/:id/response",
+        "status": 200,
+        "wallMs": 16.699542000000292,
+        "harnessProcessCpuMs": 1.481,
+        "responseBytes": 55600
+      },
+      {
+        "name": "GET /groups/:id/availability",
+        "status": 200,
+        "wallMs": 60.24083300000075,
+        "harnessProcessCpuMs": 6.575,
+        "responseBytes": 1303822
+      },
+      {
+        "name": "GET /groups/:id",
+        "status": 200,
+        "wallMs": 15.806416999999783,
+        "harnessProcessCpuMs": 4.134,
+        "responseBytes": 820559
+      }
+    ],
+    "notes": [
+      "Harness process CPU does not include a reliable isolated workerd request CPU measurement",
+      "Draft API accepted the maximum counters; no media activation or public publication was simulated",
+      "No D1 per-query Cloudflare rows/CPU quota evidence is available from this local run"
+    ]
+  }
+}

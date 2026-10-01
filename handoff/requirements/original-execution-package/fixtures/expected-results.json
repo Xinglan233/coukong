@@ -1,0 +1,38 @@
+{
+  "unknown-version.json": {
+    "expected": "reject",
+    "stage": "schema"
+  },
+  "invalid-minute.json": {
+    "expected": "reject",
+    "stage": "schema"
+  },
+  "duplicate-session-id.json": {
+    "expected": "reject",
+    "stage": "semantic"
+  },
+  "session-outside-open.json": {
+    "expected": "reject",
+    "stage": "semantic"
+  },
+  "missing-day.json": {
+    "expected": "reject",
+    "stage": "semantic"
+  },
+  "overlapping-open.json": {
+    "expected": "reject",
+    "stage": "semantic"
+  },
+  "reversed-interval.json": {
+    "expected": "reject",
+    "stage": "semantic"
+  },
+  "blank-title.json": {
+    "expected": "reject",
+    "stage": "semantic"
+  },
+  "duplicate-object-key.json": {
+    "expected": "reject",
+    "stage": "parse"
+  }
+}

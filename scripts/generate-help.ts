@@ -19,7 +19,7 @@ function render(text:string):string {
  }
  if(table)result.push('</table></div>');return result.join('\n')
 }
-const pages=[['security','../SECURITY.md'],['changelog','../CHANGELOG.md'],['','GETTING_STARTED.md'],['event-json','EVENT_JSON_FORMAT.md'],...readdirSync(resolve(root,'docs')).filter(x=>x.endsWith('.md')).map(x=>[x.replace('.md','').toLowerCase(),x])]
+const pages=[['security','../SECURITY.md'],['changelog','../CHANGELOG.md'],['','GETTING_STARTED.md'],['event-json','EVENT_JSON_FORMAT.md'],...readdirSync(resolve(root,'docs')).filter(x=>x.endsWith('.md')&&x!=='HANDOFF.md').map(x=>[x.replace('.md','').toLowerCase(),x])]
 for(const [slug,file] of pages){const dir=resolve(root,'public/help',slug);mkdirSync(dir,{recursive:true});writeFileSync(resolve(dir,'index.html'),`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main>${render(readFileSync(resolve(root,'docs',file),'utf8'))}</main></div></body></html>`) }
 // The app stylesheet is the sole source of colors, type, controls and theme tokens.
 writeFileSync(resolve(root,'public/help/help.css'),readFileSync(resolve(root,'src/styles.css'),'utf8')+`
