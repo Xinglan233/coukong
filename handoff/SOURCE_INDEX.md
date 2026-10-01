@@ -49,7 +49,7 @@
 
 | 相对路径 | 字节数 | SHA-256 |
 | --- | --- | --- |
-| `CURRENT_STATE.md` | 6936 | `81458c62e2c970df8f70dd1f1208ea34fa58f89d8e57b90c5b93a25e3363b61c` |
+| `CURRENT_STATE.md` | 7658 | `aaae88c2832abb4328a66d9b5ce7d11c4ab2da5703549f99d8f8bbb4b33e88ca` |
 | `FIGMA_REFERENCE.md` | 4742 | `7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c` |
 | `LOCAL_CHANGES_DECISION.md` | 1103 | `77f4128ba1be3884d06e3ea738eb3a9024b185d190d6aa80588d6399068fcc25` |
 | `README.md` | 1166 | `260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b` |
@@ -70,7 +70,7 @@
 | `references/微信图片_20260930142714_12435_10.jpg` | 153567 | `731b39dad95f7598f16b62cf796085d0e21790aba61e8485ed1a1468fad173d7` |
 | `requirements/activity-and-visual/activity-update.md` | 50163 | `df58ac0e7f7987759cd4ea237b012e1584fcae58eb860ad60da4a429dd2b71af` |
 | `requirements/activity-and-visual/visual-style-update.md` | 16486 | `a18f83855e6dad190b47c6fe7b6a42e24acc4dd25069ded07c264eecb12e02e8` |
-| `requirements/latest-decisions.md` | 15215 | `e90e0f3ab0394f5cf6049a79b15881bca82bffaf59eeaec96c6dafa284f68956` |
+| `requirements/latest-decisions.md` | 15357 | `eb3643fbc064f03b8156bd42616426aae7a6cce305b2da5c2be9c7ce0e3981ad` |
 | `requirements/original-execution-package/HANDOFF_CHECKS.md` | 1102 | `37875b2f2879f8642010d10db605feb4c33d880a340367aae02fd773d7840ebb` |
 | `requirements/original-execution-package/PROMPT.md` | 60312 | `5f3b8bf2897a7ecf049cf1bb21b0664c7a9b2629cd95d28778e49e6dcc36dfdf` |
 | `requirements/original-execution-package/START_HERE.md` | 1746 | `108820a3c6de2cdf5cce98f3811ca66df1e484d19908bc7c9f142727e08873bd` |

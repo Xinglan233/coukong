@@ -23,7 +23,19 @@ test('普通入口不展示管理或帮助，底栏与我的文字遵守Figma对
   await page.setViewportSize({width,height:900});await settleTheme(page,scheme)
   for(const name of ['探索','计划','同行','我的']){
    await tab(page,name)
-   if(name==='计划')await expect(page.getByText('个人计划不要求先加入小队',{exact:true})).toHaveCount(0)
+   if(name==='计划'){
+    await expect(page.getByText('个人计划不要求先加入小队',{exact:true})).toHaveCount(0)
+    const contrast=await page.locator('.plan-add').evaluate(button=>{
+     const luminance=(value:string)=>{
+      const rgb=value.match(/[\d.]+/g)!.slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+      return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722
+     }
+     const text=luminance(getComputedStyle(button).color),background=luminance(getComputedStyle(document.body).backgroundColor)
+     return (Math.max(text,background)+.05)/(Math.min(text,background)+.05)
+    })
+    expect.soft(contrast,`${width}/${scheme}手动添加文字可读`).toBeGreaterThanOrEqual(4.5)
+    await page.screenshot({animations:'disabled',path:`${evidence}/plan-${width}-${scheme}.png`})
+   }
    const geometry=await page.locator('.tabbar').evaluate(nav=>{
     const n=nav.getBoundingClientRect(),b=nav.querySelector('.on')!.getBoundingClientRect()
     return {top:b.top-n.top,bottom:n.bottom-b.bottom,height:b.height}

@@ -1,12 +1,12 @@
 {
-  "generatedAtUTC": "2026-10-01T14:37:48.664476+00:00",
+  "generatedAtUTC": "2026-10-01T14:57:50.467248+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
   "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
     {
       "path": "CURRENT_STATE.md",
-      "bytes": 6936,
-      "sha256": "81458c62e2c970df8f70dd1f1208ea34fa58f89d8e57b90c5b93a25e3363b61c"
+      "bytes": 7658,
+      "sha256": "aaae88c2832abb4328a66d9b5ce7d11c4ab2da5703549f99d8f8bbb4b33e88ca"
     },
     {
       "path": "FIGMA_REFERENCE.md",
@@ -110,8 +110,8 @@
     },
     {
       "path": "requirements/latest-decisions.md",
-      "bytes": 15215,
-      "sha256": "e90e0f3ab0394f5cf6049a79b15881bca82bffaf59eeaec96c6dafa284f68956"
+      "bytes": 15357,
+      "sha256": "eb3643fbc064f03b8156bd42616426aae7a6cce305b2da5c2be9c7ce0e3981ad"
     },
     {
       "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",
@@ -211,7 +211,7 @@
     {
       "path": "SOURCE_INDEX.md",
       "bytes": 9723,
-      "sha256": "1cfd49d85d3a9794033c4c42899e0597e0947e3eb243ba57aec1bbee0bb511dc"
+      "sha256": "5a76c2b37da937331b5225b78ce08e8d1d8be42f373871d67327b20188c6a5ce"
     }
   ]
 }

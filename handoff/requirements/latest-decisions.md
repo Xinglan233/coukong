@@ -108,5 +108,5 @@
 - “1.没必要加”（Sentinel_a9d2794396408191aca667e8293a94db）的实际元素为个人计划下方“个人计划不要求先加入小队”，应删除常驻兜底；真实已保存、本机草稿、离线和冲突反馈保留。截图 `references/figma-feedback-redundant-note.png`，Library `libfile_a7a0e7d5227881919d61c2ab26c81bca`。
 - “2.靠太近”同一消息的实际元素为邀请输入框下方“打开组织者提供的完整邀请链接。”，只补既有Figma页脚间距，不新增入口。截图 `references/figma-feedback-invite-spacing.png`，Library `libfile_fd89950ef73c81918502f807c1620108`。
 - “夜间模式这个太跳了”（Sentinel_fca342dcabbc8191b48b7c864fb74100）的真实深色计划页中，日期选中条为大面积近白色。指定Figma原稿也以bg-ink/text-bg反转；本轮尚未取得Figma局部修订，不用自创色值宣称解决。截图 `references/figma-feedback-dark-plan.png`，Library `libfile_a02be452fa508191ab7a10f8508fda6b`。这三图已消费端官方物化并逐张实际查看，图像像素不等于CSS视口。
-- 用户授权在其正常已登录Mac浏览器向该Figma Make文件的agent沟通缺失核心及局部设计，不外发秘密、不购买、不改变共享或全站重造。当前AppleEvents连接不可用，尚未实际发送局部修改；未启用浏览器JavaScript控制或其他安全设置。
+- 用户授权在其正常已登录Mac浏览器向该Figma Make文件的agent沟通缺失核心及局部设计，不外发秘密、不购买、不改变共享或全站重造。普通Safari访问现已在允许环境恢复，但Figma输入框非空，未覆盖用户尚未发送的内容；进一步读取草稿类型/长度被自动审批拒绝后已停止。尚未发送局部修改，未启用浏览器JavaScript控制或其他安全设置。
 - 第三次临时预览访问只绑定5d598部署，2026-10-01 20:57:46上海生成，固定23小时至2026-10-02 19:57:46上海；未确认撤销，不宣称已撤。没有第四次授权，链接和签名不得进入交接包。生产发布仍待当前版本门禁及用户确认。
