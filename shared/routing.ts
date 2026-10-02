@@ -45,9 +45,11 @@ export function routeWindowFit(convention:ConventionData,route:PersonalRoute,cur
  const result=(status:RouteWindowResult['status'],requiredMinutes:number|null=null):RouteWindowResult=>({status,requiredMinutes})
  if(route.spatialRevision!==currentSpatialRevision)return result('stale')
  const stops=route.stops.filter(s=>!s.visited)
- if(!route.startPoiId||!route.mapId||!stops.length||window.date!==route.date)return result('unknown')
+ let origin=route.startPoiId
+ for(const stop of route.stops)if(stop.visited)origin=stop.poiId
+ if(!origin||!route.mapId||!stops.length||window.date!==route.date)return result('unknown')
  if(stops.some(s=>[s.stayMinutes,s.queueMinutes].some(v=>v===undefined||!Number.isInteger(v)||v<0||v>1440)))return result('unknown')
- const path=routeFixedOrder(convention,route.mapId,[route.startPoiId,...stops.map(s=>s.poiId)],route.date)
+ const path=routeFixedOrder(convention,route.mapId,[origin,...stops.map(s=>s.poiId)],route.date)
  if(path.segments.some(s=>s.status==='stale'))return result('stale')
  if(path.estimatedTravelSeconds===null)return result('unknown')
  const minutes=path.estimatedTravelSeconds/60+stops.reduce((sum,s)=>sum+s.stayMinutes!+s.queueMinutes!,0)

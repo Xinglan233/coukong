@@ -1,8 +1,11 @@
 import { createHash } from 'node:crypto'
 import type { IncomingMessage,ServerResponse } from 'node:http'
-import { get } from '@vercel/blob'
+import { get,type GetBlobResult } from '@vercel/blob'
 import { config,worker,boundedBytes,respond,MediaError } from './media-service.js'
 export const BACKUP_CHUNK_BYTES=1024*1024
+// SDK 2.8 normalizes HTTP 206 to 200, preserving Content-Range. Also accept a
+// raw 206 response at this boundary, but only with a validated partial range.
+type PartialBlobResult=Omit<Extract<GetBlobResult,{statusCode:200}>,'statusCode'>&{statusCode:206}
 export function backupOffset(value:string|null){if(value===null||!/^\d+$/.test(value)||!Number.isSafeInteger(Number(value))||Number(value)<0)throw new MediaError('备份偏移无效');return Number(value)}
 export function backupSlice(bytes:Buffer,offset:number){if(offset>=bytes.length)throw new MediaError('备份偏移超出文件',416);return bytes.subarray(offset,Math.min(bytes.length,offset+BACKUP_CHUNK_BYTES))}
 const hash=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex')
@@ -22,8 +25,9 @@ export default async function backupHandler(req:IncomingMessage,res:ServerRespon
   const assetId=params.get('assetId'),kind=params.get('kind');if(!assetId||!/^[-\w]{1,100}$/.test(assetId)||!['source','display'].includes(kind||''))throw new MediaError('备份文件请求无效')
   const metadata=await worker<{pathname:string;sizeBytes:number;sha256:string}>(path+'/backup-file'+query({assetId,kind:kind!}),auth)
   if(offset>=metadata.sizeBytes)throw new MediaError('备份偏移超出文件',416)
-  const c=await config(),end=Math.min(metadata.sizeBytes-1,offset+BACKUP_CHUNK_BYTES-1),blob=await get(metadata.pathname,{access:'private',useCache:false,storeId:c.storeId,oidcToken:c.oidcToken,headers:{Range:`bytes=${offset}-${end}`},abortSignal:AbortSignal.timeout(30000)})
-  if(!blob||blob.statusCode!==200)throw new MediaError('历史媒体文件缺失',404)
+  const c=await config(),end=Math.min(metadata.sizeBytes-1,offset+BACKUP_CHUNK_BYTES-1),blob=await get(metadata.pathname,{access:'private',useCache:false,storeId:c.storeId,oidcToken:c.oidcToken,headers:{Range:`bytes=${offset}-${end}`},abortSignal:AbortSignal.timeout(30000)}) as GetBlobResult|PartialBlobResult|null
+  if(!blob||(blob.statusCode!==200&&blob.statusCode!==206))throw new MediaError('历史媒体文件缺失',404)
+  if(blob.statusCode===206&&!blob.headers.get('content-range')){await blob.stream.cancel();throw new MediaError('存储分块范围缺失',503)}
   if(blob.blob.pathname!==metadata.pathname){await blob.stream.cancel();throw new MediaError('历史媒体文件范围无效',503)}
   const part=await readBackupPart(blob.stream,blob.headers as unknown as Headers,metadata,offset);bytes=part.bytes;readMode=part.readMode;total=metadata.sizeBytes;sha256=metadata.sha256
  }else throw new MediaError('备份模式无效')

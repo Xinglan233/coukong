@@ -75,13 +75,14 @@ export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;dat
   const answer=(r:Row)=>({asset:mediaDTO(r),pathname:r.blob_path,expiresAt:r.expires_at})
   if(prior){if(prior.operation_digest!==digest||prior.ticket_hash!==ticketHash)ctx.fail('VERSION_CONFLICT','上传操作已被修改',409);return {handled:true,data:answer(prior)}}
   const total=await first(`SELECT count(*) AS n FROM media_assets WHERE event_id=? AND ${chargedWhere}`,eventId);if(total!.n>=50)ctx.fail('LIMIT_EXCEEDED','此活动媒体历史已满，请整理旧资产',409)
-  const count=await first("SELECT count(DISTINCT asset_key) AS n FROM media_assets WHERE event_id=? AND (state='ready' OR (state IN ('pending','processing') AND expires_at>?))",eventId,Date.now())
-  const keys=new Set((JSON.parse(event!.event_json).event.extensions?.convention.maps||[]).map((m:Row)=>m.assetKey))
-  // Five bound maps plus one replacement ticket are allowed; old unbound ready assets remain recoverable.
-  if(keys.size>=ACTIVITY_LIMITS.maps&&!keys.has(b.assetKey)&&count!.n>=ACTIVITY_LIMITS.maps+1)ctx.fail('LIMIT_EXCEEDED','每活动最多5张地图，一次替换一张',409)
+  // Current bindings and live upload keys share five map slots plus one replacement.
+  // Historical unbound ready assets remain recoverable and charged globally, but do not occupy a live slot.
+  const liveKeysSQL="SELECT json_extract(m.value,'$.assetKey') AS asset_key FROM events e,json_each(e.event_json,'$.event.extensions.convention.maps') m WHERE e.id=? UNION SELECT asset_key FROM media_assets WHERE event_id=? AND state IN ('pending','processing') AND expires_at>? UNION SELECT ? AS asset_key"
+  const count=await first('SELECT count(*) AS n FROM ('+liveKeysSQL+')',eventId,eventId,Date.now(),b.assetKey)
+  if(count!.n>ACTIVITY_LIMITS.maps+1)ctx.fail('LIMIT_EXCEEDED','每活动最多5张地图，一次替换一张',409)
   const charge=await first(`SELECT ${chargeSQL} AS charged FROM media_assets WHERE ${chargedWhere}`),reservation=b.sizeBytes+ACTIVITY_LIMITS.sourceBytes+3*1024*1024;if(charge!.charged+reservation>MEDIA_BUDGET_BYTES)ctx.fail('LIMIT_EXCEEDED','媒体应用预算不足，请清理失败和过期上传后重试',413)
   const revision=(await first('SELECT COALESCE(MAX(revision),0)+1 AS n FROM media_assets WHERE event_id=? AND asset_key=?',eventId,b.assetKey))!.n,id=crypto.randomUUID(),pathname=`assets/${eventId}/${id}/pending`,expires=Date.now()+15*60*1000
-  const inserted=await DB.prepare(`INSERT INTO media_assets(id,event_id,asset_key,expected_event_revision,ticket_hash,expires_at,operation_id,operation_digest,blob_path,declared_size_bytes,declared_mime_type,revision,created_at,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM events WHERE id=? AND revision=?) AND EXISTS(SELECT 1 FROM admin_sessions WHERE hash=? AND expires_at>?) AND NOT EXISTS(SELECT 1 FROM media_assets WHERE event_id=? AND operation_id=?) AND (SELECT count(*) FROM media_assets WHERE event_id=? AND state IN ('pending','processing') AND expires_at>?)<6 AND (SELECT ${chargeSQL} FROM media_assets WHERE ${chargedWhere})+?<=? ON CONFLICT(id) DO NOTHING`).bind(id,eventId,b.assetKey,event!.revision,ticketHash,expires,operation,digest,pathname,b.sizeBytes,b.mimeType,revision,now,now,eventId,event!.revision,authHash,Date.now(),eventId,operation,eventId,Date.now(),reservation,MEDIA_BUDGET_BYTES).run()
+  const inserted=await DB.prepare(`INSERT INTO media_assets(id,event_id,asset_key,expected_event_revision,ticket_hash,expires_at,operation_id,operation_digest,blob_path,declared_size_bytes,declared_mime_type,revision,created_at,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM events WHERE id=? AND revision=?) AND EXISTS(SELECT 1 FROM admin_sessions WHERE hash=? AND expires_at>?) AND NOT EXISTS(SELECT 1 FROM media_assets WHERE event_id=? AND operation_id=?) AND (SELECT count(*) FROM media_assets WHERE event_id=? AND ${chargedWhere})<50 AND (SELECT count(*) FROM media_assets WHERE event_id=? AND state IN ('pending','processing') AND expires_at>?)<6 AND (SELECT count(*) FROM (${liveKeysSQL}))<=? AND (SELECT ${chargeSQL} FROM media_assets WHERE ${chargedWhere})+?<=? ON CONFLICT(id) DO NOTHING`).bind(id,eventId,b.assetKey,event!.revision,ticketHash,expires,operation,digest,pathname,b.sizeBytes,b.mimeType,revision,now,now,eventId,event!.revision,authHash,Date.now(),eventId,operation,eventId,eventId,Date.now(),eventId,eventId,Date.now(),b.assetKey,ACTIVITY_LIMITS.maps+1,reservation,MEDIA_BUDGET_BYTES).run()
   if(!inserted.meta.changes)ctx.fail('VERSION_CONFLICT','上传资料或活动版本已变化',409)
   return {handled:true,data:answer((await first('SELECT * FROM media_assets WHERE id=?',id))!)}
  }
@@ -97,8 +98,8 @@ export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;dat
   return {handled:true,data:{displayPath:r!.display_path,displaySizeBytes:r!.display_size_bytes,displayMimeType:r!.display_mime_type}}
  }
  if(['ticket','activate','process','fail'].includes(action)&&method==='POST'){
-  if(r!.ticket_hash!==authHash||r!.expires_at<=Date.now()||!['pending','processing','ready'].includes(r!.state))ctx.fail('INVALID_CAPABILITY','上传凭据失效或不属于此地图',401)
-  if(action==='ticket'){return {handled:true,data:{asset:mediaDTO(r!),pathname:r!.blob_path,expiresAt:r!.expires_at,mimeType:r!.declared_mime_type,sizeBytes:r!.declared_size_bytes}}}
+  if(r!.ticket_hash!==authHash||(r!.expires_at<=Date.now()&&!(['activate','ticket'].includes(action)&&r!.state==='ready'))||!['pending','processing','ready'].includes(r!.state))ctx.fail('INVALID_CAPABILITY','上传凭据失效或不属于此地图',401)
+  if(action==='ticket'){if(r!.state==='ready'){await ctx.verifyNode();return {handled:true,data:{asset:mediaDTO(r!)}}}return {handled:true,data:{asset:mediaDTO(r!),pathname:r!.blob_path,expiresAt:r!.expires_at,mimeType:r!.declared_mime_type,sizeBytes:r!.declared_size_bytes}}}
   await ctx.verifyNode();if(r!.state==='ready')return {handled:true,data:mediaDTO(r!)}
   if(action==='process'||action==='fail'){
    const state=action==='process'?'processing':'failed'
