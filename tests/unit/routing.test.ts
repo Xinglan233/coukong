@@ -15,3 +15,10 @@ it('relative search never reports a timed ETA or window failure from a geometric
  expect(routeWindowFit(c,{date:'2026-10-03',mapId:'m',startPoiId:'a',spatialRevision:1,stops:[{poiId:'d',visited:false,stayMinutes:0,queueMinutes:0}]},1,{date:'2026-10-03',start:'13:07',end:'13:10'})).toEqual({status:'unknown',requiredMinutes:null})
  expect(shortestPath(graph(),'a','d','2026-10-03','relative').estimatedTravelSeconds).toBeNull()
 })
+it('relative fixed-order search respects rectangular image geometry without inventing metres or ETA',()=>{
+ const g:RoutingGraph={id:'g',mapId:'m',mapRevision:1,revision:1,nodes:[{id:'a',x:0,y:0},{id:'b',x:.2,y:0},{id:'c',x:0,y:.3},{id:'d',x:.1,y:.1}],edges:[['ab','a','b'],['bd','b','d'],['ac','a','c'],['cd','c','d']].map(([id,from,to])=>({id,from,to,enabled:true,reviewed:true,bidirectional:false}))}
+ const c={maps:[{id:'m',title:'虚构宽图',assetKey:'m.png',width:1000,height:100,revision:1,coordinateSpace:'normalized-image-top-left' as const}],routingGraphs:[g],pois:g.nodes.map(n=>({id:n.id,name:n.id,kind:'booth' as const,routeNodeId:n.id,position:{mapId:'m',mapRevision:1,x:n.x,y:n.y}}))}
+ expect(routeFixedOrder(c,'m',['a','d'],'2026-10-03').segments[0]).toMatchObject({nodeIds:['a','c','d'],distanceMeters:null,estimatedTravelSeconds:null,weightUnit:'relative'})
+ c.maps[0].width=100
+ expect(routeFixedOrder(c,'m',['a','d'],'2026-10-03').segments[0].nodeIds).toEqual(['a','b','d'])
+})

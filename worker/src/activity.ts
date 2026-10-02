@@ -29,11 +29,15 @@ export async function handleActivity(ctx:ActivityContext):Promise<{handled:boole
  if(path==='/events'&&method==='GET'){const rows=await DB.prepare('SELECT v.* FROM events e JOIN event_versions v ON v.event_id=e.id AND v.revision=CASE WHEN e.visibility=\'private\' THEN e.revision ELSE e.public_revision END WHERE e.visibility=\'public\' ORDER BY v.updated_at DESC,e.id LIMIT 50').all<Row>();return {handled:true,data:rows.results.map(activityDTO)}}
  if(path==='/private-events'&&method==='POST'){
   await ctx.limited('private-create:'+(ctx.req.headers.get('CF-Connecting-IP')||'local'),20)
-  const b=await ctx.body();if(!ctx.creation)ctx.fail('FORBIDDEN','创建保护未配置',403);await ctx.creation!(b.creationCode)
+  const b=await ctx.body()
   const ownerHash=await ctx.hash(ctx.token(b.ownerToken)),personHash=await ctx.hash(ctx.token(b.personalToken)),operation=ctx.op(b.operationId),digest=await ctx.hash(JSON.stringify(b))
   if(ownerHash===personHash)ctx.fail('INVALID_REQUEST','管理与个人凭据必须分开')
   const prior=await first("SELECT * FROM events WHERE owner_hash=? AND visibility='private'",ownerHash)
   if(prior){if(prior.private_create_op!==operation||prior.private_create_digest!==digest)ctx.fail('VERSION_CONFLICT','创建操作或凭据内容已变化',409);const person=await first('SELECT * FROM personal_plans WHERE event_id=? AND token_hash=?',prior.id,personHash);if(!person)ctx.fail('INVALID_CAPABILITY','个人记录已删除，请勿重复创建',401);return {handled:true,data:{activity:activityDTO(prior),personal:personalDTO(person!)}}}
+  // Existing creation is authenticated by both capabilities and the exact operation/body,
+  // so a lost response can be recovered even after the site creation code is revoked.
+  if(!ctx.creation)ctx.fail('FORBIDDEN','创建保护未配置',403)
+  try{await ctx.creation!(b.creationCode)}catch(e){const error=e as Row;if(error.code==='FORBIDDEN'&&error.status===403)ctx.fail('PRIVATE_CREATION_REJECTED','创建码无效或已撤销，请重新填写创建码',403);throw e}
   const pack=typeof b.raw==='string'?parseEventPackage(b.raw):validateEventPackage(b.eventPackage)
   if((pack.event.eventType??'generic')!=='generic'||pack.event.extensions||pack.assetManifest)ctx.fail('INVALID_EVENT_PACKAGE','日常活动使用通用类型，不接受公共地图扩展')
   if(typeof b.name!=='string'||!b.name.trim()||b.name.trim().length>50)ctx.fail('INVALID_REQUEST','名字须为1–50字')

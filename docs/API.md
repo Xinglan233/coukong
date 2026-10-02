@@ -2,6 +2,8 @@
 
 基础路径 `/api/v1`。成功 `{data: ...}`；失败 `{error:{code,message,fields?}}`，fields 是 `{path,message}` 数组。所有凭据通过 `Authorization: Bearer`，不能放 query。CORS 仅精确允许配置的 origin；私密响应 `private, no-store`。
 
+普通请求体上限2 MiB；仅支持完整活动包写入的路由为 `raw` 的合法 JSON 转义预留外层运输空间（6×1 MiB＋64 KiB）。解码后的活动包仍受 v1 512 KiB、v2 1 MiB 上限约束，不能用外层编码绕过限制。这不是免费 Worker CPU 已达标的证明。
+
 | 方法与资源 | 权限/行为 |
 | --- | --- |
 | GET /health | 进程与 BUILD_VERSION，不代表 DB 就绪 |
@@ -65,6 +67,8 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 ## 私人日常活动与个人关联（0007迁移，本地分支）
 
 `POST /private-events` 需创建码、operationId、客户端预先保存的独立ownerToken和personalToken、name、eventPackage/raw；原子建立未公开的通用活动及本人个人记录。返回`{activity,personal}`，两种权限分离，不凭名字认领。私人活动不进入公开列表或管理员公共活动列表，public_revision始终NULL，旧Worker回滚后也不能公开它。
+
+安全重试先以原两种能力、操作ID及完整请求摘要回读已创建结果，再对新建操作检查创建码。新建请求被明确拒绝时返回403 `PRIVATE_CREATION_REJECTED`，可更正表单重试；原模糊请求的能力与内容仍保留在可见恢复入口。该拒绝仅说明本次请求未创建，不证明另一在途请求永远不会提交，不能据此丢弃原恢复能力。
 
 私人`GET /events/:id`及`GET /events/:id/event-export`只允许该活动owner、个人或有效来源小队能力。 `GET /events/:id/owner`为恢复管理入口的只读校验，只允许此私人活动的owner，返回同一ActivityDTO；个人、小队或公开活动访问能力不能通过此校验。恢复链接只有认证成功后才替换本机原入口，失败保留原记录。`PATCH /events/:id`仅owner，带expectedRevision、operationId和完整活动包，时间变化保留个人旧计划并要求复核；旧小队快照不变。私人活动仍受创建保护、限流及共享128MiB预算，不能公开地图扩展。
 

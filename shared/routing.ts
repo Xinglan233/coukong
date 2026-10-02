@@ -4,14 +4,15 @@ const empty=(status:PathResult['status']):PathResult=>({status,nodeIds:[],edgeId
 function dimensions(width:number,height:number){if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)throw new RangeError('图像尺寸须为正数')}
 export function normalizedToImage(point:Point,width:number,height:number):Point{dimensions(width,height);if(!Number.isFinite(point.x)||!Number.isFinite(point.y)||point.x<0||point.x>1||point.y<0||point.y>1)throw new RangeError('坐标须在0–1');return{x:point.x*width,y:point.y*height}}
 export function imageToNormalized(point:Point,width:number,height:number):Point{dimensions(width,height);if(!Number.isFinite(point.x)||!Number.isFinite(point.y)||point.x<0||point.x>width||point.y<0||point.y>height)throw new RangeError('像素坐标超出图像');return{x:point.x/width,y:point.y/height}}
-// All weights within a run use seconds OR relative normalized graph geometry.
+// All weights within a run use seconds OR relative image geometry.
 // Relative weights are never presented as physical metres or elapsed time.
-export function shortestPath(graph:RoutingGraph,fromNodeId:string,toNodeId:string,date:string,mode:'time'|'relative'='time'):PathResult {
+export function shortestPath(graph:RoutingGraph,fromNodeId:string,toNodeId:string,date:string,mode:'time'|'relative'='time',imageSize:{width:number;height:number}={width:1,height:1}):PathResult {
+ dimensions(imageSize.width,imageSize.height)
  const nodes=new Map(graph.nodes.map(n=>[n.id,n]));if(!nodes.has(fromNodeId)||!nodes.has(toNodeId))return empty('missing_location')
  const edges=graph.edges.filter(e=>e.enabled&&e.reviewed&&!e.closedDates?.includes(date)&&nodes.has(e.from)&&nodes.has(e.to))
  const seconds=mode==='time'&&edges.every(e=>typeof e.estimatedTravelSeconds==='number'&&e.estimatedTravelSeconds>0)
  const geometry=(edge:RouteEdge)=>edge.geometry||[nodes.get(edge.from)!,nodes.get(edge.to)!]
- const weight=(edge:RouteEdge)=>seconds?edge.estimatedTravelSeconds!:geometry(edge).slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-geometry(edge)[i].x,p.y-geometry(edge)[i].y),0)
+ const weight=(edge:RouteEdge)=>seconds?edge.estimatedTravelSeconds!:geometry(edge).slice(1).reduce((sum,p,i)=>sum+Math.hypot((p.x-geometry(edge)[i].x)*imageSize.width,(p.y-geometry(edge)[i].y)*imageSize.height),0)
  type Arc={to:string;edge:RouteEdge;reverse:boolean;weight:number}
  const adjacency=new Map<string,Arc[]>();for(const edge of edges){const w=weight(edge);if(!Number.isFinite(w)||w<=0)continue;const add=(from:string,to:string,reverse:boolean)=>{const list=adjacency.get(from)||[];list.push({to,edge,reverse,weight:w});adjacency.set(from,list)};add(edge.from,edge.to,false);if(edge.bidirectional)add(edge.to,edge.from,true)}
  // Binary heap avoids O(V²) repeated scans for the bounded 2000-node graphs.
@@ -28,7 +29,7 @@ export function shortestPath(graph:RoutingGraph,fromNodeId:string,toNodeId:strin
 }
 export function routeFixedOrder(convention:ConventionData,mapId:string,poiIds:string[],date:string,mode:'time'|'relative'='time'):{segments:PathResult[];distanceMeters:number|null;estimatedTravelSeconds:number|null} {
  const map=convention.maps.find(m=>m.id===mapId),graph=convention.routingGraphs.find(g=>g.mapId===mapId),segments:PathResult[]=[]
- for(let i=1;i<poiIds.length;i++){const from=convention.pois.find(p=>p.id===poiIds[i-1]),to=convention.pois.find(p=>p.id===poiIds[i]);if(!map||map.needsReview||graph&&graph.mapRevision!==map.revision){segments.push(empty('stale'));continue}if(!graph||!from?.routeNodeId||!to?.routeNodeId||from.closed||to.closed||from.position?.mapId!==mapId||to.position?.mapId!==mapId){segments.push(empty('missing_location'));continue}if(from.position.mapRevision!==map.revision||to.position.mapRevision!==map.revision){segments.push(empty('stale'));continue}segments.push(shortestPath(graph,from.routeNodeId,to.routeNodeId,date,mode))}
+ for(let i=1;i<poiIds.length;i++){const from=convention.pois.find(p=>p.id===poiIds[i-1]),to=convention.pois.find(p=>p.id===poiIds[i]);if(!map||map.needsReview||graph&&graph.mapRevision!==map.revision){segments.push(empty('stale'));continue}if(!graph||!from?.routeNodeId||!to?.routeNodeId||from.closed||to.closed||from.position?.mapId!==mapId||to.position?.mapId!==mapId){segments.push(empty('missing_location'));continue}if(from.position.mapRevision!==map.revision||to.position.mapRevision!==map.revision){segments.push(empty('stale'));continue}segments.push(shortestPath(graph,from.routeNodeId,to.routeNodeId,date,mode,map))}
  const total=(key:'distanceMeters'|'estimatedTravelSeconds')=>segments.length&&segments.every(s=>s.status==='ok'&&s[key]!==null)?segments.reduce((sum,s)=>sum+s[key]!,0):null
  return{segments,distanceMeters:total('distanceMeters'),estimatedTravelSeconds:total('estimatedTravelSeconds')}
 }
