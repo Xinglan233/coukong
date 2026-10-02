@@ -3,6 +3,16 @@ import {test,expect,type Page} from '@playwright/test'
 import {mkdirSync} from 'node:fs'
 import {publishFixture,tab,close} from './activity-fixture'
 
+test('加入请求未返回时邀请入口不可操作，身份恢复后可正常打开',async({browser})=>{
+ const pack=await publishFixture(browser,'joining-invite-gate'),context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage()
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve});let observed!:()=>void;const started=new Promise<void>(resolve=>{observed=resolve})
+ await page.route('**/groups/*/join',async route=>{if(route.request().method()!=='POST')return route.continue();const response=await route.fetch();observed();await gate;await route.fulfill({response})})
+ await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('加入与邀请竞态');await page.getByLabel('站点创建码').fill('test-create');await page.getByRole('button',{name:'确认创建',exact:true}).click();await page.getByLabel('怎么称呼').fill('队长');await page.getByRole('button',{name:'加入小队',exact:true}).click();await started
+ try{await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toBeDisabled()}finally{release()}
+ await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toBeEnabled();await page.getByRole('button',{name:'邀请队员',exact:true}).click();await expect(page.getByRole('dialog',{name:'管理小队'})).toBeVisible()
+ await context.close()
+})
+
 test('加入后的本人资料尚未恢复时不暴露会被重置的邀请面板',async({browser})=>{
  const pack=await publishFixture(browser,'identity-hydration'),context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage()
  let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve});let observed!:()=>void;const started=new Promise<void>(resolve=>{observed=resolve})

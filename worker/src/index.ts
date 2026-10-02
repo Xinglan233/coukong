@@ -51,7 +51,7 @@ async function handle(req:Request,env:Env){
   const priorGroup=await first('SELECT * FROM groups WHERE manager_hash=?',manager);
   if(priorGroup){
    if(priorGroup.create_op!==operation||priorGroup.create_digest!==digest)throw new ApiError('VERSION_CONFLICT','凭据或操作已使用',409);
-   if(grant&&grant.used_group_id!==priorGroup.id)throw new ApiError('FORBIDDEN','建队码没有创建此小队',403);
+   if(grant){const consumed=await first('SELECT used_group_id FROM creation_invites WHERE id=? AND token_hash=?',grant.id,creationHash);if(consumed?.used_group_id!==priorGroup.id)throw new ApiError('FORBIDDEN','建队码没有创建此小队',403);}
    return safeGroup(priorGroup);
   }
   if(grant&&(grant.used_group_id||grant.revoked_at||Date.parse(grant.expires_at)<=Date.now()))throw new ApiError('FORBIDDEN','建队码已使用、已撤销或已过期',403);

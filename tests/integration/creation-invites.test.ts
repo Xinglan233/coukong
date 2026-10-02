@@ -97,6 +97,35 @@ describe.sequential('真实D1：管理员单次建队文字码', () => {
     expect((await api('/groups', 'POST', '', request)).data.id).toBe(results[0].data.id)
     expect((await api('/groups', 'POST', '', creation(body.token))).status).toBe(403)
   })
+  it('强制旧grant读取与另一请求成功交错时，同一请求仍幂等回读', async () => {
+    const { body } = await issue(), request = creation(body.token)
+    let observed!: () => void, release!: () => void
+    const started = new Promise<void>(resolve => { observed = resolve }), gate = new Promise<void>(resolve => { release = resolve })
+    // Real D1 query, delayed after reading its real snapshot. B runs through
+    // workerd normally. Only A's scheduling is controlled; no fake SQL results.
+    const delayedDB = new Proxy(db, { get(target, key) {
+      if (key === 'prepare') return (sql: string) => {
+        const statement = target.prepare(sql)
+        if (sql !== 'SELECT * FROM creation_invites WHERE token_hash=?') return statement
+        const wrap = (stmt: D1PreparedStatement): D1PreparedStatement => new Proxy(stmt, { get(t, k) {
+          if (k === 'bind') return (...args: any[]) => wrap(t.bind(...args))
+          if (k === 'first') return async (column?: string) => { const row = await t.first(column); observed(); await gate; return row }
+          const value = Reflect.get(t, k); return typeof value === 'function' ? value.bind(t) : value
+        } })
+        return wrap(statement)
+      }
+      const value = Reflect.get(target, key); return typeof value === 'function' ? value.bind(target) : value
+    } })
+    const worker = (await import('../../worker/src/index')).default
+    const waiting = worker.fetch(new Request('http://localhost/api/v1/groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(request) }), { DB: delayedDB, CREATION_MODE: 'invite', CREATION_CODE: 'test-create', ADMIN_ROOT_SECRET: root, ALLOWED_ORIGINS: 'http://localhost:5173', BUILD_VERSION: 'forced-race' })
+    await started
+    const completed = await api('/groups', 'POST', '', request)
+    expect(completed.status).toBe(200); release()
+    const replay = await waiting
+    expect(replay.status).toBe(200)
+    expect((await replay.json() as any).data.id).toBe(completed.data.id)
+    expect((await api('/groups', 'POST', '', { ...request, managerToken: token() })).status).toBe(403)
+  })
   it('撤销需管理员且幂等；撤销或过期码不能创建', async () => {
     const { body, data } = await issue(), revoke = { operationId: randomUUID(), expectedRevision: 0 }
     expect((await api(`/admin/creation-invites/${data.id}`, 'DELETE', body.token, revoke)).status).toBe(401)
