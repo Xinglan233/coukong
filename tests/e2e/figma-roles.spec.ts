@@ -47,7 +47,7 @@ test('活动建队创建码填写错误后能改正重试，保留同一幂等�
  const pack=await publishFixture(browser,'creation-code-retry'),context=await browser.newContext(),page=await context.newPage()
  await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('创建码改正重试')
  await page.getByLabel('站点创建码').fill('wrong-test-code');let response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
- await page.getByRole('button',{name:'确认创建',exact:true}).click();const denied=await response;expect(denied.status()).toBe(403);const first=denied.request().postDataJSON()
+ await page.getByRole('button',{name:'确认创建',exact:true}).click();const denied=await response;expect(denied.status()).toBe(403);const first=denied.request().postDataJSON();await expect(page.getByRole('dialog',{name:'创建小队'}).getByRole('alert')).toContainText('创建码未通过');await expect(page.getByRole('dialog',{name:'创建小队'}).getByRole('alert')).toContainText('核对后重试')
  await page.getByLabel('站点创建码').fill('test-create');response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
  await page.getByRole('button',{name:'确认创建',exact:true}).click();const accepted=await response;expect(accepted.status()).toBe(200);const retry=accepted.request().postDataJSON()
  expect(retry.operationId).toBe(first.operationId);expect(retry.managerToken).toBe(first.managerToken);expect(retry.inviteToken).toBe(first.inviteToken)
