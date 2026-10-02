@@ -37,6 +37,19 @@ test('Figma同行接三独立身份：未提交不显示全员空闲，邀请和
  await leader.getByRole('button',{name:'凑空',exact:true}).click();await leader.getByRole('button',{name:'刷新',exact:true}).click();await expect(leader.locator('.free-range').filter({hasText:'13:07–13:52'})).toBeVisible()
  const absentPut=a.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/response'));await a.getByRole('button',{name:'提交',exact:true}).click();expect((await absentPut).status()).toBe(200);await expect(a.getByRole('button',{name:/本日在场时间/})).toContainText('已确认')
  await leader.getByRole('button',{name:'刷新',exact:true}).click();await expect(leader.locator('.free-row')).toHaveCount(0);await expect(leader.getByText('当天凑不出整块时间')).toBeVisible()
+ await a.reload();await a.getByRole('button',{name:/本日在场时间/}).click();const restoredPresence=a.getByRole('dialog',{name:/在场时间/});await restoredPresence.getByRole('button',{name:'在场',exact:true}).click();await expect(restoredPresence.getByLabel('开始时间 1',{exact:true})).toHaveValue('13:07');await expect(restoredPresence.getByLabel('结束时间 1',{exact:true})).toHaveValue('13:52');await close(a);await a.reload();await expect(a.getByRole('button',{name:/本日在场时间/})).toContainText('不能参加');await expect(a.getByRole('button',{name:/本日在场时间/})).toContainText('已确认')
  await tab(a,'同行');await a.getByRole('button',{name:'成员',exact:true}).click();await expect(a.getByRole('button',{name:'管理小队',exact:true})).toHaveCount(0);await expect(a.getByRole('button',{name:/^移除 队/})).toHaveCount(0)
  await Promise.all(contexts.map(c=>c.close()))
+})
+
+
+test('活动建队创建码填写错误后能改正重试，保留同一幂等操作和权限',async({browser})=>{
+ const pack=await publishFixture(browser,'creation-code-retry'),context=await browser.newContext(),page=await context.newPage()
+ await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('创建码改正重试')
+ await page.getByLabel('站点创建码').fill('wrong-test-code');let response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
+ await page.getByRole('button',{name:'确认创建',exact:true}).click();const denied=await response;expect(denied.status()).toBe(403);const first=denied.request().postDataJSON()
+ await page.getByLabel('站点创建码').fill('test-create');response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
+ await page.getByRole('button',{name:'确认创建',exact:true}).click();const accepted=await response;expect(accepted.status()).toBe(200);const retry=accepted.request().postDataJSON()
+ expect(retry.operationId).toBe(first.operationId);expect(retry.managerToken).toBe(first.managerToken);expect(retry.inviteToken).toBe(first.inviteToken)
+ await expect(page.getByLabel('怎么称呼')).toBeVisible();await context.close()
 })

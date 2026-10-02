@@ -5,3 +5,11 @@ const plan:PersonalPlan={response:{name:'我',presence:[],busy:[],bufferMinutes:
 const local:PersonalDraft={eventId:'expo-a',personId:'me',plan,revision:2,scheduleRevision:3,spatialRevision:4,generation:7,dirty:true}
 const remote:PersonalDTO={id:'me',eventId:'expo-a',plan:{...plan,favorites:[]},revision:3,scheduleRevision:4,spatialRevision:4,updatedAt:'2026-10-01T00:00:00Z'}
 describe('独立个人计划的恢复与提交竞态',()=>{it('脏草稿不被刷新或新活动版本覆盖',()=>{expect(receivePersonal(local,remote)).toEqual(local)});it('跨活动回复不能串收藏',()=>{expect(()=>receivePersonal(local,{...remote,eventId:'expo-b'})).toThrow()});it('慢提交期间新收藏仍未提交，个人revision采用已成功版本',()=>{const next=acknowledgePersonal(local,{...remote,scheduleRevision:3},6);expect(next.dirty).toBe(true);expect(next.plan.favorites).toEqual(plan.favorites);expect(next.revision).toBe(3);expect(next.scheduleRevision).toBe(3)});it('同编辑世代成功后可以清除待同步标记',()=>{const next=acknowledgePersonal(local,{...remote,plan,scheduleRevision:3},7);expect(next.dirty).toBe(false);expect(next.plan).toEqual(plan)})})
+
+it('云端回读不删除当前身份的本机在场历史，历史不写入有效回复',()=>{
+ const remembered={...local,dirty:false,presenceHistory:{'2026-10-03':[{start:'13:07',end:'13:52'}]}}
+ const next=receivePersonal(remembered,remote)
+ expect(next).toMatchObject({presenceHistory:{'2026-10-03':[{start:'13:07',end:'13:52'}]}})
+ expect(next.plan.response.presence).toEqual([])
+ expect(()=>receivePersonal(remembered,{...remote,id:'someone-else'})).toThrow()
+})
