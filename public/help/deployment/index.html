@@ -10,8 +10,10 @@ npm run dev:all
 <p>创建 <code>worker/.dev.vars</code>，按 示例 填本地测试创建码和管理员根凭据。不要提交它。前端 <code>.env.local</code> 的 VITE_API_URL 指向本地 Worker <code>http://127.0.0.1:8787</code>，可参照 .env.example。<code>npm run db:migrate:local</code> 应用本地迁移后启动真实本地 D1；<code>dev:all</code> 的自动迁移行为以脚本为准。</p>
 <h2>已部署资源与环境隔离</h2>
 <p>生产前端为 <a href="https://coukong.vercel.app">coukong.vercel.app</a>，Vercel 项目 <code>tongye-meet</code>。生产 Worker <code>tongye-meet-api</code>，D1 <code>tongye-meet-production</code>，配置 wrangler.production.jsonc。预发布 Worker <code>tongye-meet-api-staging</code>、D1 <code>tongye-meet-staging</code>，配置 wrangler.staging.jsonc。两库独立，不允许预览写生产。</p>
-<p>生产前端使用同源 <code>/api/v1</code>，由 Vercel rewrite 代理到生产 Worker；只有 <code>coukong.vercel.app</code> 及配置中的明确生产项目别名匹配生产代理，其余预览请求代理到 staging。见 vercel.json。生产公开前端不要设置指向 staging 的 VITE_API_URL；同源模式留空。直接跨域开发时才填对应 Worker 根地址，不加 <code>/api/v1</code>。</p>
+<p>生产前端使用同源 <code>/api/v1</code>，由 Vercel rewrite 代理到生产 Worker；<code>coukong.vercel.app</code>、<code>tongye-meet-xinglan233s-projects.vercel.app</code> 和 <code>meet.tongye.ink</code> 三个精确域名匹配生产代理，其余域名仍代理到 staging。见 vercel.json。生产公开前端不要设置指向 staging 的 VITE_API_URL；同源模式留空。直接跨域开发时才填对应 Worker 根地址，不加 <code>/api/v1</code>。</p>
 <p>生产 CORS 仅列明确生产 origin；预发布仅列明确开发和预发布 origin，不泛匹配 <code>*.vercel.app</code>。新增预览入口需在 staging 加确切 origin；不要为方便测试扩大生产 CORS。创建保护仍为 invite，Secrets 在各 Worker 分别配置。</p>
+<p>新增正式域名需要同时更新精确 host rewrite 和生产 Worker 的 HTTPS <code>ALLOWED_ORIGINS</code>，否则可能读到 staging 数据或在提交时被拒绝。媒体 Node 服务继续使用 production 环境的 <code>ACTIVITY_API_URL</code> 和私有存储，按同源 host 校验请求。HTTP 页面入口由 Vercel 自动跳到 HTTPS，保留路径和查询参数；不允许 HTTP origin 携带管理或个人权限凭据调用正式 API。参见 <a href="https://vercel.com/docs/security/reverse-proxy">Vercel HTTPS 跳转说明</a>。</p>
+<p>不同域名的本机身份、草稿和离线资料互相独立。换域名不会自动搬运 IndexedDB；继续编辑原身份时，使用本人保存的恢复链接在新域名恢复，不清除旧域名数据，也不把测试环境的个人记录导入正式环境。</p>
 <h2>维护部署步骤</h2>
 <p>1. 确认免费账户与用途、CLI 授权及目标配置。浏览器登录不能代替 CLI 授权，新增持久权限由本人确认。</p>
 <p>2. 按 <a href="/help/operations/">运维说明</a> 导出当前目标数据库到受控目录，再应用版本化迁移。已应用迁移不回改。</p>

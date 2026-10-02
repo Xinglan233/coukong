@@ -22,6 +22,16 @@
     },
     {
       "source": "/api/v1/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "meet.tongye.ink"
+        }
+      ],
+      "destination": "https://tongye-meet-api.xinglan233.workers.dev/api/v1/:path*"
+    },
+    {
+      "source": "/api/v1/:path*",
       "destination": "https://tongye-meet-api-staging.xinglan233.workers.dev/api/v1/:path*"
     },
     {

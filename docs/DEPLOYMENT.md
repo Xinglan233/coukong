@@ -15,9 +15,13 @@ npm run dev:all
 
 生产前端为 [coukong.vercel.app](https://coukong.vercel.app)，Vercel 项目 `tongye-meet`。生产 Worker `tongye-meet-api`，D1 `tongye-meet-production`，配置 [wrangler.production.jsonc](../worker/wrangler.production.jsonc)。预发布 Worker `tongye-meet-api-staging`、D1 `tongye-meet-staging`，配置 [wrangler.staging.jsonc](../worker/wrangler.staging.jsonc)。两库独立，不允许预览写生产。
 
-生产前端使用同源 `/api/v1`，由 Vercel rewrite 代理到生产 Worker；只有 `coukong.vercel.app` 及配置中的明确生产项目别名匹配生产代理，其余预览请求代理到 staging。见 [vercel.json](../vercel.json)。生产公开前端不要设置指向 staging 的 VITE_API_URL；同源模式留空。直接跨域开发时才填对应 Worker 根地址，不加 `/api/v1`。
+生产前端使用同源 `/api/v1`，由 Vercel rewrite 代理到生产 Worker；`coukong.vercel.app`、`tongye-meet-xinglan233s-projects.vercel.app` 和 `meet.tongye.ink` 三个精确域名匹配生产代理，其余域名仍代理到 staging。见 [vercel.json](../vercel.json)。生产公开前端不要设置指向 staging 的 VITE_API_URL；同源模式留空。直接跨域开发时才填对应 Worker 根地址，不加 `/api/v1`。
 
 生产 CORS 仅列明确生产 origin；预发布仅列明确开发和预发布 origin，不泛匹配 `*.vercel.app`。新增预览入口需在 staging 加确切 origin；不要为方便测试扩大生产 CORS。创建保护仍为 invite，Secrets 在各 Worker 分别配置。
+
+新增正式域名需要同时更新精确 host rewrite 和生产 Worker 的 HTTPS `ALLOWED_ORIGINS`，否则可能读到 staging 数据或在提交时被拒绝。媒体 Node 服务继续使用 production 环境的 `ACTIVITY_API_URL` 和私有存储，按同源 host 校验请求。HTTP 页面入口由 Vercel 自动跳到 HTTPS，保留路径和查询参数；不允许 HTTP origin 携带管理或个人权限凭据调用正式 API。参见 [Vercel HTTPS 跳转说明](https://vercel.com/docs/security/reverse-proxy)。
+
+不同域名的本机身份、草稿和离线资料互相独立。换域名不会自动搬运 IndexedDB；继续编辑原身份时，使用本人保存的恢复链接在新域名恢复，不清除旧域名数据，也不把测试环境的个人记录导入正式环境。
 
 ## 维护部署步骤
 
