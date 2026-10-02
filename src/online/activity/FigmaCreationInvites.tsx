@@ -3,6 +3,7 @@ import {Copy,Plus} from 'lucide-react'
 import type {CreationInviteDTO,CreateCreationInviteRequest,RevokeCreationInviteRequest} from '../../../shared/creation-invites'
 import {newToken,operationId} from '../../../shared/api'
 import {api,ApiFailure} from '../api'
+import {adminCreationPendingPrefix} from './admin-creation-storage'
 
 const statuses={available:'可用',used:'已使用',expired:'已过期',revoked:'已撤销'}
 // V18 Group/Btn layout, adapted to the project's existing tokens and Sheet.
@@ -12,22 +13,26 @@ export function FigmaCreationInvites({token,eventId,eligible,confirming,onConfir
  useEffect(()=>{alive.current=true;return()=>{alive.current=false}},[])
  function fail(e:unknown){if(!alive.current)return;setError((e as Error).message);if(e instanceof ApiFailure&&e.status===401)onExpired?.()}
  async function load(){try{const records=await api<CreationInviteDTO[]>(`/admin/creation-invites?limit=100&eventId=${encodeURIComponent(eventId)}`,token);if(alive.current)setRows(records.filter(row=>row.eventId===eventId))}catch(e){fail(e)}finally{if(alive.current)setLoading(false)}}
- useEffect(()=>{void(async()=>{const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));scope.current=`pending-admin-creation:${Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('')}:${eventId}`;await load()})().catch(fail)},[eventId,token])
+ useEffect(()=>{void(async()=>{const prefix=await adminCreationPendingPrefix(token);if(!alive.current||sessionStorage.getItem('coukong-admin')!==token)return;scope.current=prefix+eventId;await load()})().catch(fail)},[eventId,token])
  async function generate(){if(busy||!eligible||!scope.current)return;setBusy(true);setError('');setFeedback('');try{
-  const saved=sessionStorage.getItem(scope.current);const request=pending.current??(saved?JSON.parse(saved) as CreateCreationInviteRequest:{token:newToken(),operationId:operationId(),eventId})
+  const key=scope.current,saved=sessionStorage.getItem(key);const request=pending.current??(saved?JSON.parse(saved) as CreateCreationInviteRequest:{token:newToken(),operationId:operationId(),eventId})
   if(request.eventId!==eventId||!request.token||!request.operationId)throw new Error('本机待生成资料不匹配，请保留内容并重新进入管理。')
-  pending.current=request;sessionStorage.setItem(scope.current,JSON.stringify(request))
+  const serialized=JSON.stringify(request);pending.current=request;sessionStorage.setItem(key,serialized)
   const result=await api<CreationInviteDTO>('/admin/creation-invites',token,request)
-  sessionStorage.removeItem(scope.current);pending.current=undefined
-  if(alive.current){setFresh(request.token);setRows(current=>[result,...current.filter(row=>row.id!==result.id)]);setFeedback('已生成建队码')}
+  // A closed editor must retain its undelivered code. A late reply must never
+  // clear another editor's newer request or overwrite its displayed code.
+  if(!alive.current||sessionStorage.getItem('coukong-admin')!==token||JSON.stringify(pending.current)!==serialized||sessionStorage.getItem(key)!==serialized)return
+  sessionStorage.removeItem(key);pending.current=undefined
+  setFresh(request.token);setRows(current=>[result,...current.filter(row=>row.id!==result.id)]);setFeedback('已生成建队码')
  }catch(e){fail(e)}finally{if(alive.current)setBusy(false)}}
  async function revoke(){if(!selected||busy)return;setBusy(true);setError('');try{
   const key=`${scope.current}:revoke:${selected.id}`,saved=sessionStorage.getItem(key)
   const request=revocation.current??(saved?JSON.parse(saved) as RevokeCreationInviteRequest:{operationId:operationId(),expectedRevision:selected.revision})
-  revocation.current=request;sessionStorage.setItem(key,JSON.stringify(request))
+  const serialized=JSON.stringify(request);revocation.current=request;sessionStorage.setItem(key,serialized)
   const result=await api<CreationInviteDTO>(`/admin/creation-invites/${selected.id}`,token,request,'DELETE')
+  if(!alive.current||sessionStorage.getItem('coukong-admin')!==token||JSON.stringify(revocation.current)!==serialized||sessionStorage.getItem(key)!==serialized)return
   sessionStorage.removeItem(key);revocation.current=undefined
-  if(alive.current){setRows(current=>current.map(row=>row.id===result.id?result:row));setFresh('');setSelected(null);setFeedback('已撤销');onBack()}
+  setRows(current=>current.map(row=>row.id===result.id?result:row));setFresh('');setSelected(null);setFeedback('已撤销');onBack()
  }catch(e){fail(e)}finally{if(alive.current)setBusy(false)}}
  const notices=<>{error&&<p className="notice" role="alert">{error}</p>}{feedback&&<p className="page-sub" role="status">{feedback}</p>}</>
  if(confirming)return <div className="figma-confirm-content"><p>确定要撤销这个建队码吗？撤销后，该码将立即失效且不可恢复。</p>{notices}<div className="btn-row"><button className="btn btn-subtle" disabled={busy} onClick={()=>{setError('');onBack()}}>取消</button><button className="btn btn-danger" disabled={busy} onClick={()=>void revoke()}>{busy?'撤销中…':'确认撤销'}</button></div></div>
