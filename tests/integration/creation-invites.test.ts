@@ -1,11 +1,15 @@
 import { beforeAll, afterAll, describe, it, expect } from 'vitest'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import { build } from 'esbuild'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { randomBytes, randomUUID, createHash } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 let mf: Miniflare
 let db: D1Database
+let workerScript: string
 const token = () => randomBytes(32).toString('hex')
 const root = token(), admin = token()
 const pack = JSON.parse(readFileSync('examples/event-minimal.json', 'utf8'))
@@ -28,7 +32,8 @@ async function issue() {
 
 beforeAll(async () => {
   const built = await build({ entryPoints: ['worker/src/index.ts'], bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022' })
-  mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: built.outputFiles[0].text, compatibilityDate: '2026-09-01', d1Databases: ['DB'], bindings: { CREATION_MODE: 'invite', CREATION_CODE: 'test-create', ADMIN_ROOT_SECRET: root, ALLOWED_ORIGINS: 'http://localhost:5173', BUILD_VERSION: 'integration' } }))
+  workerScript = built.outputFiles[0].text
+  mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: workerScript, compatibilityDate: '2026-09-01', d1Databases: ['DB'], bindings: { CREATION_MODE: 'invite', CREATION_CODE: 'test-create', ADMIN_ROOT_SECRET: root, ALLOWED_ORIGINS: 'http://localhost:5173', BUILD_VERSION: 'integration' } }))
   db = await mf.getD1Database('DB') as unknown as D1Database
   for (const file of readdirSync('worker/migrations').filter(x => x.endsWith('.sql')).sort()) await db.exec(readFileSync('worker/migrations/' + file, 'utf8').replace(/\n/g, ' '))
   expect((await api('/admin/session', 'POST', '', { rootSecret: root, sessionToken: admin })).status).toBe(200)
@@ -184,4 +189,46 @@ describe.sequential('真实D1：管理员单次建队文字码', () => {
     expect((await api('/admin/creation-invites', 'POST', session, issuance())).status).toBe(429)
     expect((await db.prepare('SELECT count(*) AS n FROM creation_invites').first<any>())!.n).toBe(before)
   })
+  it('实际SQL备份隔离恢复保留已用码，且消费触发器恢复后仍有效', async () => {
+    const session = token()
+    expect((await api('/admin/session', 'POST', '', { rootSecret: root, sessionToken: session })).status).toBe(200)
+    const used = issuance(), available = issuance()
+    expect((await api('/admin/creation-invites', 'POST', session, used)).status).toBe(200)
+    expect((await api('/admin/creation-invites', 'POST', session, available)).status).toBe(200)
+    const request = creation(used.token), group = await api('/groups', 'POST', '', request)
+    expect(group.status).toBe(200)
+    const schema = (await db.prepare("SELECT name,type,sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'").all<any>()).results
+    const quote = (v: unknown) => v === null ? 'NULL' : typeof v === 'number' ? String(v) : "'" + String(v).replaceAll("'", "''") + "'"
+    // Table-by-table export deliberately places group rows before their grant
+    // rows, matching the forward-FK ordering the real restore helper handles.
+    let sql = 'PRAGMA defer_foreign_keys=TRUE;\n'
+    for (const row of schema.filter(r => r.type === 'table')) {
+      sql += row.sql + ';\n'
+      for (const data of (await db.prepare('SELECT * FROM "' + row.name + '"').all<any>()).results) sql += 'INSERT INTO "' + row.name + '" (' + Object.keys(data).map(k => '"' + k + '"').join(',') + ') VALUES (' + Object.values(data).map(quote).join(',') + ');\n'
+    }
+    for (const row of schema.filter(r => r.type !== 'table')) sql += row.sql + ';\n'
+    const dir = mkdtempSync(join(tmpdir(), 'tongye-creation-restore-')), sourceFile = join(dir, 'source.sql'), target = join(dir, 'restore.sql')
+    const restored = new Miniflare(convertV4MiniflareOptions({ modules: true, script: workerScript, compatibilityDate: '2026-09-01', d1Databases: ['DB'], bindings: { CREATION_MODE: 'invite', CREATION_CODE: 'test-create', ADMIN_ROOT_SECRET: root, ALLOWED_ORIGINS: 'http://localhost:5173', BUILD_VERSION: 'restore-test' } }))
+    try {
+      writeFileSync(sourceFile, sql, { mode: 0o600 })
+      execFileSync('python3', ['scripts/prepare-d1-restore.py', sourceFile, target], { stdio: 'pipe' })
+      const restoredDB = await restored.getD1Database('DB')
+      const statements: string[] = JSON.parse(execFileSync('python3', ['-c', "import sqlite3,json,sys; result=[]; text=''\nfor line in open(sys.argv[1]):\n text+=line\n if sqlite3.complete_statement(text): result.append(text); text=''\nassert not text.strip()\nprint(json.dumps(result))", target], { encoding: 'utf8' }))
+      expect(statements.every(s => Buffer.byteLength(s) <= 80 * 1024)).toBe(true)
+      await restoredDB.batch(statements.map(s => restoredDB.prepare(s)))
+      expect((await restoredDB.prepare('PRAGMA foreign_key_check').all()).results).toEqual([])
+      const states = 'SELECT id,used_group_id,used_at,revoked_at,expires_at,revision FROM creation_invites ORDER BY id'
+      expect((await restoredDB.prepare(states).all()).results).toEqual((await db.prepare(states).all()).results)
+      expect((await restoredDB.prepare('SELECT * FROM visitor_storage_budget').all()).results).toEqual((await db.prepare('SELECT * FROM visitor_storage_budget').all()).results)
+      const call = async (body: unknown) => {
+        const res = await restored.dispatchFetch('http://localhost/api/v1/groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        return { status: res.status, ...await res.json() as any }
+      }
+      expect((await call(request)).data.id).toBe(group.data.id)
+      expect((await call(creation(used.token))).status).toBe(403)
+      const newGroup = await call(creation(available.token))
+      expect(newGroup.status).toBe(200)
+      expect((await restoredDB.prepare('SELECT used_group_id,revision FROM creation_invites WHERE token_hash=?').bind(createHash('sha256').update(available.token).digest('hex')).first<any>())).toEqual({ used_group_id: newGroup.data.id, revision: 1 })
+    } finally { await restored.dispose(); rmSync(dir, { recursive: true, force: true }) }
+  }, 30000)
 })
