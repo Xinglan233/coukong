@@ -1,9 +1,9 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>地图与标点</h1>
-<p>本轮活动地图功能实施中，尚未完成生产验收。以下说明资料约定与准备要求；实际上传、标注按钮在功能稳定后对齐。不能据此认定 REDLAND 已可导航。</p>
+<p>活动支持地图上传、显示、标点与人工路网编辑。REDLAND已发布全场图，地点和通道尚未定位，不提供猜测导航。实际验证范围见 <a href="/help/release_checklist/">发布记录</a>。</p>
 <h2>先准备有权使用的图</h2>
 <p>地图必须有来源和使用授权记录，管理员发布不等于来源已核实。用户提供的 REDLAND 全场地图已真实物化并查看像素，尺寸 2048×1323；12:30 入场由用户确认。旧 A02 局部来源图不替代这张全场图。闭馆时间、彩色箭头是否代表可走通道仍待核实；C17 目录与图上名称不一致，不自动合并。地图来源与使用授权应随发布记录保留；第三方候选场次表有 998 项、缺 2 项且非完整官方资料。</p>
 <p>上传只接受实际 PNG、JPEG、WebP，不接受 SVG、HTML、脚本、PDF 或动图。当前共享合同设置每张源图最多 12 MiB、2400 万像素、每活动最多 5 张；这是输入上限，尚不表示最大图像已经通过真实媒体存储和免费运行时验收。图片去除非必要 EXIF；图中文字应仍可读，不能无声过度压缩。</p>
-<p>地图文件单独存持久媒体，活动 JSON 只绑定 assetKey、哈希、尺寸和版本。浏览器 Blob URL、函数临时磁盘、大图 base64 和 D1 JSON 都不能代替真实媒体存储。媒体代码已采用私有 Vercel Blob 与四个 Node 入口，真实云上传/读取和部署仍待验；没有开通 R2，不以免费额度名义开启可能自动计费资源。</p>
+<p>地图文件单独存持久媒体，活动 JSON 只绑定 assetKey、哈希、尺寸和版本。浏览器 Blob URL、函数临时磁盘、大图 base64 和 D1 JSON 都不能代替真实媒体存储。媒体使用私有Vercel Blob与Node入口，生产JPEG已实际上传、净化和读取；没有开通 R2，不以免费额度名义开启可能自动计费资源。</p>
 <h2>虚构练习资料</h2>
 <p><a href="/examples/convention-demo.v2.json">漫展示例 JSON</a> 配套 <a href="/examples/assets/convention-demo.png">2000×1000 自绘 PNG</a>，包含 U 形测试通道，仅用于格式与算法练习，不是 REDLAND 地图或真实导航资料。<a href="/examples/event-generic.v2.json">通用活动 v2</a> 不带地图。文件大小、SHA-256、图像尺寸及下载一致性纳入 docs:check；JSON 只含资产清单，地图文件另行绑定，不能说 JSON 已包含原图。</p>
 <h2>坐标与校对</h2>

@@ -32,14 +32,14 @@
 <tr><td>GET /admin/creation-invites</td><td>管理会话，安全状态列表，可按eventId筛选，limit/offset分页，不含码和哈希</td></tr>
 <tr><td>DELETE /admin/creation-invites/:id</td><td>管理会话，operationId、expectedRevision；撤销未使用码</td></tr>
 </table></div>
-<p>单次建队文字码属于待生产发布增量；V18候选界面已接入真实接口并在隔离预发布验证，不能将候选成功当生产上线。码默认24小时、固定一队、绑定一个已发布公开活动；通过原 <code>POST /groups</code> 的 <code>creationCode</code> 字段提交。数据库仅保存哈希；客户端在请求前生成并暂存码和操作ID，服务端不会重放码明文。完整接入与边界见仓库 <code>handoff/CREATION_INVITE_CONTRACT.md</code>。原站点创建码及私人活动创建保持兼容。</p>
+<p>单次建队文字码已生产部署。码默认24小时、固定一队、绑定一个已发布公开活动；通过原 <code>POST /groups</code> 的 <code>creationCode</code> 字段提交。数据库仅保存哈希；客户端在请求前生成并暂存码和操作ID，服务端不会重放码明文。完整接入与边界见仓库 <code>handoff/CREATION_INVITE_CONTRACT.md</code>。原站点创建码及私人活动创建保持兼容。</p>
 <h2>DTO 与提交</h2>
 <p>共享合同为 types.ts。ParticipantResponse 包含 name、presence（每日 intervals）、busy（id/date/start/end/title/source 及可选 location/note/sessionId）、bufferMinutes。成员第一次 revision 为 0；提交使用当前成员 revision 和小队 scheduleRevision。服务端 UTC 时间不可用页面当前时间代替。</p>
 <p>MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/submittedAt；结果增加安全 availability。发起人不能调用他人私人回复接口。GroupDTO 是小队及 EventPackage 快照；event.id 是外部资料标识，不是权限依据。</p>
 <p>操作 ID 要在请求前持久保存，并以同内容/同主体重试；不能凭 operationId 获取秘密。相同操作 ID 不同内容拒绝。CAS 失败 409，保留草稿；从属写入也必须以同 CAS 成功条件约束。时间配置变化返回复核冲突，不覆盖新配置。</p>
 <p>错误码包括 INVALID_EVENT_PACKAGE、INVALID_TIME_RANGE、UNSUPPORTED_TIMEZONE_DATE、VERSION_CONFLICT、RECONFIRM_REQUIRED、INVALID_CAPABILITY、FORBIDDEN、GROUP_CLOSED、LIMIT_EXCEEDED、SERVICE_UNAVAILABLE。校验错误含中文字段路径，不回显 SQL/凭据。创建/无效认证按来源限制，合法成员写操作按主体限制；同 Wi-Fi 必须多身份实测。创建20次/分钟/来源、无效队凭据30次/分钟/来源、管理员登录10次/分钟/来源、成员写60次/分钟/主体。具体实现测试见 <a href="/help/testing/">测试</a>。</p>
 <p>当前列表限制不是完整游标分页；若超过单次返回上限需要补分页，不宣传无限模板列表。API 路由和前端入口均须经 <a href="/help/release_checklist/">发布检查</a> 验收。</p>
-<h2>个人计划与公开限额（本轮分支，云端待验）</h2>
+<h2>个人计划与公开限额</h2>
 <p><code>GET /api/v1/limits</code> 无需私密凭据，返回共享 <code>ACTIVITY_LIMITS</code> 的真实配置。个人创建为 <code>POST /api/v1/events/:eventId/personal</code>；本人 Bearer 凭据用于 <code>GET/PUT/DELETE /api/v1/events/:eventId/personal/:id</code>。PUT 同时检查 <code>expectedRevision</code>、<code>scheduleRevision</code>、<code>spatialRevision</code>，带预先保存的 <code>operationId</code>，不会以活动 ID 授予个人权限。</p>
 <p>个人 <code>plan</code> 的 JSON UTF-8 上限为1536KiB。全部访客记录共用128MiB应用逻辑预算，按UTF-8数据和每记录1KiB保守元数据计量；这不是D1物理占用或剩余免费容量保证。每人最多64条幂等回执，保留24小时；回执仅保留摘要、版本和时间等紧凑元数据，不保留私人计划历史副本。</p>
 <div class="table-scroll"><table>
@@ -49,11 +49,11 @@
 <tr><td>413 PERSONAL_PLAN_TOO_LARGE</td><td>减少备注或记录，保留本机草稿后重新保存</td></tr>
 <tr><td>507 STORAGE_BUDGET_EXCEEDED</td><td>共享预算已满；保留草稿，稍后重试或删除不用的本人记录，不自动付费</td></tr>
 </table></div>
-<p>相同操作ID携带不同请求内容仍返回409 VERSION_CONFLICT。活动空间版本变化也须核对后重新保存。上述合同由本地代码与测试落实；不能据此宣称新模块已通过云端或现场验收。</p>
-<h2>私人日常活动与个人关联（0007迁移，本地分支）</h2>
+<p>相同操作ID携带不同请求内容仍返回409 VERSION_CONFLICT。活动空间版本变化也须核对后重新保存。合同与实际验证分开记录，当前生产范围见 <a href="/help/release_checklist/">发布记录</a>。</p>
+<h2>私人日常活动与个人关联（0007迁移）</h2>
 <p><code>POST /private-events</code> 需创建码、operationId、客户端预先保存的独立ownerToken和personalToken、name、eventPackage/raw；原子建立未公开的通用活动及本人个人记录。返回<code>{activity,personal}</code>，两种权限分离，不凭名字认领。私人活动不进入公开列表或管理员公共活动列表，public_revision始终NULL，旧Worker回滚后也不能公开它。</p>
 <p>安全重试先以原两种能力、操作ID及完整请求摘要回读已创建结果，再对新建操作检查创建码。新建请求被明确拒绝时返回403 <code>PRIVATE_CREATION_REJECTED</code>，可更正表单重试；原模糊请求的能力与内容仍保留在可见恢复入口。该拒绝仅说明本次请求未创建，不证明另一在途请求永远不会提交，不能据此丢弃原恢复能力。</p>
 <p>私人<code>GET /events/:id</code>及<code>GET /events/:id/event-export</code>只允许该活动owner、个人或有效来源小队能力。 <code>GET /events/:id/owner</code>为恢复管理入口的只读校验，只允许此私人活动的owner，返回同一ActivityDTO；个人、小队或公开活动访问能力不能通过此校验。恢复链接只有认证成功后才替换本机原入口，失败保留原记录。<code>PATCH /events/:id</code>仅owner，带expectedRevision、operationId和完整活动包，时间变化保留个人旧计划并要求复核；旧小队快照不变。私人活动仍受创建保护、限流及共享128MiB预算，不能公开地图扩展。</p>
 <p>从私人活动建队时，<code>POST /groups</code>另带sourceEventId、sourceEventRevision与sourceEventToken；服务端验证真实来源权限。来源能力只用于该请求，不写URL，返回GroupDTO含sourceVisibility。公开来源活动仍由管理员维护；私人队长编辑本队快照不会改原私人活动。</p>
 <p><code>POST /events/:eventId/personal/:id/link</code>需本人Bearer及memberId/memberToken；同时证明个人和本队员身份，且小队必须同活动。GET <code>.../links</code>只列本人关系；DELETE <code>.../links</code>带memberId取消本人关系。关联不共享收藏或路线，不提交任何回复。UI“同步本人计划到此小队”只在用户确认后替换本队本机草稿；仍需另点“提交”，可以逐队操作。</p>
-<p>0007目前仅隔离本地D1应用，新云端迁移和最新前后端完整链路尚未执行，不把本节当上线声明。</p></main></div></body></html>
+<p>生产已应用0001–0008迁移。实际云端验证范围见 <a href="/help/release_checklist/">发布记录</a>。</p></main></div></body></html>

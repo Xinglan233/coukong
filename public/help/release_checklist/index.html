@@ -1,55 +1,32 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>发布检查表</h1>
-<p>记录日期：2026-09-30。代码、预发布与生产部署已完成；现场使用仍有待验门禁，不能据此认定所有 P0 验收完成。</p>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>发布检查与证据</h1>
+<h2>当前生产</h2>
+<p>- 正式入口：<a href="https://meet.tongye.ink">meet.tongye.ink</a>。兼容入口：<a href="https://coukong.vercel.app">coukong.vercel.app</a>。</p>
+<p>- 活动：<a href="https://meet.tongye.ink/events/redland-2026">REDLAND 2026</a>。</p>
+<p>- 功能与 API 构建：<code>bba05f27c87ea676a1b8a870185d7e64f4f7e4e0</code>，2026-10-02 UTC 发布。</p>
+<p>- 前端纯文档部署可使用更新提交；API 构建保持上述版本，部署元数据分别核对。</p>
+<p>- 生产迁移0001–0008已应用，原小队与成员保留。生产与预发布使用独立D1和私有Blob。</p>
+<h2>自动化证据</h2>
 <div class="table-scroll"><table>
-<tr><td>环境</td><td>版本/提交</td><td>地址</td><td>状态</td></tr>
-<tr><td>本地</td><td>验收源码 7a9ab0a</td><td>Mac 开发环境</td><td>verify 与浏览器自动化通过</td></tr>
-<tr><td>隔离预发布</td><td>Worker 35fb8fa（本轮 API 源码相同）</td><td>tongye-meet-api-staging.xinglan233.workers.dev</td><td>独立 D1，云端写入与隔离恢复通过</td></tr>
-<tr><td>生产</td><td>9090be47ed732b5afd5323d20515be1fbb4cb84f</td><td><a href="https://coukong.vercel.app">前端</a>、<a href="https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready">API ready</a></td><td>实际部署及核验完成</td></tr>
+<tr><td>范围</td><td>固定源码</td><td>单元 / 本地D1 / 浏览器</td><td>CI</td></tr>
+<tr><td>活动、个人计划、地图完整功能发布</td><td>ee1ae573dee26ee7a6f10d779f9480dc3ab7f2ac</td><td>140 / 67 / 90</td><td><a href="https://github.com/Xinglan233/tongye_meet/actions/runs/37012656315">verify</a>、<a href="https://github.com/Xinglan233/tongye_meet/actions/runs/37012692964">CodeQL</a></td></tr>
+<tr><td>正式域名路由与CORS修复</td><td>3eb6ba969b56ce9541b81749ab6569152f71e60c，合并bba05f2</td><td>148 / 67 / 90</td><td><a href="https://github.com/Xinglan233/tongye_meet/actions/runs/37021313547">verify</a>、<a href="https://github.com/Xinglan233/tongye_meet/actions/runs/37021310226">CodeQL</a></td></tr>
 </table></div>
-<p>PR #2 已合并；生产前端功能代码与 Worker ready 对应上述9090完整功能合并SHA。其源码树与7a9ab0a等价；后续纯文档发布的前端部署提交另行记录，不改变Worker构建标识或已验收功能。公开地址使用既有 coukong 别名，Vercel 项目为 tongye-meet。</p>
-<h2>已执行门禁</h2>
-<p>- [x] <code>npm run verify</code>：类型、lint、30 个单元测试、9 组真实 D1 集成、文档与构建通过。</p>
-<p>- [x] <code>npm run test:e2e</code>：11 个 Playwright 用例通过，含真实 Service Worker 离线、慢 PUT、混合版本和有界旧分享处理。</p>
-<p>- [x] 本轮生产三个隔离浏览器身份通过原式 UI 建队、加入、提交、刷新与导出，4 项组合检查通过；远端请求 200，13:07–13:52 刷新与个人导出保留原值。</p>
-<p>- [x] 管理员、队长、队员 Mac Chromium 375/390px 无页面横向溢出；这不是 iPhone 或微信证据。</p>
-<p>- [x] 管理员生产375/390px登录、新建模板直接展开、文件预览、退出撤销通过；模板发布/更新/下架在本地UI和隔离云端验证，不向生产发布测试模板。</p>
-<p>- [x] 公共模板只取每个ID的最新版本；下架不复活旧发布版本，小队快照不变。</p>
-<p>- [x] 公开浏览器实际通过“保存后更新”加载新PWA界面，无清空网站数据。</p>
-<p>- [x] 本地直接 API 权限、CAS 与数据隔离验证通过，不能读写他人私人回复。</p>
-<p>- [x] 云端 998 场次、185548 字节候选包预览、原子导入、导出 deepEqual 与非法包不写入通过。</p>
-<p>- [x] 云端 SQL 导出到隔离环境恢复，API 回读 deepEqual 通过；生产初始与预发布上线前备份已受控保存，文件权限 600。</p>
-<p>- [x] Git 基线 bundle 与初始审查证据保留；前端/Worker 生产版本和公开入口实际核验。</p>
-<p>- [x] 生产同源 API 代理、预览独立 API/D1、站内帮助和例子已部署。</p>
-<h2>仍需完成</h2>
-<p>本轮交付新手与 JSON 静态帮助及仓库文档；后置完整项目文档站尚未完成，不宣称所有文档站要求已满足。</p>
-<p>- [ ] iPhone/Android 真机、微信实际操作与中国大陆现场网络可达性。</p>
-<p>- [ ] 最大限制及实际使用规模的 Worker 10ms CPU 实测；998 场次云端成功不是 CPU 指标证明。</p>
-<p>- [ ] REDLAND 每日官方开放时间与真实场次经用户确认。候选资料来自第三方且不完整，不能宣传为完整官方表。</p>
-<p>- [ ] 活动当日前复核账户免费计划、Vercel Hobby 个人非商业用途与剩余额度。</p>
-<h2>证据与保护</h2>
-<p>以上结果由执行任务的实际运行记录提供。发布交付保留测试日志、浏览器结果、云端回读/恢复结果和基线 Git bundle；私密 SQL、权限入口及本机绝对备份路径只通过受控交付提供，不写入公开文档或构建。附件格式校验不是产品上线证据。</p>
-<p>恢复和版本回滚见 <a href="/help/operations/">运维说明</a>。生产演练只用明确的隔离测试小队，不运行批量破坏性测试。</p>
-<h2>活动、地图与个人计划增量：独立验收记录</h2>
-<p>以下属于尚未生产发布的增量，不能与上面的已上线小队版本合并计为通过。生产前端仍为 b29c14a 文档版，业务与 API 为9090be47。</p>
-<div class="table-scroll"><table>
-<tr><td>验收对象</td><td>实际版本与范围</td><td>结果</td></tr>
-<tr><td>运行时基线</td><td>937b8abf97735d0ad2b9155073163f7254bdc51e</td><td>本地 verify：80 单元、30 真实 Worker/D1 集成；完整浏览器33项一次通过；该提交 GitHub verify、CodeQL 与 Vercel 均通过</td></tr>
-<tr><td>云媒体上传与读取</td><td>前端 c265e807e50e399cee11c7e5c13e8b502a7cfbcb；Worker 1ddec1c1-f2ed-4bb5-bf14-07191f676f01，构建标识 c265e807-oidc-bound-fetch，其 Worker 源码与937对应部分一致</td><td>虚构隔离活动中直传私有 Blob、可信 Node 净化、D1 激活、发布后读取均实际200；后续个人首次保存失败，完整场景未通过</td></tr>
-<tr><td>媒体与数据库备份</td><td>上述隔离活动 revision/publicRevision 均为2</td><td>一项资产、两份图片、一条历史引用，SQL与文件哈希验证后生成 COMPLETE；没有公开备份内容或凭据</td></tr>
-<tr><td>实际备份本机恢复</td><td>同一份云SQL、PNG源图与WebP显示图</td><td>外键违规0、预算计数一致、两图2000×1000且哈希匹配、无EXIF；仅本机隔离验证</td></tr>
-<tr><td>本机937界面连接真实云D1</td><td>本机375/390px浏览器 → 已部署staging Worker/D1</td><td>首次保存期间延迟真实身份响应，收藏保存成功；两个独立身份保存、刷新与导出13:07–13:52，互读私人计划403；没有测试新受保护Vercel预览或本机媒体函数</td></tr>
-<tr><td>全新云D1恢复</td><td>同一份实际备份 → 独立新恢复库 → 云端重新导出和独立恢复Worker</td><td>18张表结构与全部记录一致，重新导出SQL逐字节一致；原计数和触发器保留，临时表移除。独立恢复API的ready与公开活动DTO回读通过；未据此认定图片新路径恢复通过</td></tr>
-<tr><td>有界恢复脚本及CI</td><td>1ab339b05cf21b7d3f108b0f6ef722fad54f5432，前端/Worker运行时与937不变</td><td>本机81单元、类型/lint/文档通过；实际对应SHA的GitHub verify/CodeQL/Vercel均成功</td></tr>
-<tr><td>图片新路径业务恢复</td><td>已批准c265前端 + 修补Worker；同一staging store新虚构活动，保留原活动/资产</td><td>备份PNG再上传，新assetKey/ID及manifest匹配；独立375px浏览器实际读图；再次备份一资产/两图片/一历史引用全部哈希与SQL一致；原活动和资产未变</td></tr>
-<tr><td>恢复活动个人计划</td><td>本机937界面（与1ab运行时相同） → 真实staging D1，新命名恢复活动</td><td>两独立375/390px身份收藏、分钟保存/刷新/导出及403验证；不是原私人身份迁移或最新受保护Vercel预览全场景</td></tr>
-</table></div>
-<p>- [x] 本地真实慢身份创建响应复现首次保存竞态，937修复后回归通过；仍保留提交期间新编辑、离线草稿和双版本保护。</p>
-<p>- [x] 同key新图公开后，仍持旧资料的页面重新加载不获取或绘制新图；新页使用新图身份和新坐标。</p>
-<p>- [x] 最新完整浏览器运行生成375/390/430px、桌面与390px同尺寸页面证据；自动化截图不代表用户已确认视觉。</p>
-<p>- [ ] 937前端的新云预览首次个人保存、两独立个人身份及完整分钟链路实际回归。</p>
-<p>- [x] 实际备份在全新云D1恢复后重新导出，无损比较全部表与记录；大内联JSON先无损分段，单语句低于D1限制。</p>
-<p>- [x] 同一staging store的新媒体路径业务恢复演练；原历史及资产保留，实际显示与第二份备份引用校验通过，不代替原私人身份迁移验证。</p>
-<p>- [ ] 用户确认新版视觉；此前不得合并或替换生产。</p>
-<p>- [ ] 真机、微信、中国大陆现场网络，以及免费CPU/规模门禁。</p>
-<p>临时预览访问只适用于获准的具体部署。旧c265访问不能用于937；没有为937生成新的临时访问。源日志、私密会话、签名链接和备份绝对路径不放公开文档。</p>
-<p>完整700行功能要求逐项状态见<a href="/help/activity_p0_status/">活动升级P0状态</a>；表中实现缺项不能只标为未测试，不将未交付首发细项降为P1。</p></main></div></body></html>
+<p>域名修复新增8项测试覆盖精确生产host、未知host留在测试环境、Worker预检与媒体同源检查。浏览器90项来自该固定提交的一次完整CI运行，自动化视口不等于手机真机。</p>
+<h2>生产实际核验</h2>
+<p>- [x] 两个公开入口的 <code>/api/v1/ready</code> 均200，返回同一bba完整构建标识和真实数据库就绪。</p>
+<p>- [x] 两个入口的公开活动列表内容一致，正式入口没有读取测试活动。</p>
+<p>- [x] REDLAND公开显示图200，实际字节与发布元数据SHA-256一致。</p>
+<p>- [x] 正式HTTPS origin写入预检204；HTTP活动入口308到HTTPS，保留路径和查询参数。</p>
+<p>- [x] 正常已登录Safari完成REDLAND资料导入、JPEG净化上传、绑定和发布，实际活动与地图可打开。</p>
+<p>- [x] 数据库发布前与REDLAND发布后导出；发布后SQL在本机隔离恢复、外键和业务资料核对通过。</p>
+<p>- [x] 公开浏览器通过“保存后更新”加载PWA新版界面，无清空网站数据；该记录属于已执行更新验证，不替代所有设备冷启动。</p>
+<p>REDLAND公开资料为41个活动、998个场次、87个未定位地点、1张地图、0条路网。公开显示图核验不等于净化源图的完整媒体备份。</p>
+<h2>隔离环境证据</h2>
+<p>已执行管理员媒体发布、独立个人保存、队长及两队员分钟填写、权限拒绝、SQL云端隔离恢复、媒体新路径恢复和历史引用备份。证据对应各自的隔离部署，不能替代当前生产的完整三角色演练。</p>
+<h2>待验与资料缺口</h2>
+<p>- [ ] 当前生产版本三个独立浏览器身份的完整创建、填写、修改链路。</p>
+<p>- [ ] 当前生产净化源图与显示图的完整受控媒体备份；需维护者提供合法受控管理员会话文件。</p>
+<p>- [ ] 中国大陆手机、微信、现场弱网、真机PWA冷启动与恢复。</p>
+<p>- [ ] 最大复杂图片、全部媒体云端拒绝矩阵、Workers真实CPU/内存及现场同WiFi规模。</p>
+<p>- [ ] REDLAND闭馆、A02/C04时段、真实地点坐标与确认通道。</p>
+<p>软件功能状态见 <a href="/help/activity_p0_status/">功能状态</a>，测试命令见 <a href="/help/testing/">测试</a>。每次发布记录前端提交、Worker构建、部署ID、备份校验和及实际核验范围；私人备份路径和恢复入口通过安全方式交付，不放公开文档。</p></main></div></body></html>

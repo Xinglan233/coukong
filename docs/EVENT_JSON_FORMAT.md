@@ -128,7 +128,7 @@
 
 例如 09:60（非法分钟）、23:30–00:30（同日倒序）、重复场次 id、缺失日期、场次跨午休开放范围、空白标题或未知结构版本都拒绝。错误含稳定码、字段路径和中文说明。重复对象键在解析阶段拒绝，不能后值覆盖前值。九个 [错误夹具](../tests/fixtures/invalid) 仅用于测试，绝不导入正式活动。
 
-## v2与地图替换（本轮分支，云端待验）
+## v2与地图替换
 
 v2采用 [v2 Schema](../schemas/event-package.v2.schema.json)，包上限1MiB。通用示例为 [event-generic.v2.json](../examples/event-generic.v2.json)，带地图和通道的 [convention-demo.v2.json](../examples/convention-demo.v2.json) 及其PNG均为自绘虚构测试资料，不能当作REDLAND官方资料。v1仍按原格式验证，不接受v2字段混入v1。
 

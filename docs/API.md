@@ -35,7 +35,7 @@
 | GET /admin/creation-invites | 管理会话，安全状态列表，可按eventId筛选，limit/offset分页，不含码和哈希 |
 | DELETE /admin/creation-invites/:id | 管理会话，operationId、expectedRevision；撤销未使用码 |
 
-单次建队文字码属于待生产发布增量；V18候选界面已接入真实接口并在隔离预发布验证，不能将候选成功当生产上线。码默认24小时、固定一队、绑定一个已发布公开活动；通过原 `POST /groups` 的 `creationCode` 字段提交。数据库仅保存哈希；客户端在请求前生成并暂存码和操作ID，服务端不会重放码明文。完整接入与边界见仓库 `handoff/CREATION_INVITE_CONTRACT.md`。原站点创建码及私人活动创建保持兼容。
+单次建队文字码已生产部署。码默认24小时、固定一队、绑定一个已发布公开活动；通过原 `POST /groups` 的 `creationCode` 字段提交。数据库仅保存哈希；客户端在请求前生成并暂存码和操作ID，服务端不会重放码明文。完整接入与边界见仓库 `handoff/CREATION_INVITE_CONTRACT.md`。原站点创建码及私人活动创建保持兼容。
 
 ## DTO 与提交
 
@@ -49,7 +49,7 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 
 当前列表限制不是完整游标分页；若超过单次返回上限需要补分页，不宣传无限模板列表。API 路由和前端入口均须经 [发布检查](RELEASE_CHECKLIST.md) 验收。
 
-## 个人计划与公开限额（本轮分支，云端待验）
+## 个人计划与公开限额
 
 `GET /api/v1/limits` 无需私密凭据，返回共享 `ACTIVITY_LIMITS` 的真实配置。个人创建为 `POST /api/v1/events/:eventId/personal`；本人 Bearer 凭据用于 `GET/PUT/DELETE /api/v1/events/:eventId/personal/:id`。PUT 同时检查 `expectedRevision`、`scheduleRevision`、`spatialRevision`，带预先保存的 `operationId`，不会以活动 ID 授予个人权限。
 
@@ -62,9 +62,9 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 | 413 PERSONAL_PLAN_TOO_LARGE | 减少备注或记录，保留本机草稿后重新保存 |
 | 507 STORAGE_BUDGET_EXCEEDED | 共享预算已满；保留草稿，稍后重试或删除不用的本人记录，不自动付费 |
 
-相同操作ID携带不同请求内容仍返回409 VERSION_CONFLICT。活动空间版本变化也须核对后重新保存。上述合同由本地代码与测试落实；不能据此宣称新模块已通过云端或现场验收。
+相同操作ID携带不同请求内容仍返回409 VERSION_CONFLICT。活动空间版本变化也须核对后重新保存。合同与实际验证分开记录，当前生产范围见 [发布记录](RELEASE_CHECKLIST.md)。
 
-## 私人日常活动与个人关联（0007迁移，本地分支）
+## 私人日常活动与个人关联（0007迁移）
 
 `POST /private-events` 需创建码、operationId、客户端预先保存的独立ownerToken和personalToken、name、eventPackage/raw；原子建立未公开的通用活动及本人个人记录。返回`{activity,personal}`，两种权限分离，不凭名字认领。私人活动不进入公开列表或管理员公共活动列表，public_revision始终NULL，旧Worker回滚后也不能公开它。
 
@@ -76,4 +76,4 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 
 `POST /events/:eventId/personal/:id/link`需本人Bearer及memberId/memberToken；同时证明个人和本队员身份，且小队必须同活动。GET `.../links`只列本人关系；DELETE `.../links`带memberId取消本人关系。关联不共享收藏或路线，不提交任何回复。UI“同步本人计划到此小队”只在用户确认后替换本队本机草稿；仍需另点“提交”，可以逐队操作。
 
-0007目前仅隔离本地D1应用，新云端迁移和最新前后端完整链路尚未执行，不把本节当上线声明。
+生产已应用0001–0008迁移。实际云端验证范围见 [发布记录](RELEASE_CHECKLIST.md)。

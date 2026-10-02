@@ -1,6 +1,22 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>变更记录</h1>
-<h2>通用版（未发布，2026-09-30）</h2>
-<p>本轮增量改造目标：独立小队与成员能力凭据、Worker/D1 持久化、分钟级时间、活动 JSON、草稿/确认区分、公共模板和中文文档。实现与测试状态以 <a href="/help/release_checklist/">发布检查表</a> 为准，尚不能据此认定生产可用。</p>
-<p>旧 REDLAND 本地数据与静态分享须先保护，不能自动上传或冒名确认；09:00–21:00 示例开放时间待确认。OCR 保留为辅助能力。无付费服务、自动保留期限、CSV/ICS 或官方预约能力。</p>
-<h2>原版基线</h2>
-<p>基线提交 <code>e27d78b957f9229ee540ba238cdcc60e27910628</code>：Vite / React / PWA，本机日程、静态朋友快照、分享码、本地 OCR。原仓库未提交工作必须保护，不能为迁移清空。</p></main></div></body></html>
+<h2>2026-10-02</h2>
+<h3>活动与个人计划</h3>
+<p>功能发布提交 <code>ee1ae573dee26ee7a6f10d779f9480dc3ab7f2ac</code>。</p>
+<p>- 活动优先，支持通用活动与漫展；个人无需加入小队即可保存收藏、安排和路线。</p>
+<p>- 管理员网页和JSON编辑、差异预览、草稿与公开版本分离。</p>
+<p>- 私有地图上传、可信净化、版本绑定、人工标点和路网编辑；固定顺序路线及时间可行性。</p>
+<p>- 私人活动、活动建队码、个人恢复、回导、删除及明确逐队同步。</p>
+<p>- 有界幂等与资源预算、离线一致快照、旧分享安全解码和原数据保护。</p>
+<p>- 接入用户确认的Figma界面，保留1分钟精度及已有权限、CAS和草稿语义。</p>
+<p>- 发布REDLAND全场地图、87条目录与998条参考场次；点位与通道未定位，不提供猜测导航。</p>
+<h3>正式域名</h3>
+<p>功能/API提交 <code>bba05f27c87ea676a1b8a870185d7e64f4f7e4e0</code>。</p>
+<p>- <code>meet.tongye.ink</code> 精确转发生产API，保留 <code>coukong.vercel.app</code> 兼容入口。</p>
+<p>- 新增正式HTTPS origin写入权限；HTTP入口跳转HTTPS。其他预览host继续使用测试环境。</p>
+<p>- 两个入口的数据库版本、公开活动与地图字节核验通过。</p>
+<h3>文档</h3>
+<p>按用户、管理员、开发、部署维护和隐私安全整理文档入口，更新指南与发布证据。纯文档部署不改变Worker构建版本。</p>
+<h2>2026-09-30</h2>
+<p>提交 <code>9090be47ed732b5afd5323d20515be1fbb4cb84f</code>：通用多人协调、分钟算法、JSON导入、权限隔离、离线草稿、旧版兼容及免费部署。</p>
+<h2>原始版本</h2>
+<p>基线 <code>e27d78b957f9229ee540ba238cdcc60e27910628</code>：本机REDLAND日程、朋友静态快照、分享码和本地OCR。旧日期、分享协议与数据仍保留兼容入口，不会自动替朋友建立在线身份。</p></main></div></body></html>
