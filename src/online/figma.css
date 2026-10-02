@@ -158,6 +158,7 @@
 .figma-shell .figma-admin-tabs button.on { background:var(--ink);color:var(--surface) }
 .figma-shell .figma-admin-tabs button:disabled { opacity:.45 }
 .figma-shell .figma-admin-panel { min-height:140px }
+.figma-shell .figma-admin-code-panel { min-height:0 }
 .figma-shell .figma-admin-save { border-top:1px solid var(--line);margin-top:20px;padding-top:16px }
 
 .figma-shell .figma-crew-section { margin:20px 0 }
