@@ -1,5 +1,5 @@
 {
-  "generatedAtUTC": "2026-10-02T01:30:52.757267+00:00",
+  "generatedAtUTC": "2026-10-02T01:39:26.931071+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
   "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
@@ -30,8 +30,8 @@
     },
     {
       "path": "SOURCE_INDEX.md",
-      "bytes": 10283,
-      "sha256": "3d91732db7c750ba551ab017cc3ece710db192cdd8e11e49e2d024ff4910690b"
+      "bytes": 10515,
+      "sha256": "ce2dfdacb82d0f05d9606b6368214ea40273316dede4b252fdda5c49f4dd6e38"
     },
     {
       "path": "references/figma-feedback-dark-plan.png",

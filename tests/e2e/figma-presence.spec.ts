@@ -15,7 +15,10 @@ test('Figma在场Sheet：分钟、多时段、步长、未保存编辑恢复及�
  await d.getByRole('button',{name:'5 分',exact:true}).click();await expect(d.getByLabel('开始时间 1',{exact:true})).toHaveValue('13:07')
  await d.getByRole('button',{name:'开始时间 1推迟5分钟',exact:true}).click();await expect(d.getByLabel('开始时间 1',{exact:true})).toHaveValue('13:12')
  await d.getByRole('button',{name:'开始时间 1提前5分钟',exact:true}).click()
- await close(page);await page.reload();await entry.click();d=page.getByRole('dialog',{name:/在场时间/})
+ await close(page)
+ await page.evaluate(()=>{const original=IDBObjectStore.prototype.get;(window as any).restorePresenceRead=()=>{IDBObjectStore.prototype.get=original};IDBObjectStore.prototype.get=function(key){if(typeof key==='string'&&key.startsWith('personal-presence-editor:'))throw new DOMException('隔离读取失败夹具','UnknownError');return original.call(this,key)}})
+ await entry.click();d=page.getByRole('dialog',{name:/在场时间/});await expect(d.getByRole('alert')).toContainText('本机草稿未能读取');await expect(d.getByRole('button',{name:'保存',exact:true})).toBeDisabled();await close(page);await page.evaluate(()=>(window as any).restorePresenceRead())
+ await page.reload();await entry.click();d=page.getByRole('dialog',{name:/在场时间/})
  await expect(d.getByLabel('开始时间 1',{exact:true})).toHaveValue('13:07');await expect(d.getByLabel('结束时间 1',{exact:true})).toHaveValue('13:52')
  mkdirSync('/tmp/tongye-figma-presence-v11',{recursive:true});for(const width of [375,390,430])for(const scheme of ['light','dark'] as const){await page.setViewportSize({width,height:900});await settleTheme(page,scheme);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({animations:'disabled',path:`/tmp/tongye-figma-presence-v11/sheet-${width}-${scheme}.png`})}
  await d.getByRole('button',{name:'添加时段',exact:true}).click();await d.getByLabel('开始时间 2',{exact:true}).fill('23:55');await d.getByLabel('结束时间 2',{exact:true}).fill('24:00')
