@@ -43,7 +43,7 @@ python3 scripts/prepare-d1-restore.py "$PRIVATE_EXPORT_SQL" "$PRIVATE_RESTORE_SQ
 
 ## 回滚
 
-当前功能版本为合并提交 `9090be47ed732b5afd5323d20515be1fbb4cb84f`；可恢复的上一版为 `b80193d8ed30404f181917796919382b5efd890c`。纯文档提交不改变此功能源码或Worker构建标识。先保存当前数据备份与部署 ID；Vercel 项目 tongye-meet 选择已验证旧 deployment 恢复到公开别名 coukong.vercel.app。Worker 使用 `wrangler rollback <已验证版本ID> --config worker/wrangler.production.jsonc` 回滚，版本 ID 从实际部署历史选取，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。
+当前功能提交以实际生产部署的Git元数据和 `/api/v1/ready` 构建标识为准；纯文档提交可与Worker源码提交不同，必须记录两者及源码树关系。2026-10-02活动升级前稳定Worker源码为 `9090be47ed732b5afd5323d20515be1fbb4cb84f`，版本ID `818f337c-c334-4145-9d47-44406d62ff80`；更早b801版本会带回其已知缺陷，不默认作为首选。先保存当前数据备份与部署 ID；Vercel 项目 tongye-meet 选择已验证旧 deployment 恢复到公开别名 coukong.vercel.app。Worker 使用 `wrangler rollback <已验证版本ID> --config worker/wrangler.production.jsonc` 回滚，版本 ID 从实际部署历史选取，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。
 
 [发布检查](RELEASE_CHECKLIST.md) 必须注明备份路径、演练结果、旧部署和恢复版本，不能在公开记录里写私人链接或秘密。
 
@@ -53,10 +53,12 @@ python3 scripts/prepare-d1-restore.py "$PRIVATE_EXPORT_SQL" "$PRIVATE_RESTORE_SQ
 # 先在现有项目部署列表确认当前上一个生产部署，再填写其ID
 TONGYE_ROLLBACK_DEPLOYMENT="dpl_请替换为当前上一生产部署ID"
 npx vercel rollback "$TONGYE_ROLLBACK_DEPLOYMENT" --scope xinglan233s-projects --non-interactive
-npx wrangler rollback a01d359b-b1fe-49a7-a1e4-dcb5e57d2e93 --config worker/wrangler.production.jsonc
+# 另从Worker实际版本历史确认Schema兼容的稳定版本；按故障范围选择是否执行
+TONGYE_ROLLBACK_WORKER_VERSION="请替换为已核实Worker版本ID"
+npx wrangler rollback "$TONGYE_ROLLBACK_WORKER_VERSION" --config worker/wrangler.production.jsonc
 ```
 
-前端直接回滚目标必须从现有项目部署列表确认，不固定某次发布ID。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)；每次操作先核对项目部署列表。更早b801前端部署 `dpl_3FT8Y15H4F3ZVnPpT1VZZqnvYXhU` 仍保留，但如果免费计划拒绝直接回滚，则用b801源码经正常恢复分支、PR和CI重新发布，不升级付费。Worker命令回到b801功能版本；两者应按故障范围选择并核验，单独回滚文档无需回滚Worker。CLI需要相应账户登录；不要为失败扩权。回滚之后核对公开站点和 `/api/v1/ready`；旧版本会重新带回其已知界面与模板下架缺陷，数据库及个人草稿不因代码回滚而删除。
+前端直接回滚目标必须从现有项目部署列表确认，不固定某次发布ID。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)；每次操作先核对项目部署列表。更早b801前端部署 `dpl_3FT8Y15H4F3ZVnPpT1VZZqnvYXhU` 仍保留，但如果免费计划拒绝直接回滚，则用b801源码经正常恢复分支、PR和CI重新发布，不升级付费。Worker与前端按故障范围选择并核验，单独回滚文档无需回滚Worker。恢复到旧9090会暂时失去新增活动、个人计划与媒体功能，但不能删掉新D1表、私人活动或已保存计划；回滚前先确认私人活动不会被旧版公开。CLI需要相应账户登录；不要为失败扩权。回滚之后核对公开站点和 `/api/v1/ready`；旧版本会重新带回其已知界面与模板下架缺陷，数据库及个人草稿不因代码回滚而删除。
 
 ## 本轮媒体预算与失败清理（云端待验）
 

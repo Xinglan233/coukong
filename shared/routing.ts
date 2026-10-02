@@ -39,17 +39,22 @@ export function requiredTravelMinutes(travelSeconds:number|null,afterBuffer:numb
 }
 
 export interface RouteWindowResult {status:'fits'|'too_short'|'unknown'|'stale';requiredMinutes:number|null;start?:string;end?:string}
+// Rendering and timing use the same remaining path; completed stops stay in the saved plan.
+export function remainingRoutePoiIds(route:PersonalRoute):string[]{
+ let origin=route.startPoiId
+ for(const stop of route.stops)if(stop.visited)origin=stop.poiId
+ return [...(origin?[origin]:[]),...route.stops.filter(s=>!s.visited).map(s=>s.poiId)]
+}
 // Windows already exclude personal buffers; this check never deducts them again.
 // Unspecified dwell/queue is unknown, so users must explicitly enter zero.
 export function routeWindowFit(convention:ConventionData,route:PersonalRoute,currentSpatialRevision:number,window:{date:string;start:string;end:string}):RouteWindowResult{
  const result=(status:RouteWindowResult['status'],requiredMinutes:number|null=null):RouteWindowResult=>({status,requiredMinutes})
  if(route.spatialRevision!==currentSpatialRevision)return result('stale')
  const stops=route.stops.filter(s=>!s.visited)
- let origin=route.startPoiId
- for(const stop of route.stops)if(stop.visited)origin=stop.poiId
- if(!origin||!route.mapId||!stops.length||window.date!==route.date)return result('unknown')
+ const poiIds=remainingRoutePoiIds(route)
+ if(poiIds.length!==stops.length+1||!route.mapId||!stops.length||window.date!==route.date)return result('unknown')
  if(stops.some(s=>[s.stayMinutes,s.queueMinutes].some(v=>v===undefined||!Number.isInteger(v)||v<0||v>1440)))return result('unknown')
- const path=routeFixedOrder(convention,route.mapId,[origin,...stops.map(s=>s.poiId)],route.date)
+ const path=routeFixedOrder(convention,route.mapId,poiIds,route.date)
  if(path.segments.some(s=>s.status==='stale'))return result('stale')
  if(path.estimatedTravelSeconds===null)return result('unknown')
  const minutes=path.estimatedTravelSeconds/60+stops.reduce((sum,s)=>sum+s.stayMinutes!+s.queueMinutes!,0)

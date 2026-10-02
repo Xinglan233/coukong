@@ -26,7 +26,7 @@ export function readPersonalBackup(raw:string,activity:ActivityDTO,personId:stri
  if(p.eventId!==activity.id)throw new Error('备份不属于当前活动')
  if(!personId)throw new Error('请先保存个人计划或打开本人恢复链接')
  if(p.personId!==undefined&&p.personId!==personId)throw new Error('备份不属于当前身份，请打开原个人恢复链接')
- for(const field of ['scheduleRevision','spatialRevision'])if(p[field]!==undefined&&(!Number.isInteger(p[field])||Number(p[field])<1))throw new Error('备份版本格式无效')
+ for(const field of ['scheduleRevision','spatialRevision'])if(p[field]!==undefined&&(!Number.isInteger(p[field])||Number(p[field])<0))throw new Error('备份版本格式无效')
  if(p.scheduleRevision!==undefined&&p.scheduleRevision!==activity.scheduleRevision)throw new Error('活动时间已变化，请先核对原备份后手动调整')
  if(p.spatialRevision!==undefined&&p.spatialRevision!==activity.spatialRevision)throw new Error('地图资料已变化，请先核对原备份后手动调整')
  if(new TextEncoder().encode(JSON.stringify(p.plan)).byteLength>ACTIVITY_LIMITS.personalPlanBytes)throw new Error('个人计划超过大小限制')

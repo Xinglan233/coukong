@@ -78,6 +78,7 @@ export async function handleActivity(ctx:ActivityContext):Promise<{handled:boole
  }
  const match=path.match(/^\/events\/([^/]+)(.*)$/);if(!match)return {handled:false}
  const eventId=match[1],tail=match[2]
+ if(tail==='/owner'&&method==='GET'){const row=await first("SELECT * FROM events WHERE id=? AND visibility='private' AND owner_hash=?",eventId,authHash);if(!row)ctx.fail('FORBIDDEN','此入口没有私人活动管理权限',403);return {handled:true,data:activityDTO(row!)}}
  if(tail===''&&method==='GET'){const event=await loadReadableActivity(DB,eventId,authHash);if(!event)ctx.fail('NOT_FOUND','活动未发布或不存在',404);return {handled:true,data:event}}
  if(tail==='/event-export'&&method==='GET'){const event=await loadReadableActivity(DB,eventId,authHash);if(!event)ctx.fail('NOT_FOUND','活动不存在或没有访问权限',404);return {handled:true,data:event!.eventPackage}}
  if(tail===''&&method==='PATCH'){
@@ -104,8 +105,8 @@ export async function handleActivity(ctx:ActivityContext):Promise<{handled:boole
   return {handled:true,data:{...activityDTO(old!),revision,scheduleRevision:schedule,eventPackage:pack,updatedAt:now}}
  }
  if(tail==='/personal'&&method==='POST'){
-  const b=await ctx.body(),hash=await ctx.hash(ctx.token(b.personalToken)),operation=ctx.op(b.operationId),digest=await ctx.hash(JSON.stringify(b));await ctx.limited('personal-create:'+hash,20)
   const source=ctx.req.headers.get('CF-Connecting-IP')||'local';await ctx.limited('personal-create-source:'+source,120)
+  const b=await ctx.body(),hash=await ctx.hash(ctx.token(b.personalToken)),operation=ctx.op(b.operationId),digest=await ctx.hash(JSON.stringify(b));await ctx.limited('personal-create:'+hash,20)
   const day=Math.floor(Date.now()/86400000),dailyKey='personal-create-day:'+source
   await DB.prepare('INSERT INTO rate_limits(key,window,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window=excluded.window THEN count+1 ELSE 1 END,window=excluded.window').bind(dailyKey,day).run()
   const daily=await first('SELECT count FROM rate_limits WHERE key=?',dailyKey);if(daily!.count>1000)ctx.fail('LIMIT_EXCEEDED','此来源今日创建次数过多，请保留本机记录后稍后重试',429)

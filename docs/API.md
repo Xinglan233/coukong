@@ -66,7 +66,7 @@ MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/su
 
 `POST /private-events` 需创建码、operationId、客户端预先保存的独立ownerToken和personalToken、name、eventPackage/raw；原子建立未公开的通用活动及本人个人记录。返回`{activity,personal}`，两种权限分离，不凭名字认领。私人活动不进入公开列表或管理员公共活动列表，public_revision始终NULL，旧Worker回滚后也不能公开它。
 
-私人`GET /events/:id`及`GET /events/:id/event-export`只允许该活动owner、个人或有效来源小队能力。`PATCH /events/:id`仅owner，带expectedRevision、operationId和完整活动包，时间变化保留个人旧计划并要求复核；旧小队快照不变。私人活动仍受创建保护、限流及共享128MiB预算，不能公开地图扩展。
+私人`GET /events/:id`及`GET /events/:id/event-export`只允许该活动owner、个人或有效来源小队能力。 `GET /events/:id/owner`为恢复管理入口的只读校验，只允许此私人活动的owner，返回同一ActivityDTO；个人、小队或公开活动访问能力不能通过此校验。恢复链接只有认证成功后才替换本机原入口，失败保留原记录。`PATCH /events/:id`仅owner，带expectedRevision、operationId和完整活动包，时间变化保留个人旧计划并要求复核；旧小队快照不变。私人活动仍受创建保护、限流及共享128MiB预算，不能公开地图扩展。
 
 从私人活动建队时，`POST /groups`另带sourceEventId、sourceEventRevision与sourceEventToken；服务端验证真实来源权限。来源能力只用于该请求，不写URL，返回GroupDTO含sourceVisibility。公开来源活动仍由管理员维护；私人队长编辑本队快照不会改原私人活动。
 

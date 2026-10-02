@@ -34,3 +34,12 @@ it('completed origin needs no original start, while a missing visited location c
  delete c.pois[2].routeNodeId
  expect(routing.routeWindowFit(c,r,1,w).status).toBe('unknown')
 })
+
+it('map and time checks share the remaining fixed path without mutating completed records',()=>{
+ const {c,r}=remainingFixture(),original=JSON.stringify(r)
+ expect(routing.remainingRoutePoiIds(r)).toEqual(['c','d'])
+ expect(routing.routeFixedOrder(c,'m',routing.remainingRoutePoiIds(r),r.date).segments[0]).toMatchObject({nodeIds:['c','d'],edgeIds:['cd'],estimatedTravelSeconds:180})
+ expect(JSON.stringify(r)).toBe(original)
+ const fresh=route();expect(routing.remainingRoutePoiIds(fresh)).toEqual(['a','b'])
+ delete fresh.startPoiId;expect(routing.remainingRoutePoiIds(fresh)).toEqual(['b'])
+})
