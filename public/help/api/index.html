@@ -27,7 +27,11 @@
 <tr><td>GET /admin/audit</td><td>管理会话，最近100条脱敏操作，不含凭据/私密正文</td></tr>
 <tr><td>GET /admin/groups</td><td>管理会话，必要元数据，不含私人回复</td></tr>
 <tr><td>PATCH /admin/groups/:groupId</td><td>管理会话，closed/archived 停用</td></tr>
+<tr><td>POST /admin/creation-invites</td><td>管理会话，客户端随机token、operationId、公开eventId、可选ttlHours；单次建队码</td></tr>
+<tr><td>GET /admin/creation-invites</td><td>管理会话，安全状态列表，limit/offset分页，不含码和哈希</td></tr>
+<tr><td>DELETE /admin/creation-invites/:id</td><td>管理会话，operationId、expectedRevision；撤销未使用码</td></tr>
 </table></div>
+<p>单次建队文字码接口属于待发布增量，现有候选界面尚未接入。码默认24小时、固定一队、绑定一个已发布公开活动；通过原 <code>POST /groups</code> 的 <code>creationCode</code> 字段提交。数据库仅保存哈希；客户端在请求前生成并暂存码和操作ID，服务端不会重放码明文。完整接入与边界见 <a href="/help/handoff/creation_invite_contract/">接入合同</a>。原站点创建码及私人活动创建保持兼容。</p>
 <h2>DTO 与提交</h2>
 <p>共享合同为 types.ts。ParticipantResponse 包含 name、presence（每日 intervals）、busy（id/date/start/end/title/source 及可选 location/note/sessionId）、bufferMinutes。成员第一次 revision 为 0；提交使用当前成员 revision 和小队 scheduleRevision。服务端 UTC 时间不可用页面当前时间代替。</p>
 <p>MemberSummary 仅 id/name/status/revision/confirmedScheduleRevision/updatedAt/submittedAt；结果增加安全 availability。发起人不能调用他人私人回复接口。GroupDTO 是小队及 EventPackage 快照；event.id 是外部资料标识，不是权限依据。</p>

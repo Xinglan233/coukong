@@ -29,6 +29,11 @@
 | GET /admin/audit | 管理会话，最近100条脱敏操作，不含凭据/私密正文 |
 | GET /admin/groups | 管理会话，必要元数据，不含私人回复 |
 | PATCH /admin/groups/:groupId | 管理会话，closed/archived 停用 |
+| POST /admin/creation-invites | 管理会话，客户端随机token、operationId、公开eventId、可选ttlHours；单次建队码 |
+| GET /admin/creation-invites | 管理会话，安全状态列表，limit/offset分页，不含码和哈希 |
+| DELETE /admin/creation-invites/:id | 管理会话，operationId、expectedRevision；撤销未使用码 |
+
+单次建队文字码接口属于待发布增量，现有候选界面尚未接入。码默认24小时、固定一队、绑定一个已发布公开活动；通过原 `POST /groups` 的 `creationCode` 字段提交。数据库仅保存哈希；客户端在请求前生成并暂存码和操作ID，服务端不会重放码明文。完整接入与边界见 [接入合同](../handoff/CREATION_INVITE_CONTRACT.md)。原站点创建码及私人活动创建保持兼容。
 
 ## DTO 与提交
 
