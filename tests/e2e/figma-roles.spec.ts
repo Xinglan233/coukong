@@ -1,3 +1,4 @@
+import {API_BASE} from './api-base'
 import {settleTheme} from './figma-visual'
 import {test,expect,type Page} from '@playwright/test'
 import {mkdirSync} from 'node:fs'
@@ -53,13 +54,13 @@ test('Figma同行接三独立身份：未提交不显示全员空闲，邀请和
 })
 
 
-test('活动建队创建码填写错误后能改正重试，保留同一幂等操作和权限',async({browser})=>{
+test('活动建队明确403后改正使用新操作和有效权限',async({browser})=>{
  const pack=await publishFixture(browser,'creation-code-retry'),context=await browser.newContext(),page=await context.newPage()
  await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByLabel('小队标题').fill('创建码改正重试')
  await page.getByLabel('建队码',{exact:true}).fill('wrong-test-code');let response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
  await page.getByRole('button',{name:'创建',exact:true}).click();const denied=await response;expect(denied.status()).toBe(403);const first=denied.request().postDataJSON();await expect(page.getByRole('alert')).toContainText('创建码未通过');await expect(page.getByRole('alert')).toContainText('核对后重试')
  await page.getByLabel('建队码',{exact:true}).fill('test-create');response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
  await page.getByRole('button',{name:'创建',exact:true}).click();const accepted=await response;expect(accepted.status()).toBe(200);const retry=accepted.request().postDataJSON()
- expect(retry.operationId).toBe(first.operationId);expect(retry.managerToken).toBe(first.managerToken);expect(retry.inviteToken).toBe(first.inviteToken)
+ expect(retry.operationId).not.toBe(first.operationId);expect(retry.managerToken).not.toBe(first.managerToken);expect(retry.inviteToken).not.toBe(first.inviteToken);const g=(await accepted.json()).data;expect((await page.request.get(`${API_BASE}/api/v1/groups/${g.id}`,{headers:{Authorization:'Bearer '+retry.managerToken}})).status()).toBe(200);expect((await page.request.get(`${API_BASE}/api/v1/groups/${g.id}`,{headers:{Authorization:'Bearer '+retry.inviteToken}})).status()).toBe(200)
  await expect(page.getByLabel('怎么称呼')).toBeVisible();await context.close()
 })
