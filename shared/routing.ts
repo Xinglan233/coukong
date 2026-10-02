@@ -24,7 +24,7 @@ export function shortestPath(graph:RoutingGraph,fromNodeId:string,toNodeId:strin
  const arcs:Arc[]=[],nodeIds=[toNodeId];let cursor=toNodeId;while(cursor!==fromNodeId){const step=previous.get(cursor)!;arcs.unshift(step.arc);cursor=step.from;nodeIds.unshift(cursor)}
  const points:Point[]=[];for(const arc of arcs){const pointsForEdge=geometry(arc.edge).map(p=>({x:p.x,y:p.y}));if(arc.reverse)pointsForEdge.reverse();points.push(...(points.length?pointsForEdge.slice(1):pointsForEdge))}if(!arcs.length){const n=nodes.get(fromNodeId)!;points.push({x:n.x,y:n.y})}
  const total=(key:'distanceMeters'|'estimatedTravelSeconds')=>arcs.every(a=>typeof a.edge[key]==='number'&&a.edge[key]!>0)?arcs.reduce((sum,a)=>sum+a.edge[key]!,0):null
- return{status:'ok',nodeIds,edgeIds:arcs.map(a=>a.edge.id),geometry:points,distanceMeters:total('distanceMeters'),estimatedTravelSeconds:total('estimatedTravelSeconds'),weightUnit:seconds?'seconds':'relative'}
+ return{status:'ok',nodeIds,edgeIds:arcs.map(a=>a.edge.id),geometry:points,distanceMeters:total('distanceMeters'),estimatedTravelSeconds:seconds?total('estimatedTravelSeconds'):null,weightUnit:seconds?'seconds':'relative'}
 }
 export function routeFixedOrder(convention:ConventionData,mapId:string,poiIds:string[],date:string,mode:'time'|'relative'='time'):{segments:PathResult[];distanceMeters:number|null;estimatedTravelSeconds:number|null} {
  const map=convention.maps.find(m=>m.id===mapId),graph=convention.routingGraphs.find(g=>g.mapId===mapId),segments:PathResult[]=[]

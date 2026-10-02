@@ -65,4 +65,11 @@ describe.sequential('审查修复真实隔离D1回归',()=>{
   const before=await db.prepare('SELECT * FROM events ORDER BY id').all();expect((await api(`/events/${eventId}/owner`,'GET',owner)).data).toEqual(created.data.activity);for(const bad of [personalToken,groupToken,token(),''])expect((await api(`/events/${eventId}/owner`,'GET',bad)).status).toBe(403);expect((await api('/events/identity-selection-fixture/owner','GET',owner)).status).toBe(403);expect((await api('/events/missing-owner-fixture/owner','GET',owner)).status).toBe(403);expect((await db.prepare('SELECT * FROM events ORDER BY id').all()).results).toEqual(before.results)
  })
 
+ it('管理资产列表排除51条已清理撤销记录，旧绑定ready仍可选且最多50项',async()=>{
+  const pack=structuredClone(minimal);pack.event.id='cleaned-history-list-fixture';pack.event.extensions={convention:{maps:[{id:'current-map',assetKey:'current-map',width:64,height:32}],pois:[],routingGraphs:[]}};const db=await seedEvent(pack),bound=await seedReady(pack.event.id,'current-map');await db.prepare('UPDATE media_assets SET created_at=? WHERE id=?').bind('2000-01-01T00:00:00.000Z',bound).run();
+  for(let i=0;i<51;i++){const id=await seedReady(pack.event.id,'cleaned-'+i);await db.prepare("UPDATE media_assets SET state='revoked',blob_path=NULL,source_path=NULL,display_path=NULL WHERE id=?").bind(id).run()}
+  const path=`/admin/events/${pack.event.id}/assets`;expect((await api(path,'GET',token())).status).toBe(401);const list=await api(path,'GET',admin);expect(list.status).toBe(200);expect(list.data.map((a:any)=>a.id)).toContain(bound);expect(list.data.every((a:any)=>a.state!=='revoked')).toBe(true);expect(list.data.every((a:any)=>a.eventId===pack.event.id)).toBe(true);expect(JSON.stringify(list.data)).not.toMatch(/ticket_hash|source_path|display_path|blob_path/);
+  for(let i=0;i<49;i++)await seedReady(pack.event.id,'uncleaned-history-'+i);const full=(await api(path,'GET',admin)).data;expect(full).toHaveLength(50);expect(full.map((a:any)=>a.id)).toContain(bound);expect(full.every((a:any)=>a.state==='ready')).toBe(true)
+ })
+
 })

@@ -64,7 +64,7 @@ export async function handleMedia(ctx:MediaContext):Promise<{handled:boolean;dat
  }
  const reserve=path.match(/^\/admin\/events\/([-\w]+)\/assets$/)
  if(reserve){await ctx.admin();const eventId=reserve[1],event=await first('SELECT * FROM events WHERE id=?',eventId);if(!event||event.visibility==='private')ctx.fail('NOT_FOUND','请先保存公共活动',404)
-  if(method==='GET'){const rows=await DB.prepare('SELECT * FROM media_assets WHERE event_id=? ORDER BY created_at DESC LIMIT 50').bind(eventId).all<Row>();return {handled:true,data:rows.results.map(mediaDTO)}}
+  if(method==='GET'){const rows=await DB.prepare(`SELECT * FROM media_assets WHERE event_id=? AND ${chargedWhere} ORDER BY created_at DESC,id LIMIT 50`).bind(eventId).all<Row>();return {handled:true,data:rows.results.map(mediaDTO)}}
   if(method!=='POST')return {handled:false}
   await ctx.limited('media-reserve:'+authHash,15)
   const b=await ctx.body(),ticketHash=await ctx.hash(ctx.token(b.uploadToken)),operation=ctx.op(b.operationId),digest=await ctx.hash(JSON.stringify(b))

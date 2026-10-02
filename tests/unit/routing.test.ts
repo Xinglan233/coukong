@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest'
-import {shortestPath,normalizedToImage,imageToNormalized,requiredTravelMinutes,routeFixedOrder} from '../../shared/routing'
+import {shortestPath,normalizedToImage,imageToNormalized,requiredTravelMinutes,routeFixedOrder,routeWindowFit} from '../../shared/routing'
 import type {RoutingGraph} from '../../shared/activity-contract'
 const graph=():RoutingGraph=>({id:'g',mapId:'m',mapRevision:1,revision:1,nodes:[{id:'a',x:0,y:0},{id:'b',x:0,y:1},{id:'c',x:1,y:1},{id:'d',x:1,y:0}],edges:['ab','bc','cd'].map((id,i)=>({id,from:'abcd'[i],to:'abcd'[i+1],bidirectional:false,enabled:true,reviewed:true,estimatedTravelSeconds:60,distanceMeters:10}))})
 it('must detour a-b-c-d, not draw a-d straight',()=>{const p=shortestPath(graph(),'a','d','2026-10-03');expect(p.nodeIds).toEqual(['a','b','c','d']);expect(p.geometry).toHaveLength(4);expect(p.estimatedTravelSeconds).toBe(180)})
@@ -8,3 +8,10 @@ it('partial unknown metric never becomes zero/full ETA',()=>{const g=graph();del
 it('2000x1000 coordinate mapping and inverse exact',()=>{expect(normalizedToImage({x:.25,y:.6},2000,1000)).toEqual({x:500,y:600});expect(imageToNormalized({x:500,y:600},2000,1000)).toEqual({x:.25,y:.6});expect(()=>normalizedToImage({x:2,y:0},2000,1000)).toThrow()})
 it('travel uses max not double buffer and unknown stays unknown',()=>{expect(requiredTravelMinutes(180,5,5)).toBe(10);expect(requiredTravelMinutes(900,5,5,2,3)).toBe(20);expect(requiredTravelMinutes(null,5,5)).toBeNull();expect(requiredTravelMinutes(61,0,0)).toBeCloseTo(61/60)})
 it('fixed order preserves order and stale map cannot route',()=>{const g=graph();const c={maps:[{id:'m',title:'demo',assetKey:'m.png',width:2000,height:1000,revision:1,coordinateSpace:'normalized-image-top-left' as const}],routingGraphs:[g],pois:['a','b','c','d'].map(id=>({id,name:id,kind:'booth' as const,position:{mapId:'m',mapRevision:1,x:0,y:0},routeNodeId:id}))};expect(routeFixedOrder(c,'m',['a','c','d'],'2026-10-03').segments.map(s=>s.nodeIds)).toEqual([['a','b','c'],['c','d']]);c.maps[0].revision=2;expect(routeFixedOrder(c,'m',['a','d'],'2026-10-03').segments[0].status).toBe('stale')})
+it('relative search never reports a timed ETA or window failure from a geometrically selected slower path',()=>{
+ const g:RoutingGraph={id:'g',mapId:'m',mapRevision:1,revision:1,nodes:[{id:'a',x:0,y:0},{id:'b',x:.1,y:0},{id:'c',x:0,y:1},{id:'d',x:.2,y:0},{id:'x',x:.8,y:.8},{id:'y',x:.9,y:.9}],edges:[{id:'ab',from:'a',to:'b',estimatedTravelSeconds:300},{id:'bd',from:'b',to:'d',estimatedTravelSeconds:300},{id:'ac',from:'a',to:'c',estimatedTravelSeconds:30},{id:'cd',from:'c',to:'d',estimatedTravelSeconds:30},{id:'xy',from:'x',to:'y'}].map(e=>({...e,enabled:true,reviewed:true,bidirectional:false}))}
+ expect(shortestPath(g,'a','d','2026-10-03')).toMatchObject({edgeIds:['ab','bd'],weightUnit:'relative',estimatedTravelSeconds:null})
+ const c={maps:[{id:'m',title:'虚构图',assetKey:'m.png',width:2000,height:1000,revision:1,coordinateSpace:'normalized-image-top-left' as const}],routingGraphs:[g],pois:g.nodes.map(n=>({id:n.id,name:n.id,kind:'booth' as const,routeNodeId:n.id,position:{mapId:'m',mapRevision:1,x:n.x,y:n.y}}))}
+ expect(routeWindowFit(c,{date:'2026-10-03',mapId:'m',startPoiId:'a',spatialRevision:1,stops:[{poiId:'d',visited:false,stayMinutes:0,queueMinutes:0}]},1,{date:'2026-10-03',start:'13:07',end:'13:10'})).toEqual({status:'unknown',requiredMinutes:null})
+ expect(shortestPath(graph(),'a','d','2026-10-03','relative').estimatedTravelSeconds).toBeNull()
+})
