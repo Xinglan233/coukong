@@ -54,7 +54,9 @@ async function handle(req:Request,env:Env){
    if(grant){const consumed=await first('SELECT used_group_id FROM creation_invites WHERE id=? AND token_hash=?',grant.id,creationHash);if(consumed?.used_group_id!==priorGroup.id)throw new ApiError('FORBIDDEN','建队码没有创建此小队',403);}
    return safeGroup(priorGroup);
   }
-  if(grant&&(grant.used_group_id||grant.revoked_at||Date.parse(grant.expires_at)<=Date.now()))throw new ApiError('FORBIDDEN','建队码已使用、已撤销或已过期',403);
+  if(grant?.used_group_id)throw new ApiError('CREATION_INVITE_USED','该建队码已被使用。',403);
+  if(grant?.revoked_at)throw new ApiError('CREATION_INVITE_REVOKED','该建队码已被撤销。',403);
+  if(grant&&Date.parse(grant.expires_at)<=Date.now())throw new ApiError('CREATION_INVITE_EXPIRED','该建队码已过期。',403);
   const sourceHash=b.sourceEventToken?await hash(token(b.sourceEventToken)):authHash;
   const source=sourceId?await loadReadableActivity(env.DB,String(sourceId),sourceHash):null;
   if(sourceId&&(!source||source.status!=='published'))throw new ApiError('EVENT_UNAVAILABLE','活动未发布、取消或已归档',409);

@@ -7,7 +7,7 @@ test('加入请求未返回时邀请入口不可操作，身份恢复后可正�
  const pack=await publishFixture(browser,'joining-invite-gate'),context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage()
  let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve});let observed!:()=>void;const started=new Promise<void>(resolve=>{observed=resolve})
  await page.route('**/groups/*/join',async route=>{if(route.request().method()!=='POST')return route.continue();const response=await route.fetch();observed();await gate;await route.fulfill({response})})
- await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('加入与邀请竞态');await page.getByLabel('站点创建码').fill('test-create');await page.getByRole('button',{name:'确认创建',exact:true}).click();await page.getByLabel('怎么称呼').fill('队长');await page.getByRole('button',{name:'加入小队',exact:true}).click();await started
+ await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByLabel('小队标题').fill('加入与邀请竞态');await page.getByLabel('建队码',{exact:true}).fill('test-create');await page.getByRole('button',{name:'创建',exact:true}).click();await page.getByLabel('怎么称呼').fill('队长');await page.getByRole('button',{name:'加入小队',exact:true}).click();await started
  try{await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toBeDisabled()}finally{release()}
  await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toBeEnabled();await page.getByRole('button',{name:'邀请队员',exact:true}).click();await expect(page.getByRole('dialog',{name:'管理小队'})).toBeVisible()
  await context.close()
@@ -17,7 +17,7 @@ test('加入后的本人资料尚未恢复时不暴露会被重置的邀请面�
  const pack=await publishFixture(browser,'identity-hydration'),context=await browser.newContext({viewport:{width:390,height:900}}),page=await context.newPage()
  let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve});let observed!:()=>void;const started=new Promise<void>(resolve=>{observed=resolve})
  await page.route('**/members/*/response',async route=>{if(route.request().method()!=='GET')return route.continue();const response=await route.fetch();observed();await gate;await route.fulfill({response})})
- await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('身份恢复验收');await page.getByLabel('站点创建码').fill('test-create');await page.getByRole('button',{name:'确认创建',exact:true}).click();await page.getByLabel('怎么称呼').fill('队长');await page.getByRole('button',{name:'加入小队',exact:true}).click();await started
+ await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByLabel('小队标题').fill('身份恢复验收');await page.getByLabel('建队码',{exact:true}).fill('test-create');await page.getByRole('button',{name:'创建',exact:true}).click();await page.getByLabel('怎么称呼').fill('队长');await page.getByRole('button',{name:'加入小队',exact:true}).click();await started
  try{expect(await page.getByRole('button',{name:'邀请队员',exact:true}).count()).toBe(0)}finally{release()}
  await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toBeVisible()
  for(let i=0;i<3;i++){await page.getByRole('button',{name:'邀请队员',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await close(page)}
@@ -32,9 +32,9 @@ test('Figma同行接三独立身份：未提交不显示全员空闲，邀请和
  await leader.goto(`/events/${pack.event.id}?view=companions`)
  await expect(leader.locator('.figma-companions-entry')).toBeVisible()
  await leader.getByLabel('小队邀请链接').fill('123456');await leader.getByRole('button',{name:'加入',exact:true}).click();await expect(leader.getByRole('alert')).toContainText('完整邀请链接')
- await leader.getByRole('button',{name:'创建小队',exact:true}).click();await leader.getByLabel('小队标题').fill('真实三身份小队');await leader.getByLabel('站点创建码').fill('test-create');await leader.getByRole('button',{name:'确认创建',exact:true}).click()
+ await leader.getByLabel('小队标题').fill('真实三身份小队');await leader.getByLabel('建队码',{exact:true}).fill('test-create');await leader.getByRole('button',{name:'创建',exact:true}).click()
  await leader.getByLabel('怎么称呼').fill('队长');await leader.getByRole('button',{name:'加入小队',exact:true}).click()
- await leader.getByRole('button',{name:'邀请队员',exact:true}).click();const invitation=await leader.getByLabel('邀请链接').inputValue();await close(leader)
+ await leader.getByRole('button',{name:'邀请队员',exact:true}).click();await leader.context().grantPermissions(['clipboard-read','clipboard-write']);await leader.getByRole('button',{name:'复制链接',exact:true}).click();const invitation=await leader.evaluate(()=>navigator.clipboard.readText());await close(leader)
  for(const [page,name] of [[a,'队员 A'],[b,'队员 B']] as const){await page.goto(invitation);await page.getByLabel('怎么称呼').fill(name);const joined=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/join'));await page.getByRole('button',{name:'加入小队',exact:true}).click();expect((await joined).status()).toBe(200);await expect(page.getByRole('button',{name:/本日在场时间/})).toBeVisible();await expect(page.getByRole('button',{name:'邀请队员',exact:true})).toHaveCount(0)}
  await leader.getByRole('button',{name:'凑空',exact:true}).click();await leader.getByRole('button',{name:'刷新',exact:true}).click();await expect(leader.getByText(/等待 .*队员 A.*队员 B.*提交/)).toBeVisible();await expect(leader.locator('.free-row')).toHaveCount(0)
  async function confirmTime(page:Page){await page.getByRole('button',{name:'日程',exact:true}).click();await page.getByRole('button',{name:/本日在场时间/}).click();const d=page.getByRole('dialog');await d.getByLabel('开始时间 1',{exact:true}).fill('13:07');await d.getByLabel('结束时间 1',{exact:true}).fill('13:52');await d.getByRole('button',{name:'保存',exact:true}).click();const reply=page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/response'));await page.getByRole('button',{name:'提交',exact:true}).click();expect((await reply).status()).toBe(200)}
@@ -55,11 +55,11 @@ test('Figma同行接三独立身份：未提交不显示全员空闲，邀请和
 
 test('活动建队创建码填写错误后能改正重试，保留同一幂等操作和权限',async({browser})=>{
  const pack=await publishFixture(browser,'creation-code-retry'),context=await browser.newContext(),page=await context.newPage()
- await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByRole('button',{name:'创建小队',exact:true}).click();await page.getByLabel('小队标题').fill('创建码改正重试')
- await page.getByLabel('站点创建码').fill('wrong-test-code');let response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
- await page.getByRole('button',{name:'确认创建',exact:true}).click();const denied=await response;expect(denied.status()).toBe(403);const first=denied.request().postDataJSON();await expect(page.getByRole('dialog',{name:'创建小队'}).getByRole('alert')).toContainText('创建码未通过');await expect(page.getByRole('dialog',{name:'创建小队'}).getByRole('alert')).toContainText('核对后重试')
- await page.getByLabel('站点创建码').fill('test-create');response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
- await page.getByRole('button',{name:'确认创建',exact:true}).click();const accepted=await response;expect(accepted.status()).toBe(200);const retry=accepted.request().postDataJSON()
+ await page.goto(`/events/${pack.event.id}?view=companions`);await page.getByLabel('小队标题').fill('创建码改正重试')
+ await page.getByLabel('建队码',{exact:true}).fill('wrong-test-code');let response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
+ await page.getByRole('button',{name:'创建',exact:true}).click();const denied=await response;expect(denied.status()).toBe(403);const first=denied.request().postDataJSON();await expect(page.getByRole('alert')).toContainText('创建码未通过');await expect(page.getByRole('alert')).toContainText('核对后重试')
+ await page.getByLabel('建队码',{exact:true}).fill('test-create');response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/groups'))
+ await page.getByRole('button',{name:'创建',exact:true}).click();const accepted=await response;expect(accepted.status()).toBe(200);const retry=accepted.request().postDataJSON()
  expect(retry.operationId).toBe(first.operationId);expect(retry.managerToken).toBe(first.managerToken);expect(retry.inviteToken).toBe(first.inviteToken)
  await expect(page.getByLabel('怎么称呼')).toBeVisible();await context.close()
 })

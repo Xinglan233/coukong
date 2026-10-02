@@ -873,6 +873,32 @@ textarea {
 .figma-picker-icon.is-accent{color:var(--accent-ink)}
 .figma-picker-hint{padding:0 16px;font-size:13px}
 
+/* Official Figma V18: creation rows, three management groups, code history. */
+.figma-create-row{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:44px}
+.figma-create-row input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:var(--ink);font:inherit;font-size:16px}
+.figma-create-row input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.figma-create-row button{flex-shrink:0;white-space:nowrap;border:0;background:transparent;color:var(--accent-ink);font-size:15px;font-weight:600;min-height:44px;padding:0 4px}
+.figma-create-row button:disabled{color:var(--ink-3);opacity:.65}
+.figma-manage-content{padding:16px}
+.figma-manage-content>.page-sub{margin:0 0 16px;text-align:center}
+.figma-manage-invite-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.figma-manage-invite-actions .btn{min-width:0;white-space:nowrap;padding-inline:4px}
+.figma-manage-divider{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+.figma-recovery-value{width:100%;margin-bottom:12px;border:0;outline:0;background:transparent;color:var(--ink-2);font-size:14px;text-overflow:ellipsis}
+.figma-confirm-content>p{text-align:center;margin:0 0 24px;font-size:14.5px}
+.figma-confirm-content .btn-row>.btn{flex:1}
+.figma-code-current{padding:16px}
+.figma-code-text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.6;word-break:break-all;user-select:all;color:var(--ink);padding:12px;background:var(--surface-2);border-radius:12px;border:1px solid var(--line);margin:0 0 12px}
+.figma-code-history-row{padding:12px 16px}
+.figma-code-history-row+.figma-code-history-row{border-top:1px solid var(--line)}
+.figma-code-row-heading{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}
+.figma-code-row-heading>div{min-width:0;flex:1}
+.figma-code-row-heading p{margin:0;overflow-wrap:anywhere}
+.figma-code-row-heading .page-sub{font-size:13px;margin-top:4px}
+.figma-code-row-heading>.figma-badge{flex:none}
+.figma-code-row-action{border-top:1px solid var(--line);padding-top:8px;margin-top:8px;text-align:right}
+.figma-danger-action{color:var(--danger)}
+
 .help-shell{max-width:800px;margin:0 auto;padding:24px 16px calc(64px + env(safe-area-inset-bottom));overflow-wrap:anywhere;line-height:1.7}
 .help-nav{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:24px;border-bottom:1px solid var(--line)}
 .help-nav .btn{font-weight:500;text-decoration:none;border-radius:12px;min-height:44px}

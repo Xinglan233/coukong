@@ -132,10 +132,10 @@ describe.sequential('真实D1：管理员单次建队文字码', () => {
     expect((await api(`/admin/creation-invites/${data.id}`, 'DELETE', admin, revoke)).data.status).toBe('revoked')
     expect((await api(`/admin/creation-invites/${data.id}`, 'DELETE', admin, revoke)).data.status).toBe('revoked')
     expect((await api(`/admin/creation-invites/${data.id}`, 'DELETE', admin, { ...revoke, expectedRevision: 1 })).status).toBe(409)
-    expect((await api('/groups', 'POST', '', creation(body.token))).status).toBe(403)
+    const deniedRevoked=await api('/groups', 'POST', '', creation(body.token));expect(deniedRevoked.status).toBe(403);expect(deniedRevoked.error.code).toBe('CREATION_INVITE_REVOKED')
     const expired = await issue()
     await db.prepare('UPDATE creation_invites SET expires_at=? WHERE id=?').bind('2000-01-01T00:00:00.000Z', expired.data.id).run()
-    expect((await api('/groups', 'POST', '', creation(expired.body.token))).status).toBe(403)
+    const deniedExpired=await api('/groups', 'POST', '', creation(expired.body.token));expect(deniedExpired.status).toBe(403);expect(deniedExpired.error.code).toBe('CREATION_INVITE_EXPIRED')
     expect((await api('/admin/creation-invites', 'GET', admin)).data.find((x: any) => x.id === expired.data.id).status).toBe('expired')
   })
   it('撤销和消费竞态只有一个赢；不存在已撤销却新建的小队', async () => {

@@ -15,7 +15,9 @@ export async function handleCreationInvites(ctx: ActivityContext, reservedHashes
  if (path === '/admin/creation-invites' && method === 'GET') {
   const url = new URL(ctx.req.url), offset = Number(url.searchParams.get('offset') ?? 0), limit = Number(url.searchParams.get('limit') ?? 50)
   if (!Number.isInteger(offset) || offset < 0 || offset > 10000 || !Number.isInteger(limit) || limit < 1 || limit > 100) ctx.fail('INVALID_REQUEST', '分页范围无效')
-  const rows = await DB.prepare('SELECT * FROM creation_invites ORDER BY created_at DESC,id LIMIT ? OFFSET ?').bind(limit, offset).all<Row>()
+  const eventId=url.searchParams.get('eventId')
+  if(eventId!==null&&!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(eventId))ctx.fail('INVALID_REQUEST','活动标识无效')
+  const rows=eventId===null?await DB.prepare('SELECT * FROM creation_invites ORDER BY created_at DESC,id LIMIT ? OFFSET ?').bind(limit,offset).all<Row>():await DB.prepare('SELECT * FROM creation_invites WHERE event_id=? ORDER BY created_at DESC,id LIMIT ? OFFSET ?').bind(eventId,limit,offset).all<Row>()
   return { handled: true, data: rows.results.map(creationInviteDTO) }
  }
  if (path === '/admin/creation-invites' && method === 'POST') {
