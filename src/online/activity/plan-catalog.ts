@@ -13,8 +13,9 @@ function sessionSource(session:EventSession,title:string,location?:string,poi?:P
 
 /** Sources are resolved from the current activity package, never from favorites or routes. */
 export function planCatalog(event:EventData,date:string,query:string){
- const needle=query.trim().toLocaleLowerCase()
- const matches=(values:(string|undefined)[])=>values.some(v=>v?.toLocaleLowerCase().includes(needle))
+ const normalize=(text:string)=>text.toLocaleLowerCase().replace(/[-—\s]/g,'')
+ const needle=normalize(query)
+ const matches=(values:(string|undefined)[])=>normalize(values.filter(Boolean).join(' ')).includes(needle)
  const allPois=event.extensions?.convention.pois||[],byId=new Map(allPois.map(p=>[p.id,p]))
  const pois=allPois.filter(p=>!p.closed&&matches([p.name,p.boothCode,p.description,...p.tags||[]]))
  const sessions=event.activities.flatMap(activity=>activity.sessions.filter(s=>s.date===date).map(s=>{

@@ -1,7 +1,7 @@
 {
-  "generatedAtUTC": "2026-10-02T01:39:26.931071+00:00",
+  "generatedAtUTC": "2026-10-02T02:29:15.417604+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
-  "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
+  "baselineCommit": "32a85f8a6dd13af1d4231e31fa8d35e724cf3b98",
   "files": [
     {
       "path": "CURRENT_STATE.md",
@@ -15,8 +15,8 @@
     },
     {
       "path": "FIGMA_UI_GAPS.md",
-      "bytes": 2917,
-      "sha256": "762453545c6e8e17049048d93953b73bea3f9eead1017e31db38cc7b680d5fad"
+      "bytes": 3156,
+      "sha256": "7d7ffade572592a3deb85cb0386b0279d7d56b78eec385f9c57327db499ce152"
     },
     {
       "path": "LOCAL_CHANGES_DECISION.md",
@@ -30,8 +30,8 @@
     },
     {
       "path": "SOURCE_INDEX.md",
-      "bytes": 10515,
-      "sha256": "ce2dfdacb82d0f05d9606b6368214ea40273316dede4b252fdda5c49f4dd6e38"
+      "bytes": 10666,
+      "sha256": "a452934c6abf9e965d36c05152abf4fe7cfaa793a4a72d8cd4914337f34b437a"
     },
     {
       "path": "references/figma-feedback-dark-plan.png",
@@ -89,6 +89,26 @@
       "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
     },
     {
+      "path": "references/figma-plan-picker-v14/README.md",
+      "bytes": 1055,
+      "sha256": "100eb5f189eff326ef8d4998181998f74993b3694ef99f082abb8a184797fd57"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/src/App.tsx",
+      "bytes": 81664,
+      "sha256": "cfe09d13ae042320005dfbc44fa8afd78ce53e8578e22b38e2f04d6755d29a80"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
+    },
+    {
       "path": "references/figma-presence-v11/README.md",
       "bytes": 906,
       "sha256": "0242182ff5cd089087f6775cccc15d7fe767e52478db4cffba9d92e7a6a4450c"
@@ -140,13 +160,18 @@
     },
     {
       "path": "requirements/latest-decisions.md",
-      "bytes": 17188,
-      "sha256": "433ce5730c9c0d96850bb98e4e3e446445eefac08f4d55fa4673a7bcf63fcf5a"
+      "bytes": 17772,
+      "sha256": "9dc9e6dca12f715d51bc507fbae7e7b7a72c0252d3b8fd1e571ab55fd18548cc"
     },
     {
       "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",
       "bytes": 1102,
       "sha256": "37875b2f2879f8642010d10db605feb4c33d880a340367aae02fd773d7840ebb"
+    },
+    {
+      "path": "requirements/original-execution-package/MANIFEST.sha256.json",
+      "bytes": 1943,
+      "sha256": "8eac846264ecd56bb115021fe9570ec884f8139c200043351f356a730a37f75c"
     },
     {
       "path": "requirements/original-execution-package/PROMPT.md",

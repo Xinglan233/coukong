@@ -101,3 +101,5 @@
 ## 在场时间局部补稿
 
 指定Figma Make官方下载V11原始参考在 `references/figma-presence-v11/`；实际接入状态见 `FIGMA_UI_GAPS.md` 与实施计划。原型不是后端、鉴权、数据或发布验收证据。
+
+指定Make最终V14来源选择原始参考：[参考与接线边界](references/figma-plan-picker-v14/README.md)。V11参与时间组件仍保留。

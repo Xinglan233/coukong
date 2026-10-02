@@ -861,6 +861,18 @@ textarea {
 .figma-presence-save{margin-top:16px}
 .figma-presence-editor button:disabled{opacity:.5;cursor:default}
 
+/* Make AddScheduleSheet: same search, grouped rows and icon tiles. */
+.figma-picker-custom{margin-bottom:16px}
+.figma-picker-custom .me-row-label{color:var(--accent-ink)}
+.figma-picker-sources{max-height:45vh;overflow-y:auto!important}
+.figma-picker-row{gap:12px;text-align:left;align-items:center}
+.figma-picker-row .me-row-label{min-width:0;flex:1;display:block}
+.figma-picker-row .sched-title{display:block;font-size:15.5px;white-space:normal}
+.figma-picker-row .sched-meta{display:block;margin-top:2px;font-size:13px;font-variant-numeric:tabular-nums}
+.figma-picker-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:12px;background:var(--surface-2);color:var(--ink-2)}
+.figma-picker-icon.is-accent{color:var(--accent-ink)}
+.figma-picker-hint{padding:0 16px;font-size:13px}
+
 .help-shell{max-width:800px;margin:0 auto;padding:24px 16px calc(64px + env(safe-area-inset-bottom));overflow-wrap:anywhere;line-height:1.7}
 .help-nav{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:24px;border-bottom:1px solid var(--line)}
 .help-nav .btn{font-weight:500;text-decoration:none;border-radius:12px;min-height:44px}

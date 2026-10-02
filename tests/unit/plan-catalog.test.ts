@@ -9,6 +9,7 @@ function event():EventData{return (JSON.parse(readFileSync('examples/convention-
 it('计划来源限当前活动和所选日期，搜索覆盖真实活动名/地点/展位号',()=>{
  const e=event();e.extensions!.convention.pois[3].boothCode='A-03'
  expect(planCatalog(e,'2026-10-03','A-03').sessions.map(s=>s.sessionId)).toEqual(['demo-workshop-1003-01'])
+ expect(planCatalog(e,'2026-10-03','a 03').sessions.map(s=>s.sessionId)).toEqual(['demo-workshop-1003-01'])
  expect(planCatalog(e,'2026-10-03','手作').sessions.map(s=>s.start)).toEqual(['09:05','13:07'])
  expect(planCatalog(e,'2026-10-04','').sessions).toEqual([])
  e.extensions!.convention.pois[0].closed=true
@@ -42,4 +43,13 @@ it('选择无时间地点只带真实快照，不虚构分钟、不改收藏路�
  expect(()=>poiArrangement(e,'other-event-poi','2026-10-03','b')).toThrow()
  e.extensions!.convention.pois[0].closed=true
  expect(()=>poiArrangement(e,'poi-a','2026-10-03','b')).toThrow()
+})
+
+it('最大一千地点和场次保持完整可检索，不截断尾部来源',()=>{
+ const e=event(),convention=e.extensions!.convention
+ convention.pois=Array.from({length:1000},(_,n)=>({id:'source-poi-'+n,name:'来源地点 '+n,kind:'booth',boothCode:'A-'+n}))
+ e.activities=[{id:'source-activity',title:'已公布节目',sessions:convention.pois.map((p,n)=>({id:'source-session-'+n,poiId:p.id,date:'2026-10-03',start:'13:07',end:'13:52'}))}]
+ const all=planCatalog(e,'2026-10-03','')
+ expect(all.pois).toHaveLength(1000);expect(all.sessions).toHaveLength(1000)
+ expect(planCatalog(e,'2026-10-03','A999').sessions[0].sessionId).toBe('source-session-999')
 })
