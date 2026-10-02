@@ -1,0 +1,13 @@
+import {useEffect,useState} from 'react'
+import {Sheet} from '../../ui/Sheet'
+import type {ActivityDTO,MediaAssetDTO} from '../../../shared/activity-contract'
+import {listAssets} from './media-client'
+import {matchingMapAsset} from './map-asset-identity'
+import {activityUpdatedAt} from './activity-tools'
+export function OfflinePreparation({open,activity,busy,onClose,onPrepare}:{open:boolean;activity:ActivityDTO;busy:boolean;onClose:()=>void;onPrepare:(ids:string[])=>Promise<void>}){
+ const maps=activity.eventPackage.event.extensions?.convention.maps||[],[selection,setSelection]=useState<{key:string;ids:string[]}|null>(null),[assets,setAssets]=useState<MediaAssetDTO[]>([]),[error,setError]=useState(''),[loading,setLoading]=useState(false)
+ const selectionKey=`${activity.id}:${activity.revision}`,ids=selection?.key===selectionKey?selection.ids:maps.map(m=>m.id)
+ useEffect(()=>{if(!open)return;let active=true;setError('');setAssets([]);setLoading(false);if(!maps.length)return;setLoading(true);listAssets(activity.id).then(data=>{if(active)setAssets(data)},e=>{if(active)setError((e as Error).message)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[open,activity.id,activity.revision])
+ const selected=maps.filter(m=>ids.includes(m.id)),baseBytes=new TextEncoder().encode(JSON.stringify(activity)).length,assetSizes=selected.map(m=>matchingMapAsset(activity.eventPackage,m,assets)?.displaySizeBytes),known=assetSizes.every(size=>typeof size==='number'),bytes=known?baseBytes+assetSizes.reduce((sum,size)=>sum+(size||0),0):null
+ return <Sheet open={open} title="离线准备" onClose={()=>{if(!busy)onClose()}}><p className="page-sub">活动资料和地点列表始终保留，选择要下载的地图。个人草稿单独保存在此设备。</p>{maps.map(m=><label className="me-row" key={m.id}><span className="me-row-label">{m.title}</span><input type="checkbox" aria-label={`下载 ${m.title}`} checked={ids.includes(m.id)} disabled={busy} onChange={e=>setSelection({key:selectionKey,ids:e.target.checked?Array.from(new Set([...ids,m.id])):ids.filter(id=>id!==m.id)})}/></label>)}{!maps.length&&<p className="page-sub">地图尚未提供，仍可准备活动资料和列表。</p>}<p className="page-sub">{loading?'正在核对文件大小':bytes===null?'地图大小暂时未知，连接网络后可重新核对':`预计下载 ${(bytes/1024/1024).toFixed(2)} MiB`}</p><p className="page-sub">资料版本 {activity.revision} · 时间版本 {activity.scheduleRevision} · 地图版本 {activity.spatialRevision}<br/>资料更新：{activityUpdatedAt(activity)}</p>{error&&<p className="notice" role="alert">{error}</p>}<button className="btn btn-primary btn-block" disabled={busy||loading} onClick={async()=>{setError('');try{await onPrepare(ids);onClose()}catch(e){setError((e as Error).message)}}}>{busy?'正在准备…':'准备所选资料'}</button><p className="page-sub">准备失败会保留上次完整下载。没有选中的地图需要联网查看。</p></Sheet>
+}

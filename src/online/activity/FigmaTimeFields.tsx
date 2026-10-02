@@ -1,0 +1,11 @@
+import {useState} from 'react'
+import {Minus,Plus} from 'lucide-react'
+import type {BusyItem} from '../../../shared/types'
+import {editableMinute,shiftedClock} from './figma-time-controls'
+
+export function FigmaTimeFields({item,items,step,onChange,readOnly=false,disabled=false}:{item:BusyItem;items:BusyItem[];step:number;onChange:(patch:Partial<BusyItem>)=>void;readOnly?:boolean;disabled?:boolean}){
+ const [selectedStep,setSelectedStep]=useState([5,10,15,30].includes(step)?step:15)
+ const start=editableMinute(item.start),end=editableMinute(item.end,true),valid=start!==null&&end!==null&&end>start
+ const conflict=valid?items.find(other=>{if(other.id===item.id||other.date!==item.date)return false;const a=editableMinute(other.start),b=editableMinute(other.end,true);return a!==null&&b!==null&&a<b&&start<b&&a<end}):undefined
+ return <><div className="figma-time-fields">{(['start','end'] as const).map(key=>{const label=key==='start'?'开始时间':'结束时间',allowEnd=key==='end';return <div className="figma-time-field" key={key}><label><span className="field-label">{label}</span><input aria-label={label} inputMode="numeric" className="figma-clock-input" value={item[key]} readOnly={readOnly} disabled={disabled} placeholder="HH:mm" aria-invalid={editableMinute(item[key],allowEnd)===null} onChange={e=>onChange({[key]:e.target.value})}/></label><div className="figma-time-nudges">{[-selectedStep,selectedStep].map(delta=>{const next=shiftedClock(item[key],delta,allowEnd);return <button key={delta} disabled={disabled||readOnly||next===null} aria-label={`${label}${delta<0?'提前':'推迟'}${selectedStep}分钟`} onClick={()=>{if(next!==null)onChange({[key]:next})}}>{delta<0?<Minus size={13}/>:<Plus size={13}/>} {selectedStep}</button>})}</div></div>})}</div><p className="page-sub">快捷步长</p><div className="figma-duration-options" aria-label="快捷步长">{[5,10,15,30].map(value=><button key={value} disabled={disabled} className={selectedStep===value?'on':''} aria-pressed={selectedStep===value} onClick={()=>setSelectedStep(value)}>{value} 分</button>)}</div>{valid?<p className="page-sub">时长 {end-start} 分钟</p>:<p className="notice" role="alert">请输入 HH:mm，结束须晚于开始；跨午夜请分成两天填写。</p>}{conflict&&<p className="notice figma-time-conflict">与“{conflict.title}”{conflict.start}–{conflict.end} 重叠，可核对后保存。</p>}</>
+}

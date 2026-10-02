@@ -1,0 +1,130 @@
+{
+  "sourceBase": "a397ef1365545ada7102a070da370f62d3acd31e",
+  "workerBundleSha256": "e387509be41adff0847973850a9619a0456233f0b3b353d6044ddaa7b945cc42",
+  "createdAt": "2026-10-01T12:41:39.647Z",
+  "scope": "隔离本地 Node/workerd/D1 与 Chromium；图片为仓库虚构 PNG，非 Blob、真机或 Cloudflare CPU 证据",
+  "shape": {
+    "days": 5,
+    "pois": 1000,
+    "activities": 1000,
+    "sessions": 1000,
+    "nodes": 2000,
+    "edges": 4000,
+    "members": 50,
+    "busyPerMember": 500,
+    "totalBusy": 25000,
+    "routeStops": 100,
+    "routeSegments": 99,
+    "maps": 1,
+    "packageBytes": 820320,
+    "packageLimitBytes": 1048576
+  },
+  "coldParseSchemaSemantics": {
+    "wallMs": 60.14754099999999,
+    "processCpuMs": 86.604,
+    "rssBytes": 104775680
+  },
+  "fixedOrderDijkstra": {
+    "iterations": 3,
+    "wallMs": {
+      "min": 140.80612499999995,
+      "p50": 143.15441699999997,
+      "p95": 153.68220899999994,
+      "max": 153.68220899999994
+    },
+    "processCpuMs": {
+      "min": 170.738,
+      "p50": 176.034,
+      "p95": 228.278,
+      "max": 228.278
+    },
+    "maxObservedRssBytes": 288473088
+  },
+  "localWorker": {
+    "migrations": [
+      "0001_initial.sql",
+      "0002_audit.sql",
+      "0003_operation_ownership.sql",
+      "0004_management_idempotency.sql",
+      "0005_activity_personal.sql",
+      "0006_personal_storage_budget.sql",
+      "0007_private_activity.sql"
+    ],
+    "memberJoins": 50,
+    "memberSubmissions": 50,
+    "confirmedMembers": 50,
+    "commonIntervals": 497,
+    "requestWallMs": {
+      "all": {
+        "count": 105,
+        "min": 4.976541999999881,
+        "p50": 13.056040999999823,
+        "max": 106.13120900000013
+      },
+      "joins": {
+        "count": 50,
+        "min": 5.945166999999856,
+        "p50": 6.764833000000181,
+        "max": 11.530541000000085
+      },
+      "submissions": {
+        "count": 50,
+        "min": 13.056040999999823,
+        "p50": 14.117583999999624,
+        "max": 21.06645800000024
+      }
+    }
+  },
+  "browser": [
+    {
+      "width": 375,
+      "height": 900,
+      "markers": 1000,
+      "sessions": 1000,
+      "readyMs": 1002.205041,
+      "zoomMs": 446.7974999999999,
+      "filterMs": 265.07612500000005,
+      "keyboardDetailMs": 100.31404099999963,
+      "wholePageOverflow": false
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "markers": 1000,
+      "sessions": 1000,
+      "readyMs": 1079.3184999999994,
+      "zoomMs": 292.8888339999994,
+      "filterMs": 263.49612499999967,
+      "keyboardDetailMs": 93.43283299999985,
+      "wholePageOverflow": false
+    },
+    {
+      "width": 430,
+      "height": 900,
+      "markers": 1000,
+      "sessions": 1000,
+      "readyMs": 745.0394160000014,
+      "zoomMs": 394.5732080000016,
+      "filterMs": 252.98324999999932,
+      "keyboardDetailMs": 90.51366699999926,
+      "wholePageOverflow": false
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "markers": 1000,
+      "sessions": 1000,
+      "readyMs": 885.0170419999995,
+      "zoomMs": 459.98670800000036,
+      "filterMs": 260.64658300000156,
+      "keyboardDetailMs": 93.1361250000009,
+      "wholePageOverflow": false
+    }
+  ],
+  "notVerified": [
+    "Cloudflare Workers Free 10ms CPU/request and 128MB memory at this scale",
+    "Five 12MiB/24MP image processing and Blob quota",
+    "Physical mobile devices/WeChat/China mainland network"
+  ],
+  "cpuMeaning": "processCpuMs is measured Node CPU; workerd harness CPU cannot prove individual remote Worker CPU. Browser wall times are automation observations, not promised latency."
+}

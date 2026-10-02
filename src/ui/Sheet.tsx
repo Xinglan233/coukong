@@ -6,10 +6,11 @@ interface SheetProps {
   open: boolean
   title: string
   onClose: () => void
+  onExited?: () => void
   children: ReactNode
 }
 
-export function Sheet({ open, title, onClose, children }: SheetProps) {
+export function Sheet({ open, title, onClose, onExited, children }: SheetProps) {
   const reduce = useReducedMotion()
   const dialog = useRef<HTMLDivElement>(null)
   const close = useRef(onClose)
@@ -31,7 +32,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
   },[open])
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={onExited}>
       {open && (
         <>
           <motion.div

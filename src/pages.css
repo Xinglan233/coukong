@@ -75,7 +75,7 @@
 .sched-time-end {
   font-weight: 500;
   color: var(--ink-3);
-  font-size: 12.5px;
+  font-size: 13px;
   margin-top: 1px;
 }
 .sched-main {
@@ -83,18 +83,20 @@
   min-width: 0;
 }
 .sched-title {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
   font-size: 15px;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
 }
 .sched-meta {
-  font-size: 12.5px;
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+  font-size: 13px;
   color: var(--ink-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
   margin-top: 2px;
 }
 .sched-chev {
@@ -212,9 +214,7 @@
   font-size: 14px;
   font-weight: 600;
   display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
 }
 .rv-meta {
   font-size: 11.5px;
@@ -239,7 +239,7 @@
   font-weight: 700;
 }
 .match-day-weekday {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--ink-3);
 }
 .match-none {
@@ -290,7 +290,7 @@
   font-weight: 700;
 }
 .friend-meta {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--ink-2);
   margin-top: 2px;
 }
@@ -354,7 +354,7 @@
   font-weight: 700;
 }
 .me-days {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--ink-2);
   margin-top: 3px;
 }
@@ -407,7 +407,7 @@
   height: 42px;
 }
 .me-hours-sep {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--ink-3);
 }
 .me-danger .me-row-label {
@@ -429,3 +429,24 @@
   line-height: 1.6;
   margin-bottom: 12px;
 }
+
+/* Activity page headings live in online.css (single source). */
+.activity-disclosure { margin:6px 0 12px; }
+.activity-disclosure .btn { min-height:44px; }
+.activity-disclosure .is-open { transform:rotate(180deg); }
+.activity-disclosure-content { color:var(--ink-2); font-size:13.5px; line-height:1.6; margin-top:8px; overflow-wrap:anywhere; }
+.activity-disclosure-content p { margin:0; }
+.activity-list-group { margin-top:16px; }
+.activity-personal .activity-companion-empty { padding-top:72px; }
+.activity-empty-note { color:var(--ink-2); font-size:12px; line-height:1.6; margin:20px 0 0; }
+.activity-personal .activity-sync-status { margin:8px 0 0; font-size:12.5px; }
+.activity-personal .card.me-card { margin-bottom:16px; }
+.activity-personal .card.me-card .me-row { min-height:52px; }
+
+/* Shared advanced sections use the same full-row control as settings. */
+.disclosure { margin-block: 8px; }
+.disclosure-toggle { width: 100%; min-height: 44px; color: var(--ink); text-align: left; }
+.disclosure-toggle .me-row-label { white-space: normal; }
+.disclosure-toggle svg { flex-shrink: 0; color: var(--ink-2); }
+.disclosure-panel { padding-block: 8px; }
+.disclosure-panel[hidden] { display: none; }

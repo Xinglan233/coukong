@@ -1,0 +1,26 @@
+{
+  "createdAtUTC": "2026-09-30T13:45:12.782043+00:00",
+  "references": [
+    {
+      "library_file_id": "libfile_c05bc9868cec8191814d02c57677bf4c",
+      "bytes": 126676,
+      "sha256": "65aeeccc1def7bcb0733e8c971121f52a47d12e01cd06b562c0052c77efda5b9",
+      "actual_pixels_viewed": true,
+      "path": "references/微信图片_20260930142714_12434_10.jpg"
+    },
+    {
+      "library_file_id": "libfile_b0def1ecbd90819181613996547b3f84",
+      "bytes": 143222,
+      "sha256": "d87d3b0e120e5c6748206e7bdd011174573b72dc7e15d2b0e561c198bf4fb3f1",
+      "actual_pixels_viewed": true,
+      "path": "references/微信图片_20260930142714_12433_10.jpg"
+    },
+    {
+      "library_file_id": "libfile_e7b587212eb88191870ad1a6e7ff38eb",
+      "bytes": 153567,
+      "sha256": "731b39dad95f7598f16b62cf796085d0e21790aba61e8485ed1a1468fad173d7",
+      "actual_pixels_viewed": true,
+      "path": "references/微信图片_20260930142714_12435_10.jpg"
+    }
+  ]
+}

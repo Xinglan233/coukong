@@ -1,0 +1,3 @@
+import type { IncomingMessage,ServerResponse } from 'node:http'
+import { cleanupMedia,jsonBody,respond,checkOrigin,MediaError } from '../../src/server/media-service.js'
+export default async function cleanup(req:IncomingMessage,res:ServerResponse){try{if(req.method!=='POST')throw new MediaError('仅支持POST',405);checkOrigin(req);const body=await jsonBody(req),token=String(req.headers.authorization||'').replace(/^Bearer /,'');if(!body||typeof body.eventId!=='string'||body.confirmDelete!==true)throw new MediaError('请明确确认删除失败与过期的未引用上传，此操作不可恢复');respond(res,undefined,await cleanupMedia(body.eventId,token))}catch(e){respond(res,e)}}

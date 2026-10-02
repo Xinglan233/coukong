@@ -1,0 +1,7 @@
+import type {TimeInterval} from '../../../shared/types'
+export interface PresenceMemory{date:string;intervals:TimeInterval[]}
+import type {PersonalDTO,PersonalPlan} from '../../../shared/activity-contract'
+export interface PersonalDraft{eventId:string;personId:string;plan:PersonalPlan;revision:number;scheduleRevision:number;spatialRevision:number;generation:number;dirty:boolean;presenceHistory?:Record<string,TimeInterval[]>}
+function belongs(local:PersonalDraft,remote:PersonalDTO){if(remote.eventId!==local.eventId||remote.id!==local.personId)throw new Error('个人计划不属于当前活动或身份')}
+export function receivePersonal(local:PersonalDraft|undefined,remote:PersonalDTO):PersonalDraft{if(local){belongs(local,remote);if(local.dirty)return local}return {eventId:remote.eventId,personId:remote.id,plan:remote.plan,revision:remote.revision,scheduleRevision:remote.scheduleRevision,spatialRevision:remote.spatialRevision,generation:local?.generation||0,dirty:false,...(local?.presenceHistory?{presenceHistory:local.presenceHistory}:{})}}
+export function acknowledgePersonal(local:PersonalDraft,remote:PersonalDTO,submittedGeneration:number):PersonalDraft{belongs(local,remote);return {...local,plan:local.generation===submittedGeneration?remote.plan:local.plan,revision:remote.revision,dirty:local.generation!==submittedGeneration}}

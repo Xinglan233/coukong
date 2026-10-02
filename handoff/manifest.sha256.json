@@ -1,0 +1,267 @@
+{
+  "generatedAtUTC": "2026-10-02T02:29:15.417604+00:00",
+  "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
+  "baselineCommit": "32a85f8a6dd13af1d4231e31fa8d35e724cf3b98",
+  "files": [
+    {
+      "path": "CURRENT_STATE.md",
+      "bytes": 8990,
+      "sha256": "c18d3c29806db701560b48a3c58f362de38797c42b0ed73b98e0de2582cebf09"
+    },
+    {
+      "path": "FIGMA_REFERENCE.md",
+      "bytes": 4742,
+      "sha256": "7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c"
+    },
+    {
+      "path": "FIGMA_UI_GAPS.md",
+      "bytes": 3156,
+      "sha256": "7d7ffade572592a3deb85cb0386b0279d7d56b78eec385f9c57327db499ce152"
+    },
+    {
+      "path": "LOCAL_CHANGES_DECISION.md",
+      "bytes": 1103,
+      "sha256": "77f4128ba1be3884d06e3ea738eb3a9024b185d190d6aa80588d6399068fcc25"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1166,
+      "sha256": "260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b"
+    },
+    {
+      "path": "SOURCE_INDEX.md",
+      "bytes": 10666,
+      "sha256": "a452934c6abf9e965d36c05152abf4fe7cfaa793a4a72d8cd4914337f34b437a"
+    },
+    {
+      "path": "references/figma-feedback-dark-plan.png",
+      "bytes": 1017455,
+      "sha256": "a74d61baf1d677a5c16db36589e3f01be95e9482ae7b55e47da34fad61ba69ee"
+    },
+    {
+      "path": "references/figma-feedback-invite-spacing.png",
+      "bytes": 15136,
+      "sha256": "9e99d3eb6674e7159a25a862f292f86733a6050288f8bb57545f7c261f5845de"
+    },
+    {
+      "path": "references/figma-feedback-redundant-note.png",
+      "bytes": 10776,
+      "sha256": "283d3b7eaa58ce962e10f7b884443b9fbf9cfc0c66e42711139969a155b7adb0"
+    },
+    {
+      "path": "references/figma-layout-feedback.png",
+      "bytes": 851777,
+      "sha256": "f0a491a0df5f7e2f44204873a98bf6e86758a1284b837a65204d4e8acf0b5bf2"
+    },
+    {
+      "path": "references/figma-make/package.json",
+      "bytes": 584,
+      "sha256": "d0e8d76cc6ff9884bd88bdbbd530e164e0c0bcf47a4948075be8a4786a4f97fd"
+    },
+    {
+      "path": "references/figma-make/provenance.json",
+      "bytes": 1176,
+      "sha256": "c3b83f9cd166cd5cf558fcbd4eb5a493cba5b2e0533eda628e1905f1b8061721"
+    },
+    {
+      "path": "references/figma-make/src/App.tsx",
+      "bytes": 63268,
+      "sha256": "3f92ca267724cf5bab3c9ba4335db53d8f51f1d7fe13cfa4990fbdd424cbcb07"
+    },
+    {
+      "path": "references/figma-make/src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "references/figma-make/src/index.css",
+      "bytes": 2238,
+      "sha256": "40cf007570671d40fe843e1711eca28eb382069dad719182a3755dac8867e614"
+    },
+    {
+      "path": "references/figma-make/src/main.tsx",
+      "bytes": 232,
+      "sha256": "6c2ddad066d2a90b04cf766465b454de0a9f031965311a3609c87f0e495c3383"
+    },
+    {
+      "path": "references/figma-make/src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/README.md",
+      "bytes": 1055,
+      "sha256": "100eb5f189eff326ef8d4998181998f74993b3694ef99f082abb8a184797fd57"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/src/App.tsx",
+      "bytes": 81664,
+      "sha256": "cfe09d13ae042320005dfbc44fa8afd78ce53e8578e22b38e2f04d6755d29a80"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "references/figma-plan-picker-v14/src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
+    },
+    {
+      "path": "references/figma-presence-v11/README.md",
+      "bytes": 906,
+      "sha256": "0242182ff5cd089087f6775cccc15d7fe767e52478db4cffba9d92e7a6a4450c"
+    },
+    {
+      "path": "references/figma-presence-v11/src/App.tsx",
+      "bytes": 74151,
+      "sha256": "6f5f24a47bcc05c0693a84499918358193c281a0b3208c208133fcbe84b7c78b"
+    },
+    {
+      "path": "references/figma-presence-v11/src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "references/figma-presence-v11/src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
+    },
+    {
+      "path": "references/provenance.json",
+      "bytes": 958,
+      "sha256": "8370adc8dcefd7f92bb390fbe936cfeb6d2b503964a5dac11dfc5243cba44400"
+    },
+    {
+      "path": "references/微信图片_20260930142714_12433_10.jpg",
+      "bytes": 143222,
+      "sha256": "d87d3b0e120e5c6748206e7bdd011174573b72dc7e15d2b0e561c198bf4fb3f1"
+    },
+    {
+      "path": "references/微信图片_20260930142714_12434_10.jpg",
+      "bytes": 126676,
+      "sha256": "65aeeccc1def7bcb0733e8c971121f52a47d12e01cd06b562c0052c77efda5b9"
+    },
+    {
+      "path": "references/微信图片_20260930142714_12435_10.jpg",
+      "bytes": 153567,
+      "sha256": "731b39dad95f7598f16b62cf796085d0e21790aba61e8485ed1a1468fad173d7"
+    },
+    {
+      "path": "requirements/activity-and-visual/activity-update.md",
+      "bytes": 50163,
+      "sha256": "df58ac0e7f7987759cd4ea237b012e1584fcae58eb860ad60da4a429dd2b71af"
+    },
+    {
+      "path": "requirements/activity-and-visual/visual-style-update.md",
+      "bytes": 16486,
+      "sha256": "a18f83855e6dad190b47c6fe7b6a42e24acc4dd25069ded07c264eecb12e02e8"
+    },
+    {
+      "path": "requirements/latest-decisions.md",
+      "bytes": 17772,
+      "sha256": "9dc9e6dca12f715d51bc507fbae7e7b7a72c0252d3b8fd1e571ab55fd18548cc"
+    },
+    {
+      "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",
+      "bytes": 1102,
+      "sha256": "37875b2f2879f8642010d10db605feb4c33d880a340367aae02fd773d7840ebb"
+    },
+    {
+      "path": "requirements/original-execution-package/MANIFEST.sha256.json",
+      "bytes": 1943,
+      "sha256": "8eac846264ecd56bb115021fe9570ec884f8139c200043351f356a730a37f75c"
+    },
+    {
+      "path": "requirements/original-execution-package/PROMPT.md",
+      "bytes": 60312,
+      "sha256": "5f3b8bf2897a7ecf049cf1bb21b0664c7a9b2629cd95d28778e49e6dcc36dfdf"
+    },
+    {
+      "path": "requirements/original-execution-package/START_HERE.md",
+      "bytes": 1746,
+      "sha256": "108820a3c6de2cdf5cce98f3811ca66df1e484d19908bc7c9f142727e08873bd"
+    },
+    {
+      "path": "requirements/original-execution-package/examples/event-demo.json",
+      "bytes": 1398,
+      "sha256": "1d0745639cbb21f1b4524e98bf51b2ba072100b30ff797cc1f961d0052b38c89"
+    },
+    {
+      "path": "requirements/original-execution-package/examples/event-minimal.json",
+      "bytes": 643,
+      "sha256": "4742bc23934d75c9986c4d748a43551dc6bc69c67c0fa7f38d046b7de3ec0f1a"
+    },
+    {
+      "path": "requirements/original-execution-package/examples/redland-2026-template.json",
+      "bytes": 1605,
+      "sha256": "729d62993fedc49741f901f7fd63b5d2aa0ba7727f7020fda8ec9084c23bf37c"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/expected-results.json",
+      "bytes": 752,
+      "sha256": "f2e2e763d81b0f3c389dfe1a25b3e671a9d02a957214afa0d7ea7c6393df38ce"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/blank-title.json",
+      "bytes": 1380,
+      "sha256": "3f3710d16c051538c3cd2982106d01e136ba1a9fc7058555c917660dd06f99b0"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/duplicate-object-key.json",
+      "bytes": 665,
+      "sha256": "aea29ea4186ead0ec87177adc351784e3d9c66d647b6282b3b7b31301a6ad42e"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/duplicate-session-id.json",
+      "bytes": 1398,
+      "sha256": "95858b478627088a9a670c9bd50da4cce969c7e70137da6670190c60039b95a3"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/invalid-minute.json",
+      "bytes": 1398,
+      "sha256": "aeb6903292193e37c7a4d4e39f172e1d70c8b352dd477902b8259289630e8fe5"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/missing-day.json",
+      "bytes": 1440,
+      "sha256": "52947df6b8e1ee80ca818104792da60782e7bb378d1ba5399c58ded3852af8bf"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/overlapping-open.json",
+      "bytes": 1398,
+      "sha256": "0c4c05ef4d435a2ab359730358b52c490dd01539854ad1118cd7aa7b4009dff7"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/reversed-interval.json",
+      "bytes": 1398,
+      "sha256": "21d2fa2f685b6e637bb1aac9412e339c5dffe30e65e5ee532b07de0d9b521b42"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/session-outside-open.json",
+      "bytes": 1398,
+      "sha256": "05af32e4527ead658d9683c2f662406013bdba7b82be4e561f08a948f0b979d1"
+    },
+    {
+      "path": "requirements/original-execution-package/fixtures/invalid/unknown-version.json",
+      "bytes": 1398,
+      "sha256": "2add16919ab5f2ecc1c25b8c24037c51a486f3611a2b9c105004d4b7d2acdef5"
+    },
+    {
+      "path": "requirements/original-execution-package/schemas/event-package.v1.schema.json",
+      "bytes": 5674,
+      "sha256": "23e469e2b541f2ab6f2763e278ebf8a932fa45cc87d3fd7897f6f90df34f0ce6"
+    },
+    {
+      "path": "requirements/original-execution-package/validation-report.json",
+      "bytes": 2934,
+      "sha256": "3d7c68451294d1982fedf33911424d0b9888f973eb52e982080a6fd26c15f187"
+    },
+    {
+      "path": "source-manifest-check.json",
+      "bytes": 4773,
+      "sha256": "d7958c14ce3159695ecf8f9e8e4a39eb0188763d44edf85e2637545a113394c7"
+    }
+  ]
+}

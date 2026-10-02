@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>免费部署指南</h1>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>免费部署指南</h1>
 <p>使用现有 Vercel 前端与 Cloudflare Workers Free / D1 Free。不要创建付费计划、购买域名或自动升级。Vercel Hobby 只限个人非商业使用；部署者先核验账户计划和实际用途。浏览器已登录不等于 CLI 已获授权，OAuth 持久授权由账号持有人完成。</p>
 <h2>本地</h2>
 <pre><code>
@@ -31,4 +31,16 @@ npx wrangler deploy --config worker/wrangler.staging.jsonc
 <p>6. 生产只读核验 <code>/api/v1/health</code>、<code>/api/v1/ready</code>、首页、深链接、帮助与三个下载。写入演练限明确测试小队，记录并清理。</p>
 <p>首次搭建其他环境时，先 <code>wrangler d1 create</code> 建独立免费库，填写返回的 database_id 和该环境 Worker 名，再迁移和配置 Secrets；本地全零 ID 不可作为远程部署配置。</p>
 <h2>当前发布与待验</h2>
-<p>本次生产前端和 API 均对应 <code>b80193d8ed30404f181917796919382b5efd890c</code>；生产三身份 UI、分钟往返、候选包云端导入及隔离恢复已验证。真机、微信、中国大陆现场网络、CPU 指标和官方活动资料确认仍待完成，见 <a href="/help/release_checklist/">发布检查表</a>。私密管理/成员恢复入口另行安全保存，不能放公开文档。</p></main></body></html>
+<p>生产功能/API仍对应 <code>9090be47ed732b5afd5323d20515be1fbb4cb84f</code>，生产前端文档为 <code>b29c14a73cacc4d99f248964751e0d4804ba974c</code>；生产三身份 UI、分钟往返、候选包云端导入及隔离恢复已验证。真机、微信、中国大陆现场网络、CPU 指标和官方活动资料确认仍待完成，见 <a href="/help/release_checklist/">发布检查表</a>。私密管理/成员恢复入口另行安全保存，不能放公开文档。</p>
+<h2>本轮媒体服务（隔离云部分验证）</h2>
+<p>代码新增四个 Vercel Node 入口：POST <code>/api/media/upload</code> 获取限定路径/大小/类型的私有上传授权；POST <code>/api/media/finish</code> 净化图像并激活不可变源图/显示图；GET <code>/api/media/read</code> 在 Worker 验证公开发布引用或管理权限后回读显示图；POST <code>/api/media/cleanup</code> 在管理员确认后清理失败/过期且未引用上传。不能用静态构建预览代替这些入口。</p>
+<p>Vercel 后端分别配置 ACTIVITY_API_URL（对应 Worker 根地址，不含/api/v1）和 BLOB_STORE_ID（对应独立私有 store），不带 VITE_ 前缀，不暴露 OIDC token。Production 只连 production；Preview/Development 只连 staging。Node 使用运行时 OIDC，Worker 配置 VERCEL_OIDC_ISSUER、VERCEL_OIDC_AUDIENCE、VERCEL_OIDC_SUBJECT，并验证 RS256/JWKS、有效期与精确 iss/aud/sub。实际值从当前组织/项目官方配置核对，不凭猜测填写或记录 JWT。生产只允许当前项目 production 的单一 subject，staging 仅允许该项目明确 preview 与 development 两个 subject，不使用环境通配符。</p>
+<p>每环境256MiB应用预算保守计入未完成预留和残留临时图，独立于账户1GB平台额度。首次部署必须测试媒体授权、非法/伪MIME/动画拒绝、另一浏览器公开回读、草稿拒读、OIDC跨环境拒绝、失效清理和数据＋图片隔离恢复；c265前端加修补Worker已真实验证PNG上传、净化、公开读图及新路径恢复；新完整提交三角色链路、JPEG/WebP云矩阵和最大图片仍待验。无需开通R2或付费资源。</p>
+<p>已核对当前项目的公开 OIDC 配置（这些是匹配规则，不是JWT或密钥）：</p>
+<div class="table-scroll"><table>
+<tr><td>字段</td><td>生产与预发布共用值</td></tr>
+<tr><td>VERCEL_OIDC_ISSUER</td><td>https://oidc.vercel.com/xinglan233s-projects</td></tr>
+<tr><td>VERCEL_OIDC_AUDIENCE</td><td>https://vercel.com/xinglan233s-projects</td></tr>
+</table></div>
+<p>生产 VERCEL_OIDC_SUBJECT 仅 <code>owner:xinglan233s-projects:project:tongye-meet:environment:production</code>。预发布只允许 <code>owner:xinglan233s-projects:project:tongye-meet:environment:preview</code> 和 <code>owner:xinglan233s-projects:project:tongye-meet:environment:development</code> 两个精确值，以逗号配置。已写入环境配置不等于四媒体入口真实云端验收通过，仍需按前述门禁验证。</p>
+<p>当前新功能分支新增0007私人活动迁移，仅本地应用。后续云端发布前备份后在staging正常应用迁移并部署同一完整提交，不能用旧c265预览替代新合同验收。生产新版发布仍暂停，等待功能门禁和用户视觉确认，不自动扩预览访问权限。</p></main></div></body></html>

@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:coukong:schema:event-package:v1",
+  "title": "Coukong event package v1",
+  "description": "Activity data only. Never contains participant data or access credentials. This schema must be combined with the semantic checks in PROMPT.md section 8.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "const": "coukong.event",
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "event": {
+      "$ref": "#/$defs/event"
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    }
+  },
+  "required": [
+    "kind",
+    "schemaVersion",
+    "event"
+  ],
+  "$defs": {
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(?:(?:[01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "day": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "openIntervals": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "$ref": "#/$defs/interval"
+          }
+        }
+      },
+      "required": [
+        "date",
+        "openIntervals"
+      ]
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "start": {
+          "type": "string",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(?:(?:[01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "start",
+        "end"
+      ]
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30
+          }
+        },
+        "sessions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/session"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "sessions"
+      ]
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Must be checked against an IANA time-zone database in semantic validation."
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "defaultBufferMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "defaultMinSlotMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 240
+        },
+        "defaultSelectionStepMinutes": {
+          "type": "integer",
+          "enum": [
+            5,
+            10,
+            15,
+            30
+          ]
+        },
+        "days": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 31,
+          "items": {
+            "$ref": "#/$defs/day"
+          }
+        },
+        "activities": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/activity"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "timezone",
+        "startDate",
+        "endDate",
+        "defaultBufferMinutes",
+        "defaultMinSlotMinutes",
+        "defaultSelectionStepMinutes",
+        "days",
+        "activities"
+      ]
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isExample": {
+          "type": "boolean"
+        },
+        "sourceNote": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      },
+      "required": []
+    }
+  }
+}

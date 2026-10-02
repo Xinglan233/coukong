@@ -1,5 +1,5 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>活动 JSON 格式 v1</h1>
-<p>UTF-8，最大 512 KiB；不接受注释、尾逗号、重复对象键、未知字段或远程 Schema。活动包只含活动资料，不能授予权限，也不能混入成员回复。结构与业务由前后端共享校验器再次验证。</p>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>活动 JSON 格式</h1>
+<p>下表说明兼容v1（UTF-8，最大512KiB）；v2见文末。不接受注释、尾逗号、重复对象键、未知字段或远程 Schema。活动包只含活动资料，不能授予权限，也不能混入成员回复。结构与业务由前后端共享校验器再次验证。</p>
 <h2>root</h2>
 <div class="table-scroll"><table>
 <tr><td>字段</td><td>类型</td><td>必填</td><td>限制</td></tr>
@@ -136,4 +136,8 @@
 <h2>更新、导出与错误</h2>
 <p>上传/粘贴 → 校验 → 预览标题、日期、开放、场次数、来源和变更 → 明确确认 → 服务端再次校验、CAS 原子提交 → 回读。event.id 无法越权指定小队。expectedRevision 过期返回 409，须重新预览。整包替换，任一非法则不写入；重复无变化导入不会增生场次。</p>
 <p>活动导出可无损回导同版本且无成员、令牌和内部主键。个人备份是另一 kind，旧备份另用兼容入口。时间结构改动保留原回复并要求复核，纯标题说明变化不影响确认。</p>
-<p>例如 09:60（非法分钟）、23:30–00:30（同日倒序）、重复场次 id、缺失日期、场次跨午休开放范围、空白标题或 schemaVersion=2 都拒绝。错误含稳定码、字段路径和中文说明。重复对象键在解析阶段拒绝，不能后值覆盖前值。九个 错误夹具 仅用于测试，绝不导入正式活动。</p></main></body></html>
+<p>例如 09:60（非法分钟）、23:30–00:30（同日倒序）、重复场次 id、缺失日期、场次跨午休开放范围、空白标题或未知结构版本都拒绝。错误含稳定码、字段路径和中文说明。重复对象键在解析阶段拒绝，不能后值覆盖前值。九个 错误夹具 仅用于测试，绝不导入正式活动。</p>
+<h2>v2与地图替换（本轮分支，云端待验）</h2>
+<p>v2采用 <a href="/examples/event-package.v2.schema.json">v2 Schema</a>，包上限1MiB。通用示例为 <a href="/examples/event-generic.v2.json">event-generic.v2.json</a>，带地图和通道的 <a href="/examples/convention-demo.v2.json">convention-demo.v2.json</a> 及其PNG均为自绘虚构测试资料，不能当作REDLAND官方资料。v1仍按原格式验证，不接受v2字段混入v1。</p>
+<p>地图内容身份包含assetKey、SHA-256、字节数、MIME、地图与资源宽高。任何一项改变，地图 <code>revision</code> 必须递增，不能以相同文件名掩盖替换。已有点位或通道时，替换首轮必须设置 <code>needsReview:true</code>，保留旧引用并重新校对；缺少版本递增或复核标记分别拒绝为MAP_REVISION_REQUIRED或MAP_REVIEW_REQUIRED。</p>
+<p>先保存新底图，再在校对流程确认点位与通道，完成复核后才能启用。等比例重采样可以保留归一化坐标，但仍必须经过明确保存与重新核对；不得因为比例不变就绕过复核。只有已确认、版本相符的通道用于路线，资料不全时保留站点清单，不把直线当可走路线。</p></main></div></body></html>

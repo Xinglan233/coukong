@@ -1,10 +1,13 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>游 · 帮助</title><link rel="stylesheet" href="/help/help.css"></head><body><nav><a href="/">返回游</a> · <a href="/help/">新手上路</a> · <a href="/help/event-json/">JSON 格式</a> · <a href="/help/readme/">文档中心</a></nav><main><h1>队长指南</h1>
-<p>当前按钮路径已上线；版本与待验项见 <a href="/help/release_checklist/">发布检查表</a>。</p>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>队长指南</h1>
+<p>直接小队按钮路径已上线；活动内“同行”属于新版隔离预发布范围。版本与待验项见 <a href="/help/release_checklist/">发布检查表</a>。</p>
 <p>首页“创建小队”后，简单约饭只需标题、日期和每天候选时段。可从公共模板复制活动资料，复制后本队保存自己的快照；公共模板更新不会自动改变本队。</p>
-<p>创建使用管理员提供的站点创建码。成功后在“成员”→“管理小队”分开保存管理入口和邀请入口；邀请与二维码可发群，管理入口只自己保存。自己要参与也以成员身份加入。队长不能读成员私密备注或替他们提交。</p>
+<p>创建使用管理员提供的站点创建码。成功后在“成员”→“管理小队”分开保存管理入口和邀请入口；邀请链接可发群，管理入口只自己保存。自己要参与也以成员身份加入。队长不能读成员私密备注或替他们提交。</p>
 <h2>导入与维护活动资料</h2>
 <p>底部“成员”→“管理小队”打开管理面板。“导入活动文件”支持上传 <code>.json</code> 和粘贴文本，点“预览”，核对后点“确认导入”；<a href="/help/event_json_format/">格式说明</a> 和三个 示例目录 可直接下载。导入活动不是导入个人回复。每次更新整包替换，稳定场次 ID 保持不变；一个非法字段导致整个包不写入。</p>
 <p>更新前核对新增、修改、删除场次和时间影响。日期、开放区间、场次时间/删除及计算默认值改变时，旧回复保留但标为“需要重新确认”，旧场次快照不会默默改变。已有确认回复后不能直接改时区，请新建小队。无变化重导入不重复建场次。版本冲突请重新预览，不要覆盖别人刚保存的资料。</p>
 <h2>管理成员与结束活动</h2>
 <p>在底部“成员”查看加入和确认人数，加入人数不包括未打开邀请的人。同名是独立成员，移除时核对稳定身份。更换邀请链接后旧邀请不能新加入，既有成员权限保留；移除成员会撤销其在线权限，但不能远程抹除已下载副本。</p>
-<p>在“管理小队”点“关闭填写”停止加入/回复，“归档”表示收尾，“删除小队”会移除云端小队及对应凭据；删除前导出活动和必要数据并完成二次确认。清除本机记录不会删除云端。真实操作入口及 API 对应见 <a href="/help/api/">API</a>，仍待验项目见 <a href="/help/release_checklist/">发布检查</a>。</p></main></body></html>
+<p>在“管理小队”点“关闭填写”停止加入/回复，“归档”表示收尾，“删除小队”会移除云端小队及对应凭据；删除前导出活动和必要数据并完成二次确认。清除本机记录不会删除云端。真实操作入口及 API 对应见 <a href="/help/api/">API</a>，仍待验项目见 <a href="/help/release_checklist/">发布检查</a>。</p>
+<h2>新活动内同行（尚未生产发布）</h2>
+<p>公开活动内打开“同行”，填写管理员提供的本活动建队码和小队标题，点“创建”。码默认24小时有效，只能创建一支小队；已使用、已撤销或已过期时不能创建新队。同一请求响应丢失时可以安全重试，不另建一队。此小队保存公共活动快照，队长不能改公共地图或场次；已有个人计划不自动分享。自己以队员身份加入后，点“同步本人计划到此小队”，核对后“提交”；收藏、路线不会分享给其他队员。参与多个小队时分别检查并提交，不认为保存个人计划已经提交全部小队。</p>
+<p>管理小队分为“邀请成员”“队长恢复”和“活动资料”三组。复制或分享邀请只发成员入口；队长恢复入口只自己保存。更换成员邀请前先确认，旧邀请随即失效。公共活动更新在“活动资料”点“核对并更新活动资料”；私人日常小队才使用“导入活动文件”。完整集合提议未实现，不显示全员已确认。实际功能缺项与待验范围见<a href="/help/activity_p0_status/">活动升级P0状态</a>。</p></main></div></body></html>

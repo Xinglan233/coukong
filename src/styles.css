@@ -5,7 +5,7 @@
   --surface-3: #e6e9ed;
   --ink: #171a1f;
   --ink-2: #545b66;
-  --ink-3: #8b929d;
+  --ink-3: #66707c;
   --line: #e2e5e9;
   --line-strong: #d2d6db;
   --accent: #0c8578;
@@ -35,7 +35,7 @@
   --surface-3: #2a2f36;
   --ink: #e9ebef;
   --ink-2: #9aa2ad;
-  --ink-3: #6c7480;
+  --ink-3: #9aa2ad;
   --line: #292e35;
   --line-strong: #353b44;
   --accent: #2db9a6;
@@ -95,13 +95,13 @@ body {
 }
 
 .page {
-  padding: 20px 18px calc(96px + env(safe-area-inset-bottom));
+  padding: 20px 16px calc(96px + env(safe-area-inset-bottom));
 }
 
 .page-title {
   font-size: 26px;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   margin: 4px 0 4px;
 }
 
@@ -131,11 +131,12 @@ input,
 select,
 textarea {
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--ink);
 }
 
 .btn {
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -151,6 +152,16 @@ textarea {
 
 .btn:active {
   transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .btn-primary {
@@ -276,7 +287,11 @@ textarea {
   color: var(--ink-2);
   font-size: 13.5px;
   font-weight: 500;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+
+.chip:active {
+  transform: scale(0.97);
 }
 
 .chip.on {
@@ -302,12 +317,16 @@ textarea {
 
 .segmented button {
   flex: 1;
-  height: 38px;
+  min-height: 44px;
   border-radius: 7px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink-2);
-  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.segmented button:active {
+  transform: scale(0.98);
 }
 
 .segmented button.on {
@@ -392,9 +411,9 @@ textarea {
   width: 100%;
   max-width: 460px;
   display: flex;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 30;
@@ -574,6 +593,8 @@ textarea {
 /* The online axis keeps the original rows/colors with precise horizontal ticks. */
 .tl-online { margin-left: 0; margin-top: 24px; }
 .tl-online .tl-time { top: -18px; width: 36px; text-align: center; transform: translateX(-50%); }
+.tl-online .tl-grid .tl-time:first-child { transform: translateX(0); text-align: left; }
+.tl-online .tl-grid .tl-time:nth-last-child(2) { transform: translateX(-100%); text-align: right; }
 .tl-online .tl-line { top: 0; bottom: 0; right: auto; width: 1px; height: auto; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -581,4 +602,52 @@ textarea {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* Shared heading keeps page actions aligned without a second title. */
+.page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.page-heading .page-title{margin:0}
+
+/* ============ 组件层补充（同野·游在线页共用） ============ */
+.page-title{font-weight:700}
+.section-title{font-size:16.5px;font-weight:700;margin:22px 0 8px}
+.section-title:first-child{margin-top:8px}
+.sched-day-head{display:flex;align-items:baseline;gap:8px;margin:18px 0 2px;font-size:13.5px;font-weight:700}
+.sched-day:first-of-type .sched-day-head{margin-top:6px}
+.event-updated{display:block;font-size:11.5px;color:var(--ink-3)}
+.sched-meta>span{display:block}
+.sched-meta>span+span{margin-top:1px}
+.sched-meta>span:first-child{color:var(--ink)}
+.sched-day{margin-bottom:6px}
+.chip-sm{height:32px;padding:0 12px;font-size:12.5px}
+.sheet-save{margin-top:16px}
+.sheet-done{margin-top:12px}
+.sheet-danger{margin-top:10px}
+.chip-wrap-sm{gap:6px}
+.row-tag{display:inline-block;margin-left:7px;padding:1.5px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:600;vertical-align:1px}
+
+/* ============ 状态与反馈细化 ============ */
+.sched-row:active,
+.me-row:active {
+  background: var(--surface-2);
+}
+.icon-btn {
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+.icon-btn:active {
+  transform: scale(0.94);
+}
+.match-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 14px 0 4px;
+}
+.match-meta .page-sub {
+  margin: 0;
+}
+.plan-sync {
+  min-height: 20px;
+  margin: 10px 0 0;
 }

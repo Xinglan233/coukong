@@ -4,7 +4,7 @@ import { parseEventPackage, parseStrictJSON, validateResponse } from '../../shar
 const read = (name: string) => readFileSync(name, 'utf8')
 const demo = () => parseEventPackage(read('examples/event-demo.json'))
 describe('活动包结构与业务合同', () => {
-  for (const file of readdirSync('examples')) it(`有效示例 ${file} 无损回导`, () => {
+  for (const file of readdirSync('examples').filter(f => f.endsWith('.json'))) it(`有效示例 ${file} 无损回导`, () => {
     const p = parseEventPackage(read(`examples/${file}`))
     expect(parseEventPackage(JSON.stringify(p))).toEqual(p)
   })

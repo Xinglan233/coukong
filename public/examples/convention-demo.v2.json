@@ -1,0 +1,201 @@
+{
+  "kind": "coukong.event",
+  "schemaVersion": 2,
+  "event": {
+    "id": "convention-route-demo",
+    "title": "虚构漫展地图与通道示例",
+    "description": "人工绘制的格式测试示意图；不是REDLAND或任何真实场馆地图。绿线仅表示该虚构图中测试通道。",
+    "timezone": "Asia/Shanghai",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03",
+    "location": "示例活动场地",
+    "defaultBufferMinutes": 5,
+    "defaultMinSlotMinutes": 15,
+    "defaultSelectionStepMinutes": 5,
+    "days": [
+      {
+        "date": "2026-10-03",
+        "openIntervals": [
+          {
+            "start": "09:00",
+            "end": "12:00"
+          },
+          {
+            "start": "13:00",
+            "end": "18:00"
+          }
+        ]
+      }
+    ],
+    "activities": [
+      {
+        "id": "demo-workshop",
+        "title": "手作体验示例",
+        "location": "示例 A 区",
+        "tags": [
+          "体验"
+        ],
+        "sessions": [
+          {
+            "id": "demo-workshop-1003-01",
+            "date": "2026-10-03",
+            "start": "09:05",
+            "end": "09:50",
+            "poiId": "poi-d"
+          },
+          {
+            "id": "demo-workshop-1003-02",
+            "date": "2026-10-03",
+            "start": "13:07",
+            "end": "13:52"
+          }
+        ]
+      }
+    ],
+    "eventType": "comic_convention",
+    "extensions": {
+      "convention": {
+        "maps": [
+          {
+            "id": "demo-map",
+            "title": "虚构U形通道示意图",
+            "assetKey": "convention-demo.png",
+            "width": 2000,
+            "height": 1000,
+            "revision": 1,
+            "coordinateSpace": "normalized-image-top-left",
+            "sourceNote": "项目自绘虚构图，仅格式示例"
+          }
+        ],
+        "pois": [
+          {
+            "id": "poi-a",
+            "name": "示例地点 A",
+            "kind": "entrance",
+            "position": {
+              "mapId": "demo-map",
+              "mapRevision": 1,
+              "x": 0.1,
+              "y": 0.2
+            },
+            "routeNodeId": "a",
+            "sourceNote": "虚构点位"
+          },
+          {
+            "id": "poi-b",
+            "name": "示例地点 B",
+            "kind": "booth",
+            "position": {
+              "mapId": "demo-map",
+              "mapRevision": 1,
+              "x": 0.1,
+              "y": 0.8
+            },
+            "routeNodeId": "b",
+            "sourceNote": "虚构点位"
+          },
+          {
+            "id": "poi-c",
+            "name": "示例地点 C",
+            "kind": "booth",
+            "position": {
+              "mapId": "demo-map",
+              "mapRevision": 1,
+              "x": 0.9,
+              "y": 0.8
+            },
+            "routeNodeId": "c",
+            "sourceNote": "虚构点位"
+          },
+          {
+            "id": "poi-d",
+            "name": "示例地点 D",
+            "kind": "booth",
+            "position": {
+              "mapId": "demo-map",
+              "mapRevision": 1,
+              "x": 0.9,
+              "y": 0.2
+            },
+            "routeNodeId": "d",
+            "sourceNote": "虚构点位"
+          }
+        ],
+        "routingGraphs": [
+          {
+            "id": "demo-graph",
+            "mapId": "demo-map",
+            "mapRevision": 1,
+            "revision": 1,
+            "nodes": [
+              {
+                "id": "a",
+                "x": 0.1,
+                "y": 0.2
+              },
+              {
+                "id": "b",
+                "x": 0.1,
+                "y": 0.8
+              },
+              {
+                "id": "c",
+                "x": 0.9,
+                "y": 0.8
+              },
+              {
+                "id": "d",
+                "x": 0.9,
+                "y": 0.2
+              }
+            ],
+            "edges": [
+              {
+                "id": "ab",
+                "from": "a",
+                "to": "b",
+                "bidirectional": true,
+                "enabled": true,
+                "reviewed": true,
+                "estimatedTravelSeconds": 90
+              },
+              {
+                "id": "bc",
+                "from": "b",
+                "to": "c",
+                "bidirectional": true,
+                "enabled": true,
+                "reviewed": true,
+                "estimatedTravelSeconds": 90
+              },
+              {
+                "id": "cd",
+                "from": "c",
+                "to": "d",
+                "bidirectional": true,
+                "enabled": true,
+                "reviewed": true,
+                "estimatedTravelSeconds": 90
+              }
+            ],
+            "sourceNote": "自行定义的测试通道与假设通行时间，不是实测"
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "isExample": true,
+    "sourceNote": "本项目自行生成的虚构示意图和场次；仅用于测试格式与绕路，不是现场导航资料。"
+  },
+  "assetManifest": [
+    {
+      "assetKey": "convention-demo.png",
+      "mimeType": "image/png",
+      "width": 2000,
+      "height": 1000,
+      "sizeBytes": 11283,
+      "sha256": "74ac574fc9d77acee94f4bd994b03727e3dc64541c7398f3098cace1840af821"
+    }
+  ]
+}

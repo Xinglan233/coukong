@@ -33,6 +33,8 @@ export function TimeAxis({ openHour, closeHour, openMinute, closeMinute, buffer,
 
   const hours: number[] = []
   for (let h = Math.ceil(openMin / 60); h <= Math.floor(closeMin / 60); h++) hours.push(h)
+  // 跨度长时标签按 2 小时取样，刻度线仍每小时一条，避免横排标签互相重叠
+  const labelStep = openMinute !== undefined && hours.length > 9 ? 2 : 1
 
   const busyBlocks = (person: AxisPerson): ReactNode =>
     (person.ranges ? person.ranges.map((r, i) => ({id:String(i), start:r.start,end:r.end,title:''})) : (person.bookings||[]).map(b=>({...b,start:parseHHMM(b.start)-buffer,end:parseHHMM(b.end)+buffer}))).map((b) => {
@@ -59,11 +61,14 @@ export function TimeAxis({ openHour, closeHour, openMinute, closeMinute, buffer,
       <div className="tl-grid">
         {hours.map((h) => {
           const left = pos(h * 60)
+          const showLabel = (h - hours[0]) % labelStep === 0
           return (
             <Fragment key={h}>
-              <span className="tl-time" style={openMinute!==undefined?{left:`${left}%`}:{top:`${left}%`}}>
-                {h}:00
-              </span>
+              {showLabel && (
+                <span className="tl-time" style={openMinute!==undefined?{left:`${left}%`}:{top:`${left}%`}}>
+                  {h}:00
+                </span>
+              )}
               <span className="tl-line" style={openMinute!==undefined?{left:`${left}%`}:{top:`${left}%`}} />
             </Fragment>
           )

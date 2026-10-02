@@ -1,0 +1,123 @@
+{
+  "scope": "handoff schema, examples, prompt consistency and arithmetic only; NOT product implementation, browser, security, deployment or live-network verification",
+  "date": "2026-09-30",
+  "valid_examples": 3,
+  "invalid_fixtures": 9,
+  "results": [
+    {
+      "file": "examples/event-demo.json",
+      "expected": "accept",
+      "actual": "accept",
+      "passed": true
+    },
+    {
+      "file": "examples/event-minimal.json",
+      "expected": "accept",
+      "actual": "accept",
+      "passed": true
+    },
+    {
+      "file": "examples/redland-2026-template.json",
+      "expected": "accept",
+      "actual": "accept",
+      "passed": true
+    },
+    {
+      "file": "fixtures/invalid/unknown-version.json",
+      "expected": "schema",
+      "actual": "schema",
+      "passed": true,
+      "reason": "1 was expected"
+    },
+    {
+      "file": "fixtures/invalid/invalid-minute.json",
+      "expected": "schema",
+      "actual": "schema",
+      "passed": true,
+      "reason": "'09:60' does not match '^(?:[01]\\\\d|2[0-3]):[0-5]\\\\d$'"
+    },
+    {
+      "file": "fixtures/invalid/duplicate-session-id.json",
+      "expected": "semantic",
+      "actual": "semantic",
+      "passed": true,
+      "reason": "duplicate session id"
+    },
+    {
+      "file": "fixtures/invalid/session-outside-open.json",
+      "expected": "semantic",
+      "actual": "semantic",
+      "passed": true,
+      "reason": "session outside open intervals"
+    },
+    {
+      "file": "fixtures/invalid/missing-day.json",
+      "expected": "semantic",
+      "actual": "semantic",
+      "passed": true,
+      "reason": "date coverage invalid"
+    },
+    {
+      "file": "fixtures/invalid/overlapping-open.json",
+      "expected": "semantic",
+      "actual": "semantic",
+      "passed": true,
+      "reason": "open intervals overlap or unsorted"
+    },
+    {
+      "file": "fixtures/invalid/reversed-interval.json",
+      "expected": "semantic",
+      "actual": "semantic",
+      "passed": true,
+      "reason": "session interval reversed or empty"
+    },
+    {
+      "file": "fixtures/invalid/blank-title.json",
+      "expected": "semantic",
+      "actual": "semantic",
+      "passed": true,
+      "reason": "blank event title"
+    },
+    {
+      "file": "fixtures/invalid/duplicate-object-key.json",
+      "expected": "parse",
+      "actual": "parse",
+      "passed": true,
+      "reason": "duplicate object key: schemaVersion"
+    }
+  ],
+  "arithmetic": {
+    "free_intervals": [
+      [
+        "09:15",
+        "09:40"
+      ],
+      [
+        "09:55",
+        "10:02"
+      ],
+      [
+        "10:27",
+        "11:50"
+      ]
+    ],
+    "durations_minutes": [
+      25,
+      7,
+      83
+    ],
+    "minimum_15_minutes": [
+      [
+        "09:15",
+        "09:40"
+      ],
+      [
+        "10:27",
+        "11:50"
+      ]
+    ],
+    "off_grid_duration_minutes": 45
+  },
+  "embedded_json_matches_files": true,
+  "schema_meta_validation": true
+}
