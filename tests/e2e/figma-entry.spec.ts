@@ -15,6 +15,6 @@ test('活动选择页粘贴真实邀请后，独立队员可加入并提交分�
  await presence(page,'13:07','13:52')
  await submit(page)
  await page.reload()
- await expect(page.getByRole('button',{name:/^我可以来/})).toContainText('13:07–13:52')
+ await expect(page.getByRole('button',{name:/本日在场时间/})).toContainText('13:07–13:52')
  await guest.close();await leader.close()
 })

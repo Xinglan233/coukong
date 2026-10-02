@@ -45,14 +45,21 @@
 
 准确Library来源及最新首用/严格Figma/局部沟通边界见[最新决定](requirements/latest-decisions.md)。
 
+
+## 2026-10-02界面新增门禁
+
+所有新增组件与部分先向指定Figma Make请求设计，实际看生成结果后实现。当前保存源码的局部缺稿核对见 [Figma缺稿清单](FIGMA_UI_GAPS.md)；最新覆盖规则见 [后续决定](requirements/latest-decisions.md)。当前03fb云实证只适用于固定部署，未来改稿不能沿用。
+
 ## 文件清单
 
 | 相对路径 | 字节数 | SHA-256 |
 | --- | --- | --- |
-| `CURRENT_STATE.md` | 7658 | `aaae88c2832abb4328a66d9b5ce7d11c4ab2da5703549f99d8f8bbb4b33e88ca` |
+| `CURRENT_STATE.md` | 8990 | `c18d3c29806db701560b48a3c58f362de38797c42b0ed73b98e0de2582cebf09` |
 | `FIGMA_REFERENCE.md` | 4742 | `7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c` |
+| `FIGMA_UI_GAPS.md` | 2841 | `381ee56a08be9abc1cb779ab0fb7549540093db32a34088a60772eedf224819f` |
 | `LOCAL_CHANGES_DECISION.md` | 1103 | `77f4128ba1be3884d06e3ea738eb3a9024b185d190d6aa80588d6399068fcc25` |
 | `README.md` | 1166 | `260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b` |
+| `SOURCE_INDEX.md` | 10085 | `40d9aae85b77bd04af304cef3220ec58a17af9a051ae31e486964f51bd69024b` |
 | `references/figma-feedback-dark-plan.png` | 1017455 | `a74d61baf1d677a5c16db36589e3f01be95e9482ae7b55e47da34fad61ba69ee` |
 | `references/figma-feedback-invite-spacing.png` | 15136 | `9e99d3eb6674e7159a25a862f292f86733a6050288f8bb57545f7c261f5845de` |
 | `references/figma-feedback-redundant-note.png` | 10776 | `283d3b7eaa58ce962e10f7b884443b9fbf9cfc0c66e42711139969a155b7adb0` |
@@ -70,7 +77,7 @@
 | `references/微信图片_20260930142714_12435_10.jpg` | 153567 | `731b39dad95f7598f16b62cf796085d0e21790aba61e8485ed1a1468fad173d7` |
 | `requirements/activity-and-visual/activity-update.md` | 50163 | `df58ac0e7f7987759cd4ea237b012e1584fcae58eb860ad60da4a429dd2b71af` |
 | `requirements/activity-and-visual/visual-style-update.md` | 16486 | `a18f83855e6dad190b47c6fe7b6a42e24acc4dd25069ded07c264eecb12e02e8` |
-| `requirements/latest-decisions.md` | 15357 | `eb3643fbc064f03b8156bd42616426aae7a6cce305b2da5c2be9c7ce0e3981ad` |
+| `requirements/latest-decisions.md` | 16826 | `9c7e987636e9579e7d17d090956f50fdb2a4e807fa2fbbb2a14dae966888f8c5` |
 | `requirements/original-execution-package/HANDOFF_CHECKS.md` | 1102 | `37875b2f2879f8642010d10db605feb4c33d880a340367aae02fd773d7840ebb` |
 | `requirements/original-execution-package/PROMPT.md` | 60312 | `5f3b8bf2897a7ecf049cf1bb21b0664c7a9b2629cd95d28778e49e6dcc36dfdf` |
 | `requirements/original-execution-package/START_HERE.md` | 1746 | `108820a3c6de2cdf5cce98f3811ca66df1e484d19908bc7c9f142727e08873bd` |
@@ -90,3 +97,7 @@
 | `requirements/original-execution-package/schemas/event-package.v1.schema.json` | 5674 | `23e469e2b541f2ab6f2763e278ebf8a932fa45cc87d3fd7897f6f90df34f0ce6` |
 | `requirements/original-execution-package/validation-report.json` | 2934 | `3d7c68451294d1982fedf33911424d0b9888f973eb52e982080a6fd26c15f187` |
 | `source-manifest-check.json` | 4773 | `d7958c14ce3159695ecf8f9e8e4a39eb0188763d44edf85e2637545a113394c7` |
+
+## 在场时间局部补稿
+
+指定Figma Make官方下载V11原始参考在 `references/figma-presence-v11/`；实际接入状态见 `FIGMA_UI_GAPS.md` 与实施计划。原型不是后端、鉴权、数据或发布验收证据。

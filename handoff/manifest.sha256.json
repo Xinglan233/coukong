@@ -1,5 +1,5 @@
 {
-  "generatedAtUTC": "2026-10-01T23:37:52.710388+00:00",
+  "generatedAtUTC": "2026-10-02T01:30:52.757267+00:00",
   "scope": "完整需求原文、后续决定、用户参考图与指定Figma官方导出；无密码、token、签名链接、数据库导出或私密日志。",
   "baselineCommit": "ddcba4d9a703cd88e94f40ef6a8ddb4519e805a1",
   "files": [
@@ -14,6 +14,11 @@
       "sha256": "7d048caf09ff7fef8265b57313f0abc8b923a1a0b00b488bacb9edf2b2aa873c"
     },
     {
+      "path": "FIGMA_UI_GAPS.md",
+      "bytes": 2917,
+      "sha256": "762453545c6e8e17049048d93953b73bea3f9eead1017e31db38cc7b680d5fad"
+    },
+    {
       "path": "LOCAL_CHANGES_DECISION.md",
       "bytes": 1103,
       "sha256": "77f4128ba1be3884d06e3ea738eb3a9024b185d190d6aa80588d6399068fcc25"
@@ -22,6 +27,11 @@
       "path": "README.md",
       "bytes": 1166,
       "sha256": "260b492ebf07b41647ac46f08721ff68f15103b835368dcce0fc96aa5d7d247b"
+    },
+    {
+      "path": "SOURCE_INDEX.md",
+      "bytes": 10283,
+      "sha256": "3d91732db7c750ba551ab017cc3ece710db192cdd8e11e49e2d024ff4910690b"
     },
     {
       "path": "references/figma-feedback-dark-plan.png",
@@ -79,6 +89,26 @@
       "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
     },
     {
+      "path": "references/figma-presence-v11/README.md",
+      "bytes": 906,
+      "sha256": "0242182ff5cd089087f6775cccc15d7fe767e52478db4cffba9d92e7a6a4450c"
+    },
+    {
+      "path": "references/figma-presence-v11/src/App.tsx",
+      "bytes": 74151,
+      "sha256": "6f5f24a47bcc05c0693a84499918358193c281a0b3208c208133fcbe84b7c78b"
+    },
+    {
+      "path": "references/figma-presence-v11/src/data.ts",
+      "bytes": 4403,
+      "sha256": "1ae488b9a08fc1a5fb6bc5e4c23af43a896058faf5ae1b7ec033471aeca50d6d"
+    },
+    {
+      "path": "references/figma-presence-v11/src/ui.tsx",
+      "bytes": 8231,
+      "sha256": "69ec4a89a85f5b481c83a03614ababdeee52fc939f40b64f4418eaf0043899a2"
+    },
+    {
       "path": "references/provenance.json",
       "bytes": 958,
       "sha256": "8370adc8dcefd7f92bb390fbe936cfeb6d2b503964a5dac11dfc5243cba44400"
@@ -110,8 +140,8 @@
     },
     {
       "path": "requirements/latest-decisions.md",
-      "bytes": 15357,
-      "sha256": "eb3643fbc064f03b8156bd42616426aae7a6cce305b2da5c2be9c7ce0e3981ad"
+      "bytes": 17188,
+      "sha256": "433ce5730c9c0d96850bb98e4e3e446445eefac08f4d55fa4673a7bcf63fcf5a"
     },
     {
       "path": "requirements/original-execution-package/HANDOFF_CHECKS.md",
@@ -207,11 +237,6 @@
       "path": "source-manifest-check.json",
       "bytes": 4773,
       "sha256": "d7958c14ce3159695ecf8f9e8e4a39eb0188763d44edf85e2637545a113394c7"
-    },
-    {
-      "path": "SOURCE_INDEX.md",
-      "bytes": 9723,
-      "sha256": "5a76c2b37da937331b5225b78ce08e8d1d8be42f373871d67327b20188c6a5ce"
     }
   ]
 }
