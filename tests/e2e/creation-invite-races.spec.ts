@@ -37,7 +37,7 @@ for(const failA of [false,true])test(`创建A期间切B保持独立busy，A${fai
   const oldReply=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/groups'));releaseA();await oldReply
   await expect(page.getByRole('button',{name:'创建中',exact:true})).toBeDisabled();await expect(page.getByLabel('建队码',{exact:true})).toBeDisabled();expect(attempts.filter(x=>x.sourceEventId===b.event.id)).toHaveLength(1)
   releaseB();await expect(page.getByLabel('怎么称呼')).toBeVisible();await switchTo(a.event.title)
-  if(failA){await page.getByLabel('小队标题').fill('A待创建小队');await page.getByLabel('建队码',{exact:true}).fill('test-create');await expect(page.getByRole('button',{name:'创建',exact:true})).toBeEnabled();await page.getByRole('button',{name:'创建',exact:true}).click();await expect(page.getByLabel('怎么称呼')).toBeVisible();const xs=attempts.filter(x=>x.sourceEventId===a.event.id);expect(xs).toHaveLength(2);expect(xs[0].operationId).toBe(xs[1].operationId)}else{await expect(page.getByRole('button',{name:'A待创建小队',exact:true})).toBeVisible();expect(attempts.filter(x=>x.sourceEventId===a.event.id)).toHaveLength(1)}
+  if(failA){await page.getByLabel('小队标题').fill('A待创建小队');await page.getByLabel('建队码',{exact:true}).fill('test-create');await expect(page.getByRole('button',{name:'创建',exact:true})).toBeEnabled();await page.getByRole('button',{name:'创建',exact:true}).click();await expect(page.getByLabel('怎么称呼')).toBeVisible();const xs=attempts.filter(x=>x.sourceEventId===a.event.id);expect(xs).toHaveLength(2);expect(xs[0].operationId).not.toBe(xs[1].operationId)}else{await expect(page.getByRole('button',{name:'A待创建小队',exact:true})).toBeVisible();expect(attempts.filter(x=>x.sourceEventId===a.event.id)).toHaveLength(1)}
  }finally{releaseA();releaseB();await context.close()}
 })
 

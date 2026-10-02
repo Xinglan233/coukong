@@ -15,7 +15,7 @@ test('组队响应丢失保留原幂等请求，重载重试只恢复同一小�
  await page.route('**/api/v1/groups',async route=>{if(route.request().method()!=='POST')return route.continue();attempts.push(route.request().postDataJSON());const response=await route.fetch();expect(response.status()).toBe(200);ids.push((await response.json()).data.id);if(attempts.length===1)return route.abort('failed');await route.fulfill({response})})
  const create=async()=>{await page.getByLabel('建队码',{exact:true}).fill('test-create');await page.getByLabel('小队标题').fill('丢响应恢复小队');await page.getByRole('button',{name:'创建',exact:true}).click()}
  await page.goto(`/events/${pack.event.id}?view=companions`);await create();await expect(page.getByRole('alert')).toContainText('连接失败')
- expect(await localRecord(page,`activity-create-group:${pack.event.id}`)).toEqual(attempts[0]);await page.reload();await create();await expect(page.getByLabel('怎么称呼')).toBeVisible()
+ expect(await localRecord(page,`activity-create-group:${pack.event.id}`)).toEqual(attempts[0]);await page.reload();await create();await expect(page.getByRole('alert')).toContainText('上次创建的小队已恢复');await expect(page.getByLabel('小队标题')).toHaveValue('丢响应恢复小队');await page.getByRole('button',{name:'丢响应恢复小队',exact:true}).click();await expect(page.getByLabel('怎么称呼')).toBeVisible()
  expect(attempts).toHaveLength(2);expect(attempts[1]).toEqual(attempts[0]);expect(ids[1]).toBe(ids[0]);await expect.poll(()=>localRecord(page,`activity-create-group:${pack.event.id}`)).toBeUndefined();await context.close()
 })
 
