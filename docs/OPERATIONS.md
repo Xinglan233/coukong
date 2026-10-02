@@ -24,7 +24,7 @@ npx wrangler d1 export tongye-meet-staging --remote --output "$TONGYE_BACKUP_DIR
 
 运行前填写仓库与公开构建之外的受控目录，目录权限700，SQL和日志权限600。CLI可能输出一小时有效的私密数据库下载链接，所以stdout/stderr必须重定向至该目录；不要直接显示、上传或分享原始日志。对外只报告脱敏状态、退出码和文件大小。导出会短暂阻塞数据库请求，选低流量时执行，失败先确认状态再重试。导出后检查权限与完整性。
 
-恢复最短步骤：创建全新隔离 D1 → 复制 staging 配置为临时恢复配置并填写新 database_id/name → `wrangler d1 execute <新隔离库名> --remote --file <受控SQL文件> --config <恢复配置>` → 绑定独立 Worker → 检查 ready、三身份回读及活动导出 deepEqual。禁止把恢复 SQL 直接导入当前生产库。保留结束码与脱敏证据；只生成文件不算恢复通过。演练资源后续清理由持有人确认，免费 Time Travel 仅补充。
+恢复最短步骤：创建全新隔离 D1 → 准备可信SQL恢复顺序文件 → 复制 staging 配置为临时恢复配置并填写新 database_id/name → `wrangler d1 execute <新隔离库名> --remote --file <准备后的受控SQL文件> --config <恢复配置>` → 绑定独立 Worker → 检查 ready、三身份回读及活动导出 deepEqual。禁止把恢复 SQL 直接导入当前生产库。保留结束码与脱敏证据；只生成文件不算恢复通过。演练资源后续清理由持有人确认，免费 Time Travel 仅补充。
 
 使用 Python 3 准备受控的 Wrangler SQL 导出，保留原文件：
 
@@ -43,7 +43,9 @@ python3 scripts/prepare-d1-restore.py "$PRIVATE_EXPORT_SQL" "$PRIVATE_RESTORE_SQ
 
 ## 回滚
 
-当前功能提交以实际生产部署的Git元数据和 `/api/v1/ready` 构建标识为准；纯文档提交可与Worker源码提交不同，必须记录两者及源码树关系。2026-10-02活动升级前稳定Worker源码为 `9090be47ed732b5afd5323d20515be1fbb4cb84f`，版本ID `818f337c-c334-4145-9d47-44406d62ff80`；更早b801版本会带回其已知缺陷，不默认作为首选。先保存当前数据备份与部署 ID；Vercel 项目 tongye-meet 选择已验证旧 deployment 恢复到公开别名 coukong.vercel.app。Worker 使用 `wrangler rollback <已验证版本ID> --config worker/wrangler.production.jsonc` 回滚，版本 ID 从实际部署历史选取，必须检查其 Schema 兼容性。已应用迁移不回改、不盲目降级数据库。需要数据回退时先备份当前库并恢复旧 SQL 到新隔离库验证，然后由持有人决定切换绑定；旧数据库保留。旧版 localStorage 原文和 Git baseline.bundle 是迁移依据，不能恢复云端未备份数据。
+以实际前端部署元数据和 `/api/v1/ready` 核对版本。当前Worker构建为 `bba05f27c87ea676a1b8a870185d7e64f4f7e4e0`，前端文档部署可使用更新提交。先保存数据库与媒体备份、当前部署ID；按故障范围选择前端或Worker回滚。单独文档回滚不需要回滚Worker。
+
+已应用迁移不回改，不盲目降级数据库。需要数据恢复时先备份当前库，将SQL恢复到新隔离库并检查外键、预算和业务，再决定切换绑定。旧库保留，公开活动JSON不能恢复未备份的个人记录。
 
 [发布检查](RELEASE_CHECKLIST.md) 必须注明备份路径、演练结果、旧部署和恢复版本，不能在公开记录里写私人链接或秘密。
 
@@ -58,17 +60,19 @@ TONGYE_ROLLBACK_WORKER_VERSION="请替换为已核实Worker版本ID"
 npx wrangler rollback "$TONGYE_ROLLBACK_WORKER_VERSION" --config worker/wrangler.production.jsonc
 ```
 
-前端直接回滚目标必须从现有项目部署列表确认，不固定某次发布ID。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)；每次操作先核对项目部署列表。更早b801前端部署 `dpl_3FT8Y15H4F3ZVnPpT1VZZqnvYXhU` 仍保留，但如果免费计划拒绝直接回滚，则用b801源码经正常恢复分支、PR和CI重新发布，不升级付费。Worker与前端按故障范围选择并核验，单独回滚文档无需回滚Worker。恢复到旧9090会暂时失去新增活动、个人计划与媒体功能，但不能删掉新D1表、私人活动或已保存计划；回滚前先确认私人活动不会被旧版公开。CLI需要相应账户登录；不要为失败扩权。回滚之后核对公开站点和 `/api/v1/ready`；旧版本会重新带回其已知界面与模板下架缺陷，数据库及个人草稿不因代码回滚而删除。
+前端目标从项目实际部署列表确认。Hobby只允许直接回滚到前一个生产部署，见 [官方CLI说明](https://vercel.com/docs/cli/rollback)。更早版本通过正常恢复分支、PR和CI重新发布，不升级付费。Worker版本也从实际历史确认，检查Schema、权限和当前HTTPS origin兼容性；回滚到域名修复前的Worker会丢失正式域名的CORS授权。
 
-## 本轮媒体预算与失败清理（云端待验）
+回滚后核对两个公开入口、深链接、`/api/v1/ready`、活动资料和媒体读取。不得因代码回滚删除新表、个人计划或本机草稿，也不默认回到失去活动/媒体能力的旧版。
+
+## 媒体预算与失败清理
 
 每环境256MiB保守应用预算，生产与staging独立；两个环境共512MiB不是账户1GB额度保证。其他store、直接平台操作、流量和操作配额仍可消耗账户额度。未完成、失败和已过期上传保留预留；ready计净化源图、显示图及可能未删临时原图，额度数值不等于实际平台精确用量。
 
 管理员进入地图编辑“图片空间与失败上传”→“查看图片空间”，需要时点“清理失败上传”并明确确认不可恢复。对应 POST `/api/media/cleanup`，管理员 Bearer 与 `{eventId,confirmDelete:true}` 必需。候选仅pending/processing/failed且上传期限过后再等待15分钟，所有当前/历史活动引用和ready资产排除，每次最多5项、每资产最多20对象。Node仅删除严格资产前缀内对象并再次确认目录为空，Worker再检查仍未引用后标revoked、释放预留；途中失败保留预算，可重试，不承诺自动每日清理。
 
-数据库SQL不含Blob图片。媒体恢复应同时保存净化源图、显示图、文件SHA-256、资产状态与所有历史引用，再导入全新隔离store/数据库并实际回读；单独SQL恢复证明不能沿用为新媒体恢复证据。旧ready图和历史版本不可为省额度擅自删除。c265前端加修补Worker已完成隔离云新路径媒体恢复与再次备份，证据与最新代码云端验收分开；最新完整前后端和最大媒体矩阵仍待验。
+数据库SQL不含Blob图片。媒体恢复应同时保存净化源图、显示图、文件SHA-256、资产状态与所有历史引用，再导入全新隔离store/数据库并实际回读；单独SQL恢复证明不能沿用为新媒体恢复证据。旧ready图和历史版本不可为省额度擅自删除。隔离环境已完成媒体新路径恢复与历史引用备份；生产REDLAND已上传、净化和发布。生产精确净化源图与显示图的完整备份仍需维护者受控操作，步骤见 [媒体备份](MEDIA_BACKUP.md)。最大复杂图片与完整云拒绝矩阵待验。
 
-## 个人计划应用预算（本轮分支，云端待验）
+## 个人计划应用预算
 
 通过 `GET /api/v1/limits` 核对部署实际限额，不凭文档猜运行配置。单份plan最大1536KiB；全部访客共用128MiB逻辑UTF-8预算，另按每记录1KiB保守计入元数据。该应用门禁与D1物理容量、索引、页空间及平台日读写额度不同，不能承诺物理数据库始终低于128MiB。
 

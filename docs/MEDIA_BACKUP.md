@@ -4,6 +4,8 @@
 
 隔离预发布已实际导出一项媒体资产的净化源图与显示图，并核对数据库版本、全部历史引用和文件哈希；该份实际备份的本机隔离恢复通过。另已实际恢复全量SQL到独立云D1并回读18表结构/记录一致；使用同一staging store将备份PNG恢复到新的虚构活动和资产路径，独立浏览器读图及第二份历史引用/哈希备份通过。数据库全量恢复与新活动媒体业务恢复是两份范围不同的证据，不声称复制原Blob路径、原私人身份或完成新版生产验收。对应前端与 Worker 版本见 [发布检查表](RELEASE_CHECKLIST.md)。
 
+生产REDLAND已有原始JPEG、发布活动JSON与数据库SQL备份。净化源图和显示图的完整受控备份仍需维护者执行；原始JPEG和公开显示图核验不能替代这份备份。
+
 ## 先保存私密数据库
 
 按 [运维指南](OPERATIONS.md) 的受控 D1 导出步骤保存 SQL，勿打印含私密下载链接的 CLI 原始输出。管理员在这段期间停止活动资料/地图变更。脚本会将 SQL 导入本机内存 SQLite，核对活动 revision/publicRevision、全部历史引用和媒体元数据；版本不一致时停止，重新导出 SQL 后再备份。
@@ -12,13 +14,13 @@
 
 ## 受控分块导出
 
-沿用已批准的精确预览部署临时链接；不给脚本新 CLI 登录、长期 Blob token 或第三个 store。临时访问文件只有 `{"url":"已批准的精确预览临时链接"}`；已有管理员会话单独存纯文本文件。两者及 SQL 都设600权限，存于仓库外私密目录。临时链接授予预览访问，管理员 Bearer 另行约束本活动备份，Vercel 后台运行时 OIDC 再约束 Worker 的可信访问。
+使用已授权的对应Vercel部署地址。生产无需预览访问授权；受保护预览仅使用该部署仍有效的授权链接。访问文件格式为 `{"url":"对应部署地址"}`，当前脚本要求 `.vercel.app` 部署域名。合法受控管理员会话单独存纯文本文件，不从浏览器或登录配置抽取。两者及SQL都设600权限，存于仓库外私密目录。预览授权只决定能否访问部署，管理员Bearer另行约束本活动备份，Vercel 后台运行时 OIDC 再约束 Worker 的可信访问。
 
 ```sh
 node --import tsx scripts/media-backup.ts \
-  --access-file /受控私密目录/preview-access.json \
+  --access-file /受控私密目录/deployment-access.json \
   --session-file /受控私密目录/admin-session.txt \
-  --db-file /受控私密目录/staging.sql \
+  --db-file /受控私密目录/prepared-database.sql \
   --event 需要备份的活动ID \
   --out /受控私密目录/一个尚不存在的备份目录
 ```

@@ -1,19 +1,20 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>媒体备份与隔离恢复</h1>
 <p>地图媒体需要与同一版本的数据库一起备份。数据库 SQL 保存活动、全部历史原包/引用、个人计划和小队数据；媒体备份保存每个已就绪历史资产的净化源图、显示图、大小及 SHA-256。撤回但仍保留私有文件的历史资产也纳入。临时上传、失败资产不是可恢复正式地图；历史版本若引用缺失文件，备份明确失败。</p>
 <p>隔离预发布已实际导出一项媒体资产的净化源图与显示图，并核对数据库版本、全部历史引用和文件哈希；该份实际备份的本机隔离恢复通过。另已实际恢复全量SQL到独立云D1并回读18表结构/记录一致；使用同一staging store将备份PNG恢复到新的虚构活动和资产路径，独立浏览器读图及第二份历史引用/哈希备份通过。数据库全量恢复与新活动媒体业务恢复是两份范围不同的证据，不声称复制原Blob路径、原私人身份或完成新版生产验收。对应前端与 Worker 版本见 <a href="/help/release_checklist/">发布检查表</a>。</p>
+<p>生产REDLAND已有原始JPEG、发布活动JSON与数据库SQL备份。净化源图和显示图的完整受控备份仍需维护者执行；原始JPEG和公开显示图核验不能替代这份备份。</p>
 <h2>先保存私密数据库</h2>
 <p>按 <a href="/help/operations/">运维指南</a> 的受控 D1 导出步骤保存 SQL，勿打印含私密下载链接的 CLI 原始输出。管理员在这段期间停止活动资料/地图变更。脚本会将 SQL 导入本机内存 SQLite，核对活动 revision/publicRevision、全部历史引用和媒体元数据；版本不一致时停止，重新导出 SQL 后再备份。</p>
 <p>使用刚导出的可信 SQL，先按运维指南运行 <code>scripts/prepare-d1-restore.py</code>，保留原文件并生成新的恢复顺序文件。备份命令的 <code>--db-file</code> 使用准备后的文件，避免前向外键表顺序与预算触发器重复计数。不能用来执行任意来源的 SQL。SQL 上限为128 MiB；大于上限明确停止，不截断。该校验只在本机内存数据库执行，不改云端 D1。</p>
 <h2>受控分块导出</h2>
-<p>沿用已批准的精确预览部署临时链接；不给脚本新 CLI 登录、长期 Blob token 或第三个 store。临时访问文件只有 <code>{&quot;url&quot;:&quot;已批准的精确预览临时链接&quot;}</code>；已有管理员会话单独存纯文本文件。两者及 SQL 都设600权限，存于仓库外私密目录。临时链接授予预览访问，管理员 Bearer 另行约束本活动备份，Vercel 后台运行时 OIDC 再约束 Worker 的可信访问。</p>
+<p>使用已授权的对应Vercel部署地址。生产无需预览访问授权；受保护预览仅使用该部署仍有效的授权链接。访问文件格式为 <code>{&quot;url&quot;:&quot;对应部署地址&quot;}</code>，当前脚本要求 <code>.vercel.app</code> 部署域名。合法受控管理员会话单独存纯文本文件，不从浏览器或登录配置抽取。两者及SQL都设600权限，存于仓库外私密目录。预览授权只决定能否访问部署，管理员Bearer另行约束本活动备份，Vercel 后台运行时 OIDC 再约束 Worker 的可信访问。</p>
 <pre><code>
 node --import tsx scripts/media-backup.ts \
 
-  --access-file /受控私密目录/preview-access.json \
+  --access-file /受控私密目录/deployment-access.json \
 
   --session-file /受控私密目录/admin-session.txt \
 
-  --db-file /受控私密目录/staging.sql \
+  --db-file /受控私密目录/prepared-database.sql \
 
   --event 需要备份的活动ID \
 

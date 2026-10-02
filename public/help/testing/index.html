@@ -1,23 +1,40 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>测试与证据</h1>
-<p>运行 <code>npm run verify</code> 聚合类型、lint、单元、真实本地 D1/API 集成、文档与构建；<code>npm run test:e2e</code> 单独执行浏览器发布门禁。<code>npm run docs:check</code> 校验文档链接、Schema/业务例子、九个错误夹具、下载文件和命令环境变量一致性。测试环境须与生产隔离。</p>
-<h2>必测断言</h2>
-<p>- 分钟往返 <code>13:07–13:52</code>、选择步长不改数据、第 5.4 精确三段交集、半开边界、跨午夜缓冲、24:00、设备时区不漂移与 DST 过渡日拒绝。</p>
-<p>- 未确认不算全天空、明确不能参加有效、子集不忽略未确认、时间变更保留旧回复并要求复核。</p>
-<p>- 三个独立身份创建/加入/提交/回读；同名、跨队、私人回复、移除撤销、双 revision 并发、幂等响应丢失、同操作不同正文拒绝、CAS 零行从属写入无副作用。</p>
-<p>- 三个例子通过 Schema 与业务，九个夹具按阶段拒绝；未知字段、大小/数量、并行场次、原子导入、版本冲突、导出回导和下载一致。</p>
-<p>- 旧数据成功/失败原文均保留，旧朋友不冒名，旧分享过大/超时拒绝，hydration 不覆盖数据。</p>
-<p>- 断网/超时/HTML 错页/配额失败保留草稿；隐藏页面停轮询；深链接、恢复权限、PWA 更新、离线和冷启动。</p>
-<h2>设备与上线演练</h2>
-<p>375/390/430px、桌面、键盘、深色及减少动态效果；发起人/A/B 用三个隔离浏览器上下文完成约饭、JSON、修改和比较。WebKit 自动化不等于 iPhone 真机或微信实测。</p>
-<p>2026-10-02 前使用用户实际手机与中国大陆现场网络检查前端和 API 可达性；演练 REDLAND 前核实官方资料。预发布 D1 导出到全新隔离库，比较小队/成员/版本与私人回读，再删除演练资源。生产只读核验，不跑批量破坏测试。</p>
-<p>实际命令、环境、提交、通过数量、日志和仍待验项必须写进 <a href="/help/release_checklist/">发布检查表</a>。没有证据不勾选。</p>
-<h2>功能补齐检查点（2026-10-01，本地）</h2>
-<p>新增私人创建、独立计划及小队关联、邀请上下文、路线停留排队和窗口检查、活动60秒刷新。当前类型/lint、105单元、39真实隔离D1、文档检查、构建通过，新增三项浏览器分别验证私人流程、路线显式加入和取消活动刷新/隐藏停止/dirty保留。使用实际安装Google Chrome，<code>PLAYWRIGHT_CHROMIUM_EXECUTABLE</code>可指定其可执行路径；不是iPhone真机。</p>
-<p>8599完整38浏览器37通过/1因管理员登录真实限流失败，夹具已按真实分钟限流等待而不弱化服务端。最新全部浏览器与完整最新前后端云链路仍待运行，不把分批通过拼成整套记录。私人管理编辑组件尚未挂载实走。新0007仅本地，生产保持9090功能代码。</p>
-<h2>避免占用现有开发实例</h2>
-<p>默认浏览器测试API端口为8787。如果本地开发已使用该端口，保留原进程，使用独立测试端口：</p>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>同野·游 · 帮助</title><link rel="stylesheet" href="/help/help.css"><script src="/help/theme.js"></script></head><body><div class="help-shell figma-shell"><nav class="help-nav" aria-label="帮助导航"><a class="btn btn-surface" href="/">返回活动</a><a class="btn btn-surface" href="/help/">新手上路</a><a class="btn btn-surface" href="/help/event-json/">活动资料格式</a><a class="btn btn-surface" href="/help/readme/">文档中心</a></nav><main><h1>测试</h1>
+<h2>本地命令</h2>
 <pre><code>
-TONGYE_E2E_API_PORT=8795 TONGYE_E2E_BASE_URL=http://localhost:5175 npm run test:e2e
+npm ci
+
+npm run verify
+
+npm run test:e2e
 
 </code></pre>
-<p>API端口仅允许1024–65535，监听本机，所有浏览器和离线构建统一使用同一测试API地址。每次运行仍创建新的临时D1，不复用未知开发数据库。</p></main></div></body></html>
+<p><code>verify</code>依次运行类型、lint、单元、真实本地D1集成、文档检查和构建。浏览器测试单独运行，属于发布门禁。Playwright使用独立身份和隔离数据，不访问生产数据库。</p>
+<p>需要单独定位时：</p>
+<pre><code>
+npm test
+
+npm run test:integration
+
+npm run docs:generate
+
+npm run docs:check
+
+npm run build
+
+</code></pre>
+<h2>关键断言</h2>
+<p>- 分钟往返、显示步长不改数据、半开边界、24:00、跨日缓冲与DST拒绝。</p>
+<p>- 未提交不能算全天可用；明确不能参加、成员子集、资料变更复核分别处理。</p>
+<p>- 同名不覆盖；个人、队长、邀请、管理员权限分离；跨队与跨活动拒绝，结果不含私密备注。</p>
+<p>- 个人保存、小队提交、收藏、安排和路线各自独立；CAS冲突保留本机草稿。</p>
+<p>- 慢请求期间新编辑保留；离线刷新先恢复草稿；混合资料版本拒绝绘图或计算。</p>
+<p>- JSON重复键、未知字段、错误日期、重复ID、范围越界、上限及原子导入。</p>
+<p>- 图片真实格式、尺寸、动画和身份校验；换图后的旧DTO拒绝加载新底图。</p>
+<p>- 访客共享预算、有界幂等回执、SQL恢复外键与预算计数。</p>
+<p>- 固定顺序Dijkstra、确认通道、断路、未知时间、停留排队及窗口适配。</p>
+<p>- 375/390/430px和桌面、浅深色、地图交互、长内容、深链接和无全页溢出。</p>
+<p>测试位于 <code>tests/unit</code>、<code>tests/integration</code>、<code>tests/e2e</code>；规模结果位于 <code>tests/performance</code>。Node墙钟或CPU数据不能当作Workers10ms验证。</p>
+<h2>发布验证</h2>
+<p>CI必须对应实际提交；旧提交绿灯、分批用例相加和构建成功不能替代当前完整运行。云端演练用命名隔离活动、小队及数据库，记录前端与Worker版本，不对真实用户运行删除或破坏性测试。</p>
+<p>数据库恢复检查结构、全部记录、外键、预算和业务回读；媒体恢复另检查文件字节、manifest与历史引用。真机、微信和中国大陆网络须用实际设备验证。</p>
+<p>当前已执行结果与未验证项见 <a href="/help/release_checklist/">发布检查与证据</a>。</p></main></div></body></html>

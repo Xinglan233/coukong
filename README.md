@@ -1,36 +1,48 @@
 # 同野·游
 
-同野·游（原凑空）：围绕一场活动，安排自己的行程，也安排与朋友同行的时间。保留 Vite / React / TypeScript，在线回复由 Cloudflare Worker + D1 持久化；本机草稿与已提交回复分别显示。
+同野·游是活动中的个人计划与同行工具。选一场活动，收藏想去的地点，安排自己的时间，也和朋友查看共同空闲。
 
-## 当前发布状态
+[打开同野·游](https://meet.tongye.ink) · [REDLAND 2026](https://meet.tongye.ink/events/redland-2026) · [使用帮助](https://meet.tongye.ink/help/) · [文档中心](docs/README.md)
 
-生产入口：[打开游](https://coukong.vercel.app)。API：[数据库就绪](https://tongye-meet-api.xinglan233.workers.dev/api/v1/ready)。Vercel 项目名是 `tongye-meet`，沿用已有公开别名 `coukong.vercel.app`。
+## 使用
 
-2026-09-30 发布对应功能合并提交 `9090be47ed732b5afd5323d20515be1fbb4cb84f`，PR #2 已合并；前端功能源码与 Worker 就绪标识对应此功能版本，源码树与已验收提交 `7a9ab0a` 等价；后续纯文档发布可有不同前端部署提交，不改变 Worker 构建标识。已完成本地测试、真实云端多人读写、分钟往返与备份隔离恢复；真机、微信、中国大陆现场网络和 Worker CPU 尚未验证。详细证据与剩余门禁见 [发布检查表](docs/RELEASE_CHECKLIST.md)。
+- **个人计划**：无需加入小队即可收藏地点、记录安排和整理路线。收藏、日程、路线分别保存。
+- **同行**：队长创建小队并发出邀请；每位队员填写、提交自己的时间，再查看共同空闲。
+- **活动资料**：管理员维护活动、场次、地点和地图，支持网页编辑与 JSON 导入、预览、发布。
+- **现场准备**：保存恢复链接，下载活动资料和所选地图；离线编辑保留本机草稿，联网后再保存。
 
-## 本轮活动与地图升级
+时间精确到分钟，默认快捷步长15分钟，可切5/10/30分钟。`13:07–13:52` 不取整。选择场次只记录个人计划，不替用户完成官方预约。
 
-正在实施“选活动 → 逛展/活动 → 计划 → 同行 → 我的”。公开浏览与个人收藏计划不以加入小队为前提；现有多人分钟协调保留。本轮新增能力尚未完成生产验收，当前地址的稳定多人版本不能当作地图升级已经上线。地图持久媒体资源待核验/必要审批，真实 REDLAND 地图与通道资料不足；GPS 和自托管适配未实现。
+REDLAND 已提供全场地图、87条地点目录和998条参考场次。场次来自第三方整理，A02、C04的实际时段仍缺；地点尚未定位，也没有经过核对的可走路网。12:30入场已确认，闭馆时间未确认。
 
-[地图与标点](docs/MAP_GUIDE.md)、[路线限制](docs/ROUTING.md)、[部署决策](docs/DEPLOYMENT_DECISION.md) 说明准备与边界。
+## 本地开发
 
-## 开始使用
-
-收到邀请请读 [新手上路](docs/GETTING_STARTED.md)，发起人请读 [发起人指南](docs/ORGANIZER_GUIDE.md)。部署后的站内 `/help/` 和 `/help/event-json/` 不要求 GitHub 账号。[文档中心](docs/README.md) 包含管理员、开发和运维说明。
-
-本地安装锁文件依赖后启动：
+需要 Node.js 22–26、npm 和 Python 3。安装锁文件依赖后启动前端与真实本地 Worker/D1：
 
 ```sh
 npm ci
 npm run dev:all
 ```
 
-仅前端用 `npm run dev`。发布前运行 `npm run verify` 和 `npm run test:e2e`。本地开发使用真实本地 D1；公开配置参见 [.env.example](.env.example)，免费资源配置见 [部署指南](docs/DEPLOYMENT.md)。不要将管理员凭据放进前端环境变量。
+本地配置参见 [.env.example](.env.example) 和 [worker/.dev.vars.example](worker/.dev.vars.example)。只启动前端用 `npm run dev`。
 
-## 数据与边界
+```sh
+npm run verify
+npm run test:e2e
+```
 
-分钟精度独立于 5/10/15/30 分钟选择步长，默认 15 分钟。`13:07–13:52` 保持原值。活动统一使用活动时区，DST 过渡日拒绝，详见 [日期时间](docs/DATETIME.md)。选择公共场次只是记录计划，不代表官方预约。
+## 文档
 
-草稿仅在本机；提交成功后其他成员才可看安全结果。恢复链接等效于对应权限，请单独保存。云端并非端到端加密，见 [隐私说明](docs/PRIVACY.md)。本机清除和云端删除是不同操作。
+- 用户：[新手上路](docs/GETTING_STARTED.md)、[队长指南](docs/ORGANIZER_GUIDE.md)、[地图](docs/MAP_GUIDE.md)、[路线](docs/ROUTING.md)。
+- 管理员：[管理员指南](docs/ADMIN_GUIDE.md)、[活动 JSON](docs/EVENT_JSON_FORMAT.md)。
+- 开发：[架构](docs/ARCHITECTURE.md)、[API](docs/API.md)、[日期时间](docs/DATETIME.md)、[测试](docs/TESTING.md)。
+- 维护：[部署](docs/DEPLOYMENT.md)、[运维与回滚](docs/OPERATIONS.md)、[媒体备份](docs/MEDIA_BACKUP.md)、[发布记录](docs/RELEASE_CHECKLIST.md)。
+- 数据：[隐私](docs/PRIVACY.md)、[安全](SECURITY.md)、[变更记录](CHANGELOG.md)。
 
-只用免费资源，不自动升级。Workers / D1 配额与 Vercel Hobby 个人非商业用途限制见 [运维说明](docs/OPERATIONS.md)。REDLAND 示例的 09:00–21:00 待确认，场次为空，不是官方活动安排。OCR 保留为本地辅助功能，不保证识别任意海报。
+## 数据与运行边界
+
+前端使用 Vite、React 和 TypeScript；Vercel 提供网页与图片处理，Cloudflare Worker/D1 保存在线记录，私有 Blob 保存地图。生产与测试环境隔离。仅使用免费计划，不自动升级；Vercel Hobby 限个人非商业用途。
+
+本机草稿与云端保存分别显示。恢复链接具有对应权限，需单独保管；清除本机资料与删除云端记录是不同操作。云端不是端到端加密。
+
+正式入口为 `meet.tongye.ink`，`coukong.vercel.app` 保留兼容。两个域名的本机身份和缓存不共享，换入口时用本人恢复链接找回身份。当前生产 API 构建为 `bba05f27c87ea676a1b8a870185d7e64f4f7e4e0`；文档部署可以采用更新的前端提交。实际验证范围与待验项见发布记录。
